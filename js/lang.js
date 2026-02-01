@@ -53,5 +53,24 @@ export const LANG = {
     L2_TITLE: { en: "MISSION: CODE REPAIR", si: "මෙහෙයුම: කේත දෝෂ නිවැරදි කිරීම" },
     L2_DESC: { en: "Identify and fix the syntax errors in the Python security scripts.", si: "Python ආරක්ෂක පද්ධතියේ ඇති දෝෂ හඳුනාගෙන නිවැරදි කරන්න." },
     L2_TASK_PREFIX: { en: "TASK: ", si: "කාර්යය: " },
-    L2_BTN_RUN: { en: "EXECUTE SCRIPT", si: "ධාවනය කරන්න" }
+    L2_BTN_RUN: { en: "EXECUTE SCRIPT", si: "ධාවනය කරන්න" },
+
+    // Level 3: Networking
+    L3_TITLE: { en: "MISSION: OSI STACK", si: "මෙහෙයුම: OSI ආකෘතිය" },
+    L3_DESC: { en: "Arrange the 7 Layers of the OSI Model in the correct order (Physical to Application).", si: "OSI ආකෘතියේ ස්ථර 7 නිවැරදි අනුපිළිවෙලට සකසන්න." },
+    L3_LAYER_7: { en: "7. Application", si: "7. යෙදුම් (Application)" },
+    L3_LAYER_6: { en: "6. Presentation", si: "6. ඉදිරිපත් කිරීමේ (Presentation)" },
+    L3_LAYER_5: { en: "5. Session", si: "5. සැසි (Session)" },
+    L3_LAYER_4: { en: "4. Transport", si: "4. ප්‍රවාහන (Transport)" },
+    L3_LAYER_3: { en: "3. Network", si: "3. ජාල (Network)" },
+    L3_LAYER_2: { en: "2. Data Link", si: "2. දත්ත සබැඳි (Data Link)" },
+    L3_LAYER_1: { en: "1. Physical", si: "1. භෞතික (Physical)" },
+
+    // Level 4: Logic Gates
+    L4_TITLE: { en: "MISSION: CIRCUIT LOGIC", si: "මෙහෙයුම: තර්ක ද්වාර (Logic Gates)" },
+    L4_DESC: { en: "Configure the inputs to activate the final output.", si: "ප්‍රතිදානය සක්‍රීය කිරීම සඳහා ආදාන නිවැරදිව සකසන්න." },
+    L4_GATE_AND: { en: "AND GATE", si: "AND ද්වාරය" },
+    L4_GATE_OR: { en: "OR GATE", si: "OR ද්වාරය" },
+    L4_GATE_NOT: { en: "NOT GATE", si: "NOT ද්වාරය" },
+    L4_BTN_CHECK: { en: "VERIFY CIRCUIT", si: "පරීක්ෂා කරන්න" }
 };

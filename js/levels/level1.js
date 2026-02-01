@@ -44,28 +44,28 @@ export default {
                     
                     <!-- CPU Socket -->
                     <div class="drop-zone" data-accept="cpu" style="
-                        top: 20%; left: 40%; width: 100px; height: 100px;
+                        top: 12.5%; left: 37.5%; width: 25%; height: 25%;
                     ">
                         ${this.game.getText('L1_ZONE_SOCKET')}
                     </div>
 
                     <!-- RAM Slots -->
                     <div class="drop-zone" data-accept="ram" style="
-                        top: 20%; left: 60%; width: 40px; height: 120px;
+                        top: 12.5%; left: 67.5%; width: 12.5%; height: 37.5%;
                     ">
                         ${this.game.getText('L1_ZONE_DIMM')}
                     </div>
 
                     <!-- GPU Slot -->
                     <div class="drop-zone" data-accept="gpu" style="
-                        top: 50%; left: 30%; width: 250px; height: 40px;
+                        top: 60%; left: 12.5%; width: 75%; height: 10%;
                     ">
                         ${this.game.getText('L1_ZONE_PCIE')}
                     </div>
 
                     <!-- Storage Bay -->
                     <div class="drop-zone" data-accept="storage" style="
-                        bottom: 10%; right: 10%; width: 80px; height: 120px;
+                        bottom: 5%; right: 7.5%; width: 30%; height: 20%;
                     ">
                         ${this.game.getText('L1_ZONE_SATA')}
                     </div>

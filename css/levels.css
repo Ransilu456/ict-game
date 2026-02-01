@@ -1,0 +1,105 @@
+/* Level 1: PC Build */
+.pc-build-area {
+    display: flex;
+    gap: 2rem;
+    height: 100%;
+    font-family: var(--font-mono);
+}
+
+.parts-tray {
+    width: 250px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+}
+
+.computer-case {
+    flex: 1;
+    background: url('../assets/images/case-outline.svg') no-repeat center center;
+    background-size: contain;
+    position: relative;
+    border: 2px dashed var(--color-text-muted);
+    border-radius: var(--radius-md);
+}
+
+.draggable-item {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-primary);
+    padding: 1rem;
+    text-align: center;
+    cursor: grab;
+    border-radius: var(--radius-sm);
+    user-select: none;
+    transition: transform 0.2s;
+}
+
+.draggable-item:active {
+    cursor: grabbing;
+}
+
+.draggable-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px var(--color-primary-dim);
+}
+
+.drop-zone {
+    position: absolute;
+    background: rgba(0, 243, 255, 0.1);
+    border: 1px dashed var(--color-primary);
+    border-radius: 4px;
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: var(--color-primary);
+    text-align: center;
+}
+
+.drop-zone.hover {
+    background: rgba(0, 243, 255, 0.3);
+}
+
+.drop-zone.correct {
+    border-color: var(--color-success);
+    background: rgba(10, 255, 10, 0.2);
+    color: var(--color-success);
+}
+
+/* Level 2: Code Editor */
+.code-challenge-container {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    height: 100%;
+}
+
+.code-editor {
+    flex: 2;
+    background: #1e1e1e;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #333;
+    font-family: 'Consolas', monospace;
+    color: #d4d4d4;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.code-controls {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.btn-option {
+    text-align: left;
+    text-transform: none;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}

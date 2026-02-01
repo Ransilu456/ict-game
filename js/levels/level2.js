@@ -8,6 +8,8 @@ export default {
         this.container = container;
         this.game = gameEngine;
         this.currentChallengeIndex = 0;
+        this.score = 0;
+        this.startTime = Date.now();
 
         // Define Challenges (Python Syntax & Logic)
         this.challenges = [
@@ -164,6 +166,7 @@ export default {
 
         if (this.selectedOption.correct) {
             this.game.showFeedback('COMPILATION SUCCESS', challenge.feedback.correct);
+            this.score += 100; // Award points
 
             setTimeout(() => {
                 if (this.currentChallengeIndex < this.challenges.length - 1) {
@@ -174,18 +177,25 @@ export default {
                 }
             }, 1500);
         } else {
+            this.score = Math.max(0, this.score - 20); // Penalty for wrong guess
             this.game.showFeedback('RUNTIME ERROR', challenge.feedback.incorrect);
         }
     },
 
     finishLevel() {
-        // Pass results
+        const total = this.challenges.length * 100; // Max raw score
+        const accuracy = Math.round((this.score / total) * 100);
+
+        // Time Bonus: Start with 60s, subtract elapsed. Min 0.
+        const elapsedSec = Math.floor((Date.now() - this.startTime) / 1000);
+        const timeBonus = Math.max(0, (60 - elapsedSec) * 10);
+
         this.game.completeLevel({
             success: true,
-            score: this.score,
-            xp: 750,
-            accuracy: Math.round((this.score / (this.totalChallenges * 100)) * 100),
-            timeBonus: 0
+            score: this.score + timeBonus,
+            xp: 750 + (accuracy > 90 ? 250 : 0),
+            accuracy: accuracy,
+            timeBonus: timeBonus
         });
     }
 };

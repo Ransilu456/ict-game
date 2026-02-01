@@ -101,39 +101,91 @@ export default {
             </style>
         `;
 
-        this.checkAnswer(idx);
+        // Re-attach listeners safely
+        // We use a document listener for the button clicks (delegated or custom event)
+        // But to be safe vs memory leaks, let's just grab the buttons directly now that they exist
+        const buttons = this.container.querySelectorAll('.challenge-list button');
+        buttons.forEach((btn, idx) => {
+            btn.onclick = (e) => {
+                e.stopPropagation(); // Prevent bubbling if needed
+                this.currentChallengeIndex = idx;
+                this.render();
+            };
+        });
+
+        this.container.querySelector('#btn-run-code').onclick = () => this.checkAnswer();
+
+        this.loadChallenge();
     },
 
-checkAnswer(idx) {
-    const challenge = this.challenges[this.currentChallenge];
-    const isCorrect = challenge.options[idx].correct;
+    loadChallenge() {
+        const challenge = this.challenges[this.currentChallengeIndex];
 
-    if (isCorrect) {
-        this.score += 100;
-        this.game.showFeedback('SUCCESS', 'Patch Applied Successfully.');
-    } else {
-        this.game.showFeedback('ERROR', 'Syntax Error Detected. Compilation Failed.');
-    }
+        this.container.querySelector('#c-title').innerText = challenge.title;
+        this.container.querySelector('#c-code').innerHTML = challenge.codeHTML; // Safe HTML
 
-    // Move next after small delay
-    setTimeout(() => {
-        this.currentChallenge++;
-        if (this.currentChallenge < this.totalChallenges) {
-            this.render();
-        } else {
-            this.finishLevel();
+        const optsContainer = this.container.querySelector('#c-options');
+        optsContainer.innerHTML = '';
+
+        challenge.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-option btn-secondary';
+            btn.style.textAlign = 'left';
+            btn.style.width = '100%';
+            btn.innerText = `> ${opt.text}`;
+            btn.onclick = () => this.selectOption(btn, opt);
+            optsContainer.appendChild(btn);
+        });
+
+        this.selectedOption = null;
+    },
+
+    selectOption(btnElement, optionData) {
+        this.container.querySelectorAll('.btn-option').forEach(b => {
+            b.classList.remove('selected');
+            b.style.borderColor = 'var(--color-secondary)';
+            b.style.background = 'transparent';
+        });
+
+        btnElement.classList.add('selected');
+        btnElement.style.borderColor = 'var(--color-primary)';
+        btnElement.style.background = 'rgba(0, 243, 255, 0.1)';
+
+        this.selectedOption = optionData;
+    },
+
+    checkAnswer() {
+        if (!this.selectedOption) {
+            this.game.showFeedback('No Selection', 'Please select a fix before executing the script.');
+            return;
         }
-    }, 1500);
-},
 
-finishLevel() {
-    // Pass results
-    this.game.completeLevel({
-        success: true,
-        score: this.score,
-        xp: 750,
-        accuracy: Math.round((this.score / (this.totalChallenges * 100)) * 100),
-        timeBonus: 0
-    });
-}
+        const challenge = this.challenges[this.currentChallengeIndex];
+
+        if (this.selectedOption.correct) {
+            this.game.showFeedback('COMPILATION SUCCESS', challenge.feedback.correct);
+
+            setTimeout(() => {
+                if (this.currentChallengeIndex < this.challenges.length - 1) {
+                    this.currentChallengeIndex++;
+                    this.render();
+                } else {
+                    this.finishLevel();
+                }
+            }, 1500);
+        } else {
+            this.game.showFeedback('RUNTIME ERROR', challenge.feedback.incorrect);
+        }
+    },
+
+    finishLevel() {
+        // Pass results
+        this.game.completeLevel({
+            success: true,
+            score: this.score,
+            xp: 750,
+            accuracy: Math.round((this.score / (this.totalChallenges * 100)) * 100),
+            timeBonus: 0
+        });
+    }
 };

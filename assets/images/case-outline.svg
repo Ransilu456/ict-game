@@ -1,0 +1,16 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <rect x="10" y="10" width="380" height="380" rx="10" fill="none" stroke="#444" stroke-width="4" stroke-dasharray="10 5"/>
+  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#444" font-family="monospace" font-size="20">MOTHERBOARD AREA</text>
+  
+  <!-- CPU Socket outline -->
+  <rect x="160" y="80" width="100" height="100" fill="none" stroke="#333" stroke-width="2"/>
+  <text x="210" y="70" text-anchor="middle" fill="#333" font-size="12">CPU</text>
+
+  <!-- RAM Slots outline -->
+  <rect x="240" y="80" width="40" height="120" fill="none" stroke="#333" stroke-width="2"/>
+  <text x="260" y="70" text-anchor="middle" fill="#333" font-size="12">RAM</text>
+  
+  <!-- GPU Slot outline -->
+  <rect x="120" y="200" width="250" height="40" fill="none" stroke="#333" stroke-width="2"/>
+  <text x="110" y="220" text-anchor="middle" fill="#333" font-size="12">GPU</text>
+</svg>

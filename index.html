@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICT Quest: Cyber City</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Overriding font vars to use the new Google Fonts */
+        :root {
+            --font-heading: 'Rajdhani', sans-serif;
+            --font-mono: 'Share Tech Mono', monospace;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app">
+        <!-- SCREEN: INTRO -->
+        <div id="intro-screen" class="screen active">
+            <!-- Language Toggle -->
+            <div class="lang-switch" style="position: absolute; top: 20px; right: 20px;">
+                <button class="btn btn-sm" onclick="setLang('en')" style="padding: 5px 10px;">EN</button>
+                <button class="btn btn-sm" onclick="setLang('si')" style="padding: 5px 10px;">සිං</button>
+            </div>
+
+            <h1 class="logo-glitch" data-key="INTRO_TITLE_TOP">ICT QUEST <br><span
+                    style="font-size: 2rem; color: var(--color-secondary);" data-key="INTRO_TITLE_SUB">CYBER
+                    CITY</span></h1>
+            <p data-key="INTRO_DESC">Initialize your avatar to enter the simulation.</p>
+
+            <div class="input-group">
+                <input type="text" id="player-name" placeholder="ENTER AGENT NAME"
+                    data-key-placeholder="PLACEHOLDER_NAME" autocomplete="off" maxlength="15">
+            </div>
+
+            <button id="btn-start" class="btn" data-key="BTN_START">Connect to Server</button>
+        </div>
+
+        <!-- SCREEN: GAME HUD -->
+        <div id="game-screen" class="screen">
+            <header id="game-header">
+                <div class="hud-item" id="hud-level">LEVEL: 01</div>
+                <div class="hud-item" id="hud-score">SCORE: 0000</div>
+                <div class="hud-item" id="hud-timer">TIME: 00:00</div>
+            </header>
+
+            <!-- Dynamic Content Container -->
+            <div id="level-container">
+                <!-- Level content will be injected here by JS -->
+            </div>
+        </div>
+
+        <!-- SCREEN: RESULTS -->
+        <div id="results-screen" class="screen">
+            <h2>Mission Status</h2>
+            <h1 id="mission-outcome">COMPLETED</h1>
+            <div id="score-breakdown">
+                <p>Accuracy: <span id="res-accuracy">100%</span></p>
+                <p>Time Bonus: <span id="res-time">500</span></p>
+                <h3>Total XP: <span id="res-xp">1500</span></h3>
+            </div>
+            <br>
+            <button id="btn-next-level" class="btn">Next Mission</button>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="overlay" id="overlay"></div>
+    <div class="modal" id="feedback-modal">
+        <h3 id="feedback-title">Info</h3>
+        <p id="feedback-msg">Message goes here.</p>
+        <br>
+        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+    </div>
+
+    <script src="js/app.js" type="module"></script>
+</body>
+
+</html>

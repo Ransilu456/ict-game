@@ -17,24 +17,24 @@ export default {
 
     render() {
         this.container.innerHTML = `
-            <h2>MISSION: ASSEMBLE ARCHITECTURE</h2>
-            <p>Drag the hardware components to their correct slots on the motherboard.</p>
+            <h2>${this.game.getText('L1_TITLE')}</h2>
+            <p>${this.game.getText('L1_DESC')}</p>
             
             <div class="pc-build-area">
                 <!-- Parts Tray -->
                 <div class="parts-tray">
-                    <h3>COMPONENTS</h3>
+                    <h3>${this.game.getText('L1_TRAY_TITLE')}</h3>
                     <div class="draggable-item" draggable="true" data-type="cpu">
-                        ⚡ CPU (Processor)
+                        ${this.game.getText('L1_ITEM_CPU')}
                     </div>
                     <div class="draggable-item" draggable="true" data-type="ram">
-                        💾 RAM (Memory)
+                        ${this.game.getText('L1_ITEM_RAM')}
                     </div>
                     <div class="draggable-item" draggable="true" data-type="gpu">
-                        🎮 GPU (Graphics)
+                        ${this.game.getText('L1_ITEM_GPU')}
                     </div>
                     <div class="draggable-item" draggable="true" data-type="storage">
-                        💿 SSD (Storage)
+                        ${this.game.getText('L1_ITEM_SSD')}
                     </div>
                 </div>
 
@@ -46,28 +46,28 @@ export default {
                     <div class="drop-zone" data-accept="cpu" style="
                         top: 20%; left: 40%; width: 100px; height: 100px;
                     ">
-                        SOCKET
+                        ${this.game.getText('L1_ZONE_SOCKET')}
                     </div>
 
                     <!-- RAM Slots -->
                     <div class="drop-zone" data-accept="ram" style="
                         top: 20%; left: 60%; width: 40px; height: 120px;
                     ">
-                        DIMM
+                        ${this.game.getText('L1_ZONE_DIMM')}
                     </div>
 
                     <!-- GPU Slot -->
                     <div class="drop-zone" data-accept="gpu" style="
                         top: 50%; left: 30%; width: 250px; height: 40px;
                     ">
-                        PCIe X16
+                        ${this.game.getText('L1_ZONE_PCIE')}
                     </div>
 
                     <!-- Storage Bay -->
                     <div class="drop-zone" data-accept="storage" style="
                         bottom: 10%; right: 10%; width: 80px; height: 120px;
                     ">
-                        SATA BAY
+                        ${this.game.getText('L1_ZONE_SATA')}
                     </div>
                 </div>
             </div>
@@ -117,6 +117,9 @@ export default {
         if (zone.dataset.accept === type) {
             // Correct Drop
             zone.classList.add('occupied', 'correct');
+            // Assuming type matches key suffix for nice display, or just show type
+            // To be proper, we probably want localized item names, but existing logic uses 'type' string.
+            // Let's keep it simple: "CPU" etc are universal enough or we can map them.
             zone.innerHTML = `✅ ${type.toUpperCase()}`;
 
             // Remove from tray (find the dragging element)
@@ -124,14 +127,17 @@ export default {
             if (dragger) dragger.remove();
 
             this.placedItems++;
-            this.game.showFeedback('SYSTEM INTEGRITY INCREASING', `Component [${type.toUpperCase()}] installed successfully.`);
+            // Title: System Integrity? We don't have a key for that yet. Let's use a generic success title or add to LANG.
+            // For now, using 'L1_MSG_SUCCESS' for body. Title can be hardcoded or new key.
+            // Let's use "SYSTEM" for title.
+            this.game.showFeedback('SYSTEM', this.game.getText('L1_MSG_SUCCESS'));
 
             if (this.placedItems >= this.totalItems) {
                 this.finishLevel();
             }
         } else {
             // Incorrect Drop
-            this.game.showFeedback('COMPATIBILITY ERROR', `Hardware mismatch! [${type.toUpperCase()}] cannot fit into [${zone.dataset.accept.toUpperCase()}] slot.`);
+            this.game.showFeedback(this.game.getText('L1_MSG_ERR_TITLE'), this.game.getText('L1_MSG_ERR_BODY'));
             // Penalize score?
             this.game.gameState.score -= 50;
             this.game.updateHUD();

@@ -60,15 +60,17 @@
 
         <!-- SCREEN: RESULTS -->
         <div id="results-screen" class="screen">
-            <h2>Mission Status</h2>
+            <h2 data-key="RES_TITLE">Mission Status</h2>
             <h1 id="mission-outcome">COMPLETED</h1>
             <div id="score-breakdown">
-                <p>Accuracy: <span id="res-accuracy">100%</span></p>
-                <p>Time Bonus: <span id="res-time">500</span></p>
-                <h3>Total XP: <span id="res-xp">1500</span></h3>
+                <p><span id="res-accuracy-lbl" data-key="RES_ACCURACY">Accuracy</span>: <span
+                        id="res-accuracy">100%</span></p>
+                <p><span id="res-time-lbl" data-key="RES_TIME_BONUS">Time Bonus</span>: <span id="res-time">500</span>
+                </p>
+                <h3><span id="res-xp-lbl" data-key="RES_TOTAL_XP">Total XP</span>: <span id="res-xp">1500</span></h3>
             </div>
             <br>
-            <button id="btn-next-level" class="btn">Next Mission</button>
+            <button id="btn-next-level" class="btn" data-key="BTN_NEXT">Next Mission</button>
         </div>
     </div>
 

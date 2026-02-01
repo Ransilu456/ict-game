@@ -47,5 +47,11 @@ export const LANG = {
 
     L1_MSG_SUCCESS: { en: "Component installed successfully.", si: "උපාංගය සාර්ථකව සවි කරන ලදී." },
     L1_MSG_ERR_TITLE: { en: "COMPATIBILITY ERROR", si: " නොගැලපෙන උපාංගයකි" },
-    L1_MSG_ERR_BODY: { en: "Hardware mismatch! Item cannot fit into this slot.", si: "මෙම උපාංගය මෙම ස්ලොට් එකට ගැලපෙන්නේ නැත." }
+    L1_MSG_ERR_BODY: { en: "Hardware mismatch! Item cannot fit into this slot.", si: "මෙම උපාංගය මෙම ස්ලොට් එකට ගැලපෙන්නේ නැත." },
+
+    // Level 2: Python
+    L2_TITLE: { en: "MISSION: CODE REPAIR", si: "මෙහෙයුම: කේත දෝෂ නිවැරදි කිරීම" },
+    L2_DESC: { en: "Identify and fix the syntax errors in the Python security scripts.", si: "Python ආරක්ෂක පද්ධතියේ ඇති දෝෂ හඳුනාගෙන නිවැරදි කරන්න." },
+    L2_TASK_PREFIX: { en: "TASK: ", si: "කාර්යය: " },
+    L2_BTN_RUN: { en: "EXECUTE SCRIPT", si: "ධාවනය කරන්න" }
 };

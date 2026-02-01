@@ -46,7 +46,7 @@ export default {
     },
 
     attachEvents() {
-        const list = this.container.getElementById('osi-stack');
+        const list = this.container.querySelector('#osi-stack');
         let draggedItem = null;
 
         list.addEventListener('dragstart', (e) => {

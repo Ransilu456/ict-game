@@ -100,13 +100,28 @@ if input_key ____ secret_key:
 
     // Simple manual syntax highlighter for visual flair
     syntaxHighlight(code) {
-        return code
-            .replace(/print/g, '<span style="color:#dcdcaa">print</span>')
-            .replace(/if|else|for|in/g, '<span style="color:#c586c0">$&</span>')
-            .replace(/".*?"/g, '<span style="color:#ce9178">$&</span>')
-            .replace(/range/g, '<span style="color:#dcdcaa">range</span>') // Function call color
-            // Numbers
-            .replace(/\b\d+\b/g, '<span style="color:#b5cea8">$&</span>');
+        // Order matters to avoid replacing inside already replaced tags
+        // But simply replacing sequentially with simple regex on HTML string is risky.
+        // Better approach: Escape HTML first, then wrap known tokens.
+        // For this simple prototype, let's just make the regex stricter using word boundaries \b
+
+        let html = code;
+
+        // Keywords
+        html = html.replace(/\b(if|else|elif|for|while|in|def|return)\b/g, '<span style="color:#c586c0">$1</span>');
+
+        // Functions (print, range, max, min, int, str)
+        html = html.replace(/\b(print|range|input|int|str)\b/g, '<span style="color:#dcdcaa">$1</span>');
+
+        // Strings (double quotes) - This is still risky if it contains keywords, but for our specific snippets it's okay.
+        // We do this LAST or separate to avoid coloring inside strings? 
+        // Actually, normally you parse properly. But for this hacky highlight:
+        html = html.replace(/".*?"/g, '<span style="color:#ce9178">$&</span>');
+
+        // Numbers
+        html = html.replace(/\b\d+\b/g, '<span style="color:#b5cea8">$&</span>');
+
+        return html;
     },
 
     attachEvents() {

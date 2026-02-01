@@ -72,5 +72,13 @@ export const LANG = {
     L4_GATE_AND: { en: "AND GATE", si: "AND ද්වාරය" },
     L4_GATE_OR: { en: "OR GATE", si: "OR ද්වාරය" },
     L4_GATE_NOT: { en: "NOT GATE", si: "NOT ද්වාරය" },
-    L4_BTN_CHECK: { en: "VERIFY CIRCUIT", si: "පරීක්ෂා කරන්න" }
+    L4_BTN_CHECK: { en: "VERIFY CIRCUIT", si: "පරීක්ෂා කරන්න" },
+
+    // Persistence & Menus
+    BTN_MISSIONS: { en: "Select Mission", si: "මෙහෙයුම් තෝරන්න" },
+    BTN_RESET: { en: "Reset Progress", si: "මුල සිට අරඹන්න" },
+    BTN_UNLOCK: { en: "Unlock All (Debug)", si: "සියල්ල විවෘත කරන්න (Debug)" },
+    MENU_TITLE_SELECT: { en: "MISSION SELECT", si: "මෙහෙයුම් තේරීම" },
+    LBL_LOCKED: { en: "LOCKED", si: "අගුළු දමා ඇත" },
+    MSG_RESET_CONFIRM: { en: "Are you sure? All progress will be lost.", si: "ඔබට විශ්වාසද? සියලුම දත්ත මැකී යනු ඇත." }
 };

@@ -42,6 +42,9 @@
             </div>
 
             <button id="btn-start" class="btn" data-key="BTN_START">Connect to Server</button>
+            <br><br>
+            <button id="btn-missions" class="btn btn-secondary" data-key="BTN_MISSIONS" style="display:none;">Select
+                Mission</button>
         </div>
 
         <!-- SCREEN: GAME HUD -->
@@ -58,18 +61,44 @@
             </div>
         </div>
 
-        <!-- SCREEN: RESULTS -->
-        <div id="results-screen" class="screen">
-            <h2 data-key="RES_TITLE">Mission Status</h2>
-            <h1 id="mission-outcome">COMPLETED</h1>
-            <div id="score-breakdown">
-                <p><span id="res-accuracy-lbl" data-key="RES_ACCURACY">Accuracy</span>: <span
-                        id="res-accuracy">100%</span></p>
-                <p><span id="res-time-lbl" data-key="RES_TIME_BONUS">Time Bonus</span>: <span id="res-time">500</span>
-                </p>
-                <h3><span id="res-xp-lbl" data-key="RES_TOTAL_XP">Total XP</span>: <span id="res-xp">1500</span></h3>
+        <!-- SCREEN: LEVEL SELECT -->
+        <div id="select-screen" class="screen">
+            <h2 data-key="MENU_TITLE_SELECT">MISSION SELECT</h2>
+            <div id="mission-list"
+                style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; max-width:800px;">
+                <!-- Dynamically populated -->
             </div>
             <br>
+            <div style="display:flex; gap:1rem;">
+                <button class="btn btn-secondary" id="btn-reset" data-key="BTN_RESET">Reset Progress</button>
+                <button class="btn btn-secondary" onclick="game.showScreen('intro')" data-key="BTN_CLOSE">Back</button>
+            </div>
+        </div>
+
+        <!-- SCREEN: RESULTS -->
+        <div id="results-screen" class="screen">
+            <h2 data-key="RES_TITLE" style="opacity: 0.7; letter-spacing: 5px;">Mission Status</h2>
+            <h1 id="mission-outcome">MISSION SUCCESS</h1>
+
+            <div class="results-stats">
+                <div class="stat-row">
+                    <span class="stat-label" id="res-accuracy-lbl" data-key="RES_ACCURACY">Accuracy</span>
+                    <span class="stat-value" id="res-accuracy">100%</span>
+                </div>
+
+                <div class="stat-row">
+                    <span class="stat-label" id="res-time-lbl" data-key="RES_TIME_BONUS">Time Bonus</span>
+                    <span class="stat-value" id="res-time">+500</span>
+                </div>
+
+                <div class="stat-row"
+                    style="margin-top: 1rem; border-top: 1px solid var(--color-secondary); padding-top: 1rem;">
+                    <span class="stat-label" id="res-xp-lbl" data-key="RES_TOTAL_XP"
+                        style="color:var(--color-secondary);">Total XP</span>
+                    <span class="stat-value xp-total" id="res-xp">1250</span>
+                </div>
+            </div>
+
             <button id="btn-next-level" class="btn" data-key="BTN_NEXT">Next Mission</button>
         </div>
     </div>

@@ -19,7 +19,8 @@ class GameEngine {
         this.screens = {
             intro: document.getElementById('intro-screen'),
             game: document.getElementById('game-screen'),
-            results: document.getElementById('results-screen')
+            results: document.getElementById('results-screen'),
+            select: document.getElementById('select-screen')
         };
 
         this.hud = {
@@ -38,6 +39,8 @@ class GameEngine {
     init() {
         // Event Listeners
         document.getElementById('btn-start').addEventListener('click', () => this.startGame());
+        document.getElementById('btn-missions').addEventListener('click', () => this.showMissionSelect());
+        document.getElementById('btn-reset').addEventListener('click', () => this.resetProgress());
         document.getElementById('btn-next-level').addEventListener('click', () => this.nextLevel());
 
         // Modal Close (Global)
@@ -45,8 +48,60 @@ class GameEngine {
         // Language Switch (Global)
         window.setLang = (lang) => this.setLanguage(lang);
 
+        // Load Save Data
+        this.loadData();
+
         // Initial Render
         this.updateUIText();
+        this.checkResume();
+    }
+
+    /* Persistence */
+    saveData() {
+        const data = {
+            playerName: this.gameState.playerName,
+            maxLevel: Math.max(this.gameState.currentLevel, this.gameState.maxLevel || 1), // Track max unlocked
+            xp: this.gameState.xp,
+            lang: this.gameState.lang
+        };
+        localStorage.setItem('ictQuestSave', JSON.stringify(data));
+        console.log('[System] Progress Saved.');
+    }
+
+    loadData() {
+        const raw = localStorage.getItem('ictQuestSave');
+        if (raw) {
+            try {
+                const data = JSON.parse(raw);
+                this.gameState.playerName = data.playerName || '';
+                this.gameState.xp = data.xp || 0;
+                this.gameState.maxLevel = data.maxLevel || 1;
+                if (data.lang) this.setLanguage(data.lang);
+
+                // If name exists, pre-fill
+                if (this.gameState.playerName) {
+                    document.getElementById('player-name').value = this.gameState.playerName;
+                }
+            } catch (e) {
+                console.error('Save File Corrupted', e);
+            }
+        } else {
+            this.gameState.maxLevel = 1;
+        }
+    }
+
+    checkResume() {
+        if (this.gameState.playerName) {
+            document.getElementById('btn-missions').style.display = 'inline-block';
+            document.getElementById('btn-start').innerText = this.gameState.lang === 'si' ? 'දිගටම කරගෙන යන්න' : 'Resume'; // Quick override or add to LANG
+        }
+    }
+
+    resetProgress() {
+        if (confirm(this.getText('MSG_RESET_CONFIRM'))) {
+            localStorage.removeItem('ictQuestSave');
+            location.reload();
+        }
     }
 
     /* Language System */
@@ -105,23 +160,80 @@ class GameEngine {
     showScreen(screenName) {
         Object.values(this.screens).forEach(s => s.classList.remove('active'));
         this.screens[screenName].classList.add('active');
+
+        if (screenName === 'select') {
+            this.renderLevelSelect();
+        }
+    }
+
+    showMissionSelect() {
+        this.showScreen('select');
+    }
+
+    renderLevelSelect() {
+        const list = document.getElementById('mission-list');
+        list.innerHTML = '';
+
+        // Config: Total Levels? We have 4 implemented.
+        const totalLevels = 4;
+
+        for (let i = 1; i <= totalLevels; i++) {
+            const isLocked = i > this.gameState.maxLevel;
+            const btn = document.createElement('div');
+            btn.className = `btn ${isLocked ? 'btn-secondary' : ''}`; // Style diff for locked? Or simpler
+            btn.style.width = '150px';
+            btn.style.height = '150px';
+            btn.style.display = 'flex';
+            btn.style.flexDirection = 'column';
+            btn.style.justifyContent = 'center';
+            btn.style.alignItems = 'center';
+            btn.style.padding = '1rem';
+            btn.style.opacity = isLocked ? '0.5' : '1';
+            btn.style.cursor = isLocked ? 'not-allowed' : 'pointer';
+
+            // Content
+            btn.innerHTML = `
+                <div style="font-size:2rem; margin-bottom:0.5rem;">${isLocked ? '🔒' : '🔓'}</div>
+                <div>${this.getText('LBL_LEVEL')} ${i}</div>
+                <div style="font-size:0.8rem; margin-top:0.5rem; color:var(--color-text-muted);">
+                    ${isLocked ? this.getText('LBL_LOCKED') : ''}
+                </div>
+            `;
+
+            if (!isLocked) {
+                btn.onclick = () => {
+                    this.gameState.currentLevel = i;
+                    this.startGame(true); // Skip name check if already has name
+                };
+            }
+
+            list.appendChild(btn);
+        }
     }
 
     /* Game Flow */
-    startGame() {
-        const nameInput = document.getElementById('player-name');
-        const name = nameInput.value.trim();
+    startGame(skipCheck = false) {
+        if (!skipCheck) {
+            const nameInput = document.getElementById('player-name');
+            const name = nameInput.value.trim();
 
-        if (!name) {
-            this.showFeedback('Access Denied', 'Please enter your Agent Name to proceed.');
-            return;
+            if (!name) {
+                this.showFeedback('Access Denied', 'Please enter your Agent Name to proceed.');
+                return;
+            }
+            this.gameState.playerName = name;
         }
 
-        this.gameState.playerName = name;
-        this.gameState.currentLevel = 1;
-        this.gameState.score = 0;
+        // Check if level was set via menu, else continue from max?
+        // Default behavior: if coming from "Connect/Resume", maybe load maxLevel.
+        // If from Menu, load currentLevel.
+        if (!skipCheck) {
+            // For "Connect" button, define behavior: Start at maxLevel
+            this.gameState.currentLevel = this.gameState.maxLevel;
+        }
 
-        console.log(`[System] Player ${name} logged in.`);
+        this.saveData(); // Save initial login
+        console.log(`[System] Player ${this.gameState.playerName} logged in.`);
         this.loadLevel(this.gameState.currentLevel);
     }
 
@@ -156,6 +268,13 @@ class GameEngine {
         const levelScore = levelResults.score || 0;
         this.gameState.score += levelScore;
         this.gameState.xp += (levelResults.xp || 100);
+
+        // Update Max Level if proceeding
+        if (levelResults.success && this.gameState.currentLevel === this.gameState.maxLevel) {
+            this.gameState.maxLevel++;
+        }
+
+        this.saveData();
 
         // Show Results
         const outcomeKey = levelResults.success ? 'RES_SUCCESS' : 'RES_FAIL';

@@ -38,7 +38,7 @@ export const LANG = {
 
     // Level 1: Hardware
     L1_TITLE: { en: "MISSION: ASSEMBLE ARCHITECTURE", si: "මෙහෙයුම: පරිගණක එකලස් කිරීම" },
-    L1_DESC: { en: "Drag the hardware components to their correct slots on the motherboard.", si: "දෘඩාංග උපාංග මවු පුවරුවේ ඇති නිවැරදි ස්ථාන වෙත ඇද දමන්න." },
+    L1_DESC: { en: "CRITICAL: Deploy hardware components immediately. Sub-optimal cooling or missing nodes will cause a system meltdown.", si: "දැඩි විධානය: වහාම උපාංග සවි කරන්න. දෝෂ සහිත එකලස් කිරීම් පද්ධතිය බිඳ වැටීමට හේතු වේ." },
     L1_TRAY_TITLE: { en: "COMPONENTS", si: "උපාංග" },
     L1_ITEM_CPU: { en: "⚡ CPU (Processor)", si: "⚡ CPU (සකසනය)" },
     L1_ITEM_RAM: { en: "💾 RAM (Memory)", si: "💾 RAM (මතකය)" },
@@ -60,7 +60,7 @@ export const LANG = {
 
     // Level 2: Python
     L2_TITLE: { en: "MISSION: CODE REPAIR", si: "මෙහෙයුම: කේත දෝෂ නිවැරදි කිරීම" },
-    L2_DESC: { en: "Identify and fix the syntax errors in the Python security scripts.", si: "Python ආරක්ෂක පද්ධතියේ ඇති දෝෂ හඳුනාගෙන නිවැරදි කරන්න." },
+    L2_DESC: { en: "WARNING: Security breach detected! Identify and patch Python syntax errors before the mainframe is compromised.", si: "අවවාදයයි: ආරක්ෂක දෝෂ සහිතයි! දත්ත සොරකම් කිරීමට පෙර Python කේත දෝෂ නිවැරදි කරන්න." },
     L2_TASK_PREFIX: { en: "TASK: ", si: "කාර්යය: " },
     L2_BTN_RUN: { en: "EXECUTE SCRIPT", si: "ධාවනය කරන්න" },
 
@@ -89,7 +89,7 @@ export const LANG = {
 
     // Level 5: Binary
     L5_TITLE: { en: "MISSION: BINARY TRANSLATION", si: "මෙහෙයුම: ද්වීමය පරිවර්තනය" },
-    L5_DESC: { en: "Convert the Decimal numbers to Binary by toggling the bits.", si: "බිටු සක්‍රීය කිරීම මගින් දශම සංඛ්‍යා ද්වීමය සංඛ්‍යා බවට හරවන්න." },
+    L5_DESC: { en: "INTENSE: Decrypt high-capacity 12-bit sequences to maintain neural synchronization.", si: "දැඩි පීඩනය: 12-බිටු දත්ත පේළි කේතනය කර පද්ධතිය සමතුලිත කරන්න." },
     L5_TARGET_LBL: { en: "TARGET DECIMAL:", si: "ඉලක්කගත දශම අංකය:" },
     L5_CURRENT_LBL: { en: "CURRENT VALUE:", si: "වත්මන් අගය:" },
     L5_BTN_CHECK: { en: "VERIFY SYSTEM", si: "පද්ධතිය පරීක්ෂා කරන්න" },
@@ -164,6 +164,13 @@ export const LANG = {
     L15_ITEM_DSP: { en: "Processor (DSP)", si: "සකසනය (DSP)" },
     L15_ITEM_STORAGE: { en: "Flash Storage", si: "ෆ්ලෑෂ් මතකය" },
     L15_CODEC_LBL: { en: "CODEC BANK", si: "කේතක බැංකුව" },
+
+    // Level 16: Legend's Trial
+    L16_TITLE: { en: "FINAL MISSION: THE LEGEND'S TRIAL", si: "අවසාන මෙහෙයුම: ජයග්‍රාහී විභාගය" },
+    L16_DESC: { en: "The ultimate examination. Prove your mastery across all cyber disciplines under high-intensity strokes.", si: "අවසාන පරීක්ෂණය. දැඩි පීඩනය යටතේ සියලුම සයිබර් විෂයයන් පිළිබඳ ඔබේ ප්‍රවීණත්වය ඔප්පු කරන්න." },
+    L16_STATUS_LEGEND: { en: "LEGENDARY STATUS", si: "ප්‍රවීණ තත්ත්වය" },
+    L16_STATUS_OVERLOAD: { en: "SYSTEM OVERLOAD", si: "පද්ධතිය අධික ලෙස පටවා ඇත" },
+    L16_STROKE_ACTIVE: { en: "CYBER STROKE ACTIVE", si: "සයිබර් ස්ට්‍රෝක් ක්‍රියාත්මකයි" },
 
     // Sidebar & Menus
     BTN_MISSIONS: { en: "Select Mission", si: "මෙහෙයුම් තෝරන්න" },

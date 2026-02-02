@@ -250,7 +250,7 @@ class GameEngine {
             }
             this.gameState.playerName = name;
             // Admin Check
-            if (name.toUpperCase() === 'ADMIN') this.gameState.maxLevel = 15;
+            if (name.toUpperCase() === 'ADMIN') this.gameState.maxLevel = 16;
         }
 
         if (!skipCheck) this.gameState.currentLevel = this.gameState.maxLevel;
@@ -295,13 +295,15 @@ class GameEngine {
     renderLevelSelect() {
         const list = document.getElementById('mission-list');
         list.innerHTML = '';
-        const totalLevels = 15;
+        const totalLevels = 16;
 
         const categories = [
             { name: 'Core Architecture', levels: [1, 5, 4, 15], icon: 'solar:cpu-bold', color: 'text-indigo-400' },
             { name: 'Network & Code', levels: [3, 2, 8, 9, 11, 13, 14], icon: 'solar:globus-bold', color: 'text-blue-400' },
-            { name: 'Logic & Security', levels: [6, 7, 10, 12], icon: 'solar:shield-keyhole-bold', color: 'text-emerald-400' }
+            { name: 'Logic & Security', levels: [6, 7, 10, 12], icon: 'solar:shield-keyhole-bold', color: 'text-emerald-400' },
+            { name: 'Final Frontier', levels: [16], icon: 'solar:fire-bold', color: 'text-rose-500' }
         ];
+
 
 
 
@@ -385,7 +387,7 @@ class GameEngine {
 
     nextLevel() {
         this.gameState.currentLevel++;
-        if (this.gameState.currentLevel > 15) {
+        if (this.gameState.currentLevel > 16) {
             this.showFeedback("CAMPAIGN COMPLETE", "You have completed all missions.");
             this.showScreen('select');
             return;
@@ -410,7 +412,14 @@ class GameEngine {
         const elapsed = Math.floor((Date.now() - this.levelStartTime) / 1000);
         const min = Math.floor(elapsed / 60);
         const sec = elapsed % 60;
-        if (this.hud.timer) this.hud.timer.innerText = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+        if (this.hud.timer) {
+            this.hud.timer.innerText = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+            if (elapsed > 120) {
+                this.hud.timer.classList.add('text-rose-500', 'animate-pulse', 'font-black');
+            } else {
+                this.hud.timer.classList.remove('text-rose-500', 'animate-pulse', 'font-black');
+            }
+        }
     }
 
     togglePause() {

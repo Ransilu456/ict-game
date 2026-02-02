@@ -76,16 +76,11 @@ class GameEngine {
             landing: document.getElementById('landing-container')
         };
 
-        // HUD (Some elements are inside Sidebar/Header now)
+        // HUD (Common game elements, not component internals)
         this.hud = {
             level: document.getElementById('hud-level'),
             score: document.getElementById('hud-score'),
             timer: document.getElementById('hud-timer'),
-            playerName: document.getElementById('hud-player-name'),
-            levelSm: document.getElementById('hud-level-sm'),
-            xpBar: document.getElementById('hud-xp-bar'),
-            xpVal: document.getElementById('hud-xp-val'),
-            scoreVal: document.getElementById('hud-score-val'),
             statsPanel: document.getElementById('user-stats-panel')
         };
 
@@ -137,6 +132,8 @@ class GameEngine {
     }
 
     showScreen(screenName) {
+        this.currentScreen = screenName;
+
         // Hide Landing if we move away
         this.screens.landing.innerHTML = '';
         this.screens.landing.classList.add('hidden');
@@ -157,7 +154,12 @@ class GameEngine {
 
         if (screenName === 'select') {
             this.renderLevelSelect();
+            this.header.updateMission('Sector Map');
+        } else if (screenName === 'intro') {
+            this.header.updateMission('Authentication');
         }
+
+        this.updateHUD();
     }
 
     /* Data Persistence */
@@ -182,7 +184,7 @@ class GameEngine {
                 this.gameState.xp = data.xp || 0;
                 this.gameState.score = data.score || 0;
                 this.gameState.maxLevel = data.maxLevel || 1;
-                if (data.lang) this.setLanguage(data.lang);
+                if (data.lang) this.gameState.lang = data.lang;
 
                 if (this.gameState.playerName) {
                     const el = document.getElementById('player-name');
@@ -195,10 +197,8 @@ class GameEngine {
 
     checkResume() {
         if (this.gameState.playerName) {
-            // Show stats panel in sidebar logic
             if (this.hud.statsPanel) {
                 this.hud.statsPanel.classList.remove('hidden');
-                this.hud.statsPanel.style.display = 'block'; // Ensure block if class list fails
             }
             this.updateHUD();
         }
@@ -235,16 +235,10 @@ class GameEngine {
         if (this.hud.level) this.hud.level.innerText = String(this.gameState.currentLevel).padStart(2, '0');
         if (this.hud.score) this.hud.score.innerText = String(this.gameState.score).padStart(4, '0');
 
-        if (this.hud.playerName) this.hud.playerName.innerText = this.gameState.playerName;
-        if (this.hud.levelSm) this.hud.levelSm.innerText = 'Lvl ' + this.gameState.currentLevel;
-        if (this.hud.xpVal) this.hud.xpVal.innerText = this.gameState.xp;
-        if (this.hud.scoreVal) this.hud.scoreVal.innerText = this.gameState.score;
-
-        if (this.hud.xpBar) {
-            const progress = (this.gameState.xp % 2000) / 20;
-            this.hud.xpBar.style.width = `${Math.min(100, Math.max(5, progress))}%`;
-        }
+        // Delegate to Components
+        this.sidebar.update(this.gameState, this.currentScreen);
     }
+
 
     /* Game Actions */
     startGame(skipCheck = false) {
@@ -288,6 +282,10 @@ class GameEngine {
             module.default.init(wrapper, this);
             this.startLevelTimer();
 
+            // Update Header Mission Context
+            const levelTitle = this.getText(`L${levelNum}_TITLE`);
+            this.header.updateMission(levelTitle);
+
         } catch (error) {
             console.error(error);
             this.levelContainer.innerHTML = `<div class="p-8 text-center text-rose">Error Loading Level: ${error.message}</div>`;
@@ -297,39 +295,66 @@ class GameEngine {
     renderLevelSelect() {
         const list = document.getElementById('mission-list');
         list.innerHTML = '';
-        const totalLevels = 8;
+        const totalLevels = 10;
 
-        for (let i = 1; i <= totalLevels; i++) {
-            const isLocked = i > this.gameState.maxLevel;
-            const btn = document.createElement('div');
+        const categories = [
+            { name: 'Core Architecture', levels: [1, 5, 4], icon: 'solar:cpu-bold', color: 'text-indigo-400' },
+            { name: 'Network & Code', levels: [3, 2, 8, 9], icon: 'solar:globus-bold', color: 'text-blue-400' },
+            { name: 'Logic & Security', levels: [6, 7, 10], icon: 'solar:shield-keyhole-bold', color: 'text-emerald-400' }
+        ];
 
-            // Vanilla CSS Classes
-            let baseClass = "relative overflow-hidden rounded-xl p-5 border transition-all cursor-pointer shadow-lg hover:shadow-xl ";
-            if (isLocked) baseClass += "bg-dark border-subtle opacity-60 grayscale cursor-not-allowed";
-            else baseClass += "glass-panel border-subtle hover:border-focus bg-panel";
-
-            btn.className = baseClass;
-            btn.innerHTML = `
-                <div class="flex items-start justify-between mb-4">
-                     <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl border ${isLocked ? 'bg-dark border-subtle text-muted' : 'bg-indigo-900/20 border-focus text-indigo'}">
-                        <iconify-icon icon="${isLocked ? 'solar:lock-keyhole-linear' : 'solar:code-square-linear'}"></iconify-icon>
-                    </div>
+        categories.forEach(cat => {
+            const catHeader = document.createElement('div');
+            catHeader.className = "col-span-full mt-8 mb-4 flex items-center gap-3";
+            catHeader.innerHTML = `
+                <div class="p-2 rounded-lg bg-slate-900 border border-slate-800 ${cat.color}">
+                    <iconify-icon icon="${cat.icon}" class="text-xl"></iconify-icon>
                 </div>
-                <div>
-                    <h4 class="text-sm font-bold text-white mb-1">${this.getText('LBL_LEVEL')} ${i}</h4>
-                    <p class="text-xs text-muted">${isLocked ? this.getText('LBL_LOCKED') : this.getText('L' + i + '_TITLE') || 'Ready'}</p>
-                </div>
+                <h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-500">${cat.name}</h3>
+                <div class="flex-1 h-[1px] bg-slate-800/50"></div>
             `;
+            list.appendChild(catHeader);
 
-            if (!isLocked) {
-                btn.onclick = () => {
-                    this.gameState.currentLevel = i;
-                    this.startGame(true);
-                };
-            }
-            list.appendChild(btn);
-        }
+            cat.levels.forEach(i => {
+                const isLocked = i > this.gameState.maxLevel;
+                const difficulty = Math.ceil(i / 2);
+                const btn = document.createElement('div');
+
+                let baseClass = "relative overflow-hidden rounded-2xl p-6 border transition-all cursor-pointer group ";
+                if (isLocked) baseClass += "bg-slate-900/50 border-slate-800/50 opacity-40 grayscale pointer-events-none";
+                else baseClass += "bg-slate-900 border-slate-800 hover:border-indigo-500/50 hover:bg-slate-800/50 shadow-lg hover:shadow-indigo-500/10";
+
+                btn.className = baseClass;
+                btn.innerHTML = `
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl border ${isLocked ? 'bg-slate-950 border-slate-800 text-slate-700' : 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400 shadow-inner group-hover:scale-110 transition-transform'}">
+                            <iconify-icon icon="${isLocked ? 'solar:lock-bold' : 'solar:play-circle-bold'}"></iconify-icon>
+                        </div>
+                        <div class="flex gap-0.5">
+                            ${Array(5).fill(0).map((_, idx) => `
+                                <iconify-icon icon="solar:star-bold" class="text-[10px] ${idx < difficulty ? 'text-amber-500' : 'text-slate-800'}"></iconify-icon>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[10px] font-black text-slate-600 bg-slate-950 px-1.5 py-0.5 rounded uppercase tracking-tighter border border-slate-800">Node ${i}</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-white group-hover:text-indigo-300 transition-colors truncate">${isLocked ? 'Classified' : this.getText('L' + i + '_TITLE')}</h4>
+                    </div>
+                `;
+
+                if (!isLocked) {
+                    btn.onclick = () => {
+                        this.gameState.currentLevel = i;
+                        this.startGame(true);
+                    };
+                }
+                list.appendChild(btn);
+            });
+        });
     }
+
 
     completeLevel(results) {
         this.stopLevelTimer();

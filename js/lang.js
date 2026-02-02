@@ -107,9 +107,24 @@ export const LANG = {
     L7_HINT_BODY: { en: "1. The 'Intercepted Data' is scrambled.\n2. Use the slider to shift letters back (e.g. A->B is Shift 1).\n3. Find the key where the text makes sense.\n4. Click Decrypt.", si: "1. දත්ත වෙනස් කර ඇත.\n2. ස්ලයිඩරය භාවිතයෙන් අකුරු මාරු කරන්න.\n3. අර්ථවත් වචනයක් ලැබෙන පරිදි සකසන්න.\n4. විශේධනය ක්ලික් කරන්න." },
 
     // Level 8: SQL
-    L8_TITLE: { en: "MISSION: DATABASE QUERY", si: "මෙහෙයුම: දත්ත සමුදාය" },
-    L8_DESC: { en: "Construct the correct SQL query to retrieve data.", si: "දත්ත ලබා ගැනීම සඳහා නිවැරදි SQL විධානය සකසන්න." },
     L8_BTN_RUN: { en: "RUN QUERY", si: "විධානය ක්‍රියාත්මක කරන්න" },
+
+    // Level 9: Cloud
+    L9_TITLE: { en: "MISSION: CLOUD INFRASTRUCTURE", si: "මෙහෙයුම: ක්ලවුඩ් යටිතල පහසුකම්" },
+    L9_DESC: { en: "Deploy the server nodes to their optimal cloud environments.", si: "නිවැරදි ක්ලවුඩ් පරිසරයන් වෙත සේවාදායකයන් ස්ථාපනය කරන්න." },
+    L9_NODE_WEB: { en: "Web Server", si: "වෙබ් සේවාදායකය" },
+    L9_NODE_DB: { en: "Database", si: "දත්ත සමුදාය" },
+    L9_NODE_CACHE: { en: "Redis Cache", si: "Redis Cache" },
+    L9_ENV_PUBLIC: { en: "Public Edge", si: "Public Edge" },
+    L9_ENV_PRIVATE: { en: "Private Cloud", si: "Private Cloud" },
+    L9_ENV_ONPREM: { en: "On-Premises", si: "On-Premises" },
+
+    // Level 10: Cyber Security
+    L10_TITLE: { en: "MISSION: FIREWALL PROTOCOL", si: "මෙහෙයුම: ගිනි පවුර (Firewall)" },
+    L10_DESC: { en: "Filter incoming packets based on the security policy index.", si: "ආරක්ෂක නීති වලට අනුව පැකට් පෙරීම සිදු කරන්න." },
+    L10_POLICY_HEADER: { en: "ACTIVE POLICY", si: "ක්‍රියාකාරී නීති" },
+    L10_ALLOW: { en: "ALLOW", si: "අවසර දෙන්න" },
+    L10_DROP: { en: "DROP", si: "ප්‍රතික්ෂේප කරන්න" },
 
     // Sidebar & Menus
     BTN_MISSIONS: { en: "Select Mission", si: "මෙහෙයුම් තෝරන්න" },

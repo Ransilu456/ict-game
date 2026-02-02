@@ -33,7 +33,49 @@ class GameEngine {
         this.modal = document.getElementById('feedback-modal');
         this.overlay = document.getElementById('overlay');
 
+        this.initCanvas();
         this.init();
+    }
+
+    initCanvas() {
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            columns = Math.floor(width / fontSize);
+            drops = Array(columns).fill(1);
+        });
+
+        // Matrix Rain
+        const fontSize = 16;
+        let columns = Math.floor(width / fontSize);
+        let drops = Array(columns).fill(1);
+        const chars = "0101010101ABCDEF"; // Binary + Hex
+
+        const draw = () => {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.fillStyle = '#0F0'; // Green text
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+            requestAnimationFrame(draw);
+        }
+        draw();
     }
 
     init() {
@@ -42,6 +84,20 @@ class GameEngine {
         document.getElementById('btn-missions').addEventListener('click', () => this.showMissionSelect());
         document.getElementById('btn-reset').addEventListener('click', () => this.resetProgress());
         document.getElementById('btn-next-level').addEventListener('click', () => this.nextLevel());
+
+        // Pause Menu Events
+        document.getElementById('btn-pause').addEventListener('click', () => this.togglePause());
+        document.getElementById('btn-resume').addEventListener('click', () => this.togglePause());
+        document.getElementById('btn-restart').addEventListener('click', () => {
+            this.togglePause();
+            this.loadLevel(this.gameState.currentLevel);
+        });
+        document.getElementById('btn-quit').addEventListener('click', () => this.quitToMenu());
+
+        // Global Keydown
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') this.togglePause();
+        });
 
         // Modal Close (Global)
         window.closeModal = () => this.toggleModal(false);
@@ -174,8 +230,8 @@ class GameEngine {
         const list = document.getElementById('mission-list');
         list.innerHTML = '';
 
-        // Config: Total Levels? We have 4 implemented.
-        const totalLevels = 4;
+        // Config: Total Levels? We have 6 implemented.
+        const totalLevels = 6;
 
         for (let i = 1; i <= totalLevels; i++) {
             const isLocked = i > this.gameState.maxLevel;
@@ -322,6 +378,28 @@ class GameEngine {
             this.modal.classList.remove('active');
             this.overlay.classList.remove('active');
         }
+    }
+
+    /* Pause System */
+    togglePause() {
+        if (!this.screens.game.classList.contains('active')) return;
+
+        this.isPaused = !this.isPaused;
+        const pauseModal = document.getElementById('pause-modal');
+
+        if (this.isPaused) {
+            pauseModal.style.display = 'flex';
+            this.overlay.classList.add('active'); // Reuse overlay? Or pause has its own
+            // Pause start time could be tracked here if we want to subtract duration later
+        } else {
+            pauseModal.style.display = 'none';
+            this.overlay.classList.remove('active');
+        }
+    }
+
+    quitToMenu() {
+        this.togglePause(); // Close menu
+        this.showScreen('intro');
     }
 }
 

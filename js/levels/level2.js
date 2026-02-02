@@ -58,6 +58,36 @@ export default {
                     correct: "Bug Squashed! '=' is assignment. '==' is comparison.",
                     incorrect: "A single '=' assigns a value. We need to COMPARE."
                 }
+            },
+            {
+                id: 4,
+                title: "Syntax Error",
+                codeHTML: `<span class="func">print</span> <span class="str">"Hello World"</span>`,
+                rawCode: `print "Hello World"`,
+                options: [
+                    { id: 'a', text: 'Add parentheses ()', correct: true },
+                    { id: 'b', text: 'Add semicolon ;', correct: false },
+                    { id: 'c', text: 'Capitalize Print', correct: false }
+                ],
+                feedback: {
+                    correct: "Correct! Python 3 requires parentheses for print().",
+                    incorrect: "Python 2 used print without parentheses, but we are using modern Python."
+                }
+            },
+            {
+                id: 5,
+                title: "List Logic",
+                codeHTML: `items = [<span class="str">"A"</span>, <span class="str">"B"</span>]\n<span class="func">print</span>(items[<span class="num">2</span>])`,
+                rawCode: `items = ["A", "B"]\nprint(items[2])`,
+                options: [
+                    { id: 'a', text: 'Change index to 1', correct: true },
+                    { id: 'b', text: 'Change index to 3', correct: false },
+                    { id: 'c', text: 'Items are immutable', correct: false }
+                ],
+                feedback: {
+                    correct: "Fixed! Index 2 is the 3rd item, but we only have 2 items (0 and 1).",
+                    incorrect: "Lists are 0-indexed. Index 2 means the 3rd item."
+                }
             }
         ];
 

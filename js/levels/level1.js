@@ -8,7 +8,7 @@ export default {
         this.container = container;
         this.game = gameEngine;
         this.placedItems = 0;
-        this.totalItems = 4;
+        this.totalItems = 6;
         this.startTime = Date.now();
 
         this.render();
@@ -35,6 +35,12 @@ export default {
                     </div>
                     <div class="draggable-item" draggable="true" data-type="storage">
                         ${this.game.getText('L1_ITEM_SSD')}
+                    </div>
+                    <div class="draggable-item" draggable="true" data-type="psu">
+                        ${this.game.getText('L1_ITEM_PSU')}
+                    </div>
+                    <div class="draggable-item" draggable="true" data-type="fan">
+                        ${this.game.getText('L1_ITEM_FAN')}
                     </div>
                 </div>
 
@@ -68,6 +74,20 @@ export default {
                         bottom: 5%; right: 7.5%; width: 30%; height: 20%;
                     ">
                         ${this.game.getText('L1_ZONE_SATA')}
+                    </div>
+
+                    <!-- PSU Bay (Bottom Left) -->
+                    <div class="drop-zone" data-accept="psu" style="
+                        bottom: 5%; left: 5%; width: 25%; height: 25%;
+                    ">
+                        ${this.game.getText('L1_ZONE_PSU')}
+                    </div>
+
+                    <!-- Fan Mount (Top Left) -->
+                    <div class="drop-zone" data-accept="fan" style="
+                        top: 5%; left: 5%; width: 20%; height: 20%;
+                    ">
+                        ${this.game.getText('L1_ZONE_FAN')}
                     </div>
                 </div>
             </div>

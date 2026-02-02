@@ -1,6 +1,7 @@
 /**
  * Level 3: Networking (OSI Model)
- * Mechanic: Sortable List / Drag and Drop Stacking
+ * Phase 1: Sort OSI Layers
+ * Phase 2: Match Protocols
  */
 
 export default {
@@ -8,15 +9,25 @@ export default {
         this.container = container;
         this.game = gameEngine;
         this.correctOrder = [7, 6, 5, 4, 3, 2, 1]; // Top to Bottom
+        this.score = 0;
 
-        // Randomize initial order
+        // Phase 1 Setup
         this.currentOrder = [...this.correctOrder].sort(() => Math.random() - 0.5);
+        this.phase = 1;
 
         this.render();
-        this.attachEvents();
     },
 
     render() {
+        if (this.phase === 1) {
+            this.renderPhase1();
+        } else {
+            this.renderPhase2();
+        }
+    },
+
+    /* PHASE 1: OSI SORT */
+    renderPhase1() {
         this.container.innerHTML = `
             <h2>${this.game.getText('L3_TITLE')}</h2>
             <p>${this.game.getText('L3_DESC')}</p>
@@ -43,9 +54,10 @@ export default {
                 <button id="btn-check-osi" class="btn">VERIFY CONNECTION</button>
             </div>
         `;
+        this.attachEventsPhase1();
     },
 
-    attachEvents() {
+    attachEventsPhase1() {
         const list = this.container.querySelector('#osi-stack');
         let draggedItem = null;
 
@@ -65,10 +77,7 @@ export default {
 
         list.addEventListener('drop', (e) => {
             e.preventDefault();
-            // Simple reordering logic
-            // Find closest element
             if (e.target.classList.contains('osi-layer') && e.target !== draggedItem) {
-                // Determine insert before or after
                 const rect = e.target.getBoundingClientRect();
                 const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
                 list.insertBefore(draggedItem, next ? e.target.nextSibling : e.target);
@@ -83,9 +92,6 @@ export default {
     verifyStack() {
         const layers = Array.from(this.container.querySelectorAll('.osi-layer'));
         const userOrder = layers.map(el => parseInt(el.dataset.layer));
-
-        // Correct order is 7 down to 1 (Application top, Physical bottom)
-        // Check exact match
         const isCorrect = JSON.stringify(userOrder) === JSON.stringify(this.correctOrder);
 
         if (isCorrect) {
@@ -94,19 +100,138 @@ export default {
                 l.style.borderColor = 'var(--color-success)';
             });
 
+            this.score += 500;
+            this.game.showFeedback('LAYER 1-7 ESTABLISHED', 'Architecture verified. Constructing Protocols...');
+
             setTimeout(() => {
-                this.game.completeLevel({
-                    success: true,
-                    score: 1000,
-                    xp: 1000,
-                    accuracy: 100,
-                    timeBonus: 200
-                });
-            }, 1000);
+                this.phase = 2;
+                this.render();
+            }, 1500);
         } else {
             this.game.showFeedback('CONNECTION ERROR', 'Layers are misaligned. Packets dropped.');
-            this.game.gameState.score = Math.max(0, this.game.gameState.score - 50);
+            this.score = Math.max(0, this.score - 50);
             this.game.updateHUD();
         }
+    },
+
+    /* PHASE 2: PROTOCOLS */
+    renderPhase2() {
+        // We know the stack is correct at Phase 2, so show it static with drop zones?
+        // Or just show 3 buckets.
+        // Let's show the stack on left, and protocols on right to drag onto it.
+        const protocols = [
+            { id: 'http', label: 'HTTP/HTTPS', layer: 7 },
+            { id: 'ip', label: 'IP Address', layer: 3 },
+            { id: 'mac', label: 'MAC Address', layer: 2 }
+        ];
+
+        this.container.innerHTML = `
+            <h2>${this.game.getText('L3_PROTO_TITLE')}</h2>
+            <p>${this.game.getText('L3_PROTO_DESC')}</p>
+
+            <div style="display:flex; justify-content:center; gap: 4rem; margin-top:2rem;">
+                
+                <!-- Fixed Stack (Drop Target) -->
+                <div id="osi-stack-static" style="width:300px; display:flex; flex-direction:column; gap:5px;">
+                    ${this.correctOrder.map(layerNum => `
+                        <div class="osi-drop-target" data-layer="${layerNum}" style="
+                            background: rgba(0, 243, 255, 0.05);
+                            border: 1px dashed var(--color-secondary);
+                            padding: 0.8rem;
+                            text-align: center;
+                            font-family: var(--font-mono);
+                            font-size: 0.9rem;
+                        ">
+                            ${this.game.getText(`L3_LAYER_${layerNum}`)}
+                        </div>
+                    `).join('')}
+                </div>
+
+                <!-- Protocol Tray -->
+                <div style="display:flex; flex-direction:column; gap:1rem;">
+                    <h3>PROTOCOLS</h3>
+                    ${protocols.map(p => `
+                        <div class="draggable-proto" draggable="true" data-id="${p.id}" data-layer="${p.layer}" style="
+                            background: var(--color-primary);
+                            color: #000;
+                            padding: 1rem;
+                            border-radius: 4px;
+                            cursor: grab;
+                            font-weight: bold;
+                        ">
+                            ${p.label}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        this.attachEventsPhase2();
+    },
+
+    attachEventsPhase2() {
+        const draggables = this.container.querySelectorAll('.draggable-proto');
+        const zones = this.container.querySelectorAll('.osi-drop-target');
+        let matchedCount = 0;
+        const totalToMatch = 3;
+
+        draggables.forEach(d => {
+            d.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', e.target.dataset.layer);
+                e.dataTransfer.setData('id', e.target.dataset.id); // Hacky ID storage
+                e.target.style.opacity = '0.5';
+            });
+            d.addEventListener('dragend', (e) => e.target.style.opacity = '1');
+        });
+
+        zones.forEach(z => {
+            z.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                z.style.borderColor = 'var(--color-primary)';
+            });
+            z.addEventListener('dragleave', () => {
+                z.style.borderColor = 'var(--color-secondary)';
+            });
+            z.addEventListener('drop', (e) => {
+                e.preventDefault();
+                z.style.borderColor = 'var(--color-secondary)';
+
+                const layer = parseInt(e.dataTransfer.getData('text/plain'));
+                const targetLayer = parseInt(z.dataset.layer);
+                // Also remove the element from tray if correct
+                // But dragging logic needs references.
+                // Assuming simple check:
+
+                if (layer === targetLayer) {
+                    if (z.classList.contains('matched')) return; // Already matched
+
+                    z.classList.add('matched');
+                    z.style.background = 'var(--color-success)';
+                    z.style.color = '#000';
+                    z.innerText += " ✅";
+
+                    // Remove from list visually
+                    // We need to find the specific element.
+                    // This is simplified.
+                    matchedCount++;
+
+                    if (matchedCount >= totalToMatch) {
+                        this.finishLevel();
+                    }
+                } else {
+                    this.game.showFeedback('PROTOCOL MISMATCH', `Incorrect Layer. Try again.`);
+                }
+            });
+        });
+    },
+
+    finishLevel() {
+        this.game.completeLevel({
+            success: true,
+            score: this.score + 1000,
+            xp: 1500,
+            accuracy: 100,
+            timeBonus: 200
+        });
     }
 };

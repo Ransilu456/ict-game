@@ -8,6 +8,10 @@ export const LANG = {
     BTN_START: { en: "Connect to Server", si: "සම්බන්ධ වන්න" },
     BTN_NEXT: { en: "Next Mission", si: "ඊළඟ මෙහෙයුම" },
     BTN_CLOSE: { en: "Close", si: "වසන්න" },
+    BTN_RESUME: { en: "RESUME", si: "නැවත අරඹන්න" },
+    BTN_RESTART: { en: "RESTART LEVEL", si: "නැවත මුලසිට අරඹන්න" },
+    BTN_QUIT: { en: "QUIT TO MENU", si: "ප්‍රධාන මෙනුවට" },
+    PAUSE_TITLE: { en: "GAME PAUSED", si: "තාවකාලිකව නවතා ඇත" },
 
     // Intro Screen
     INTRO_TITLE_TOP: { en: "ICT QUEST", si: "ICT QUEST" }, // Keep English or transliterate? Keeping English for "Brand"
@@ -39,11 +43,15 @@ export const LANG = {
     L1_ITEM_RAM: { en: "💾 RAM (Memory)", si: "💾 RAM (මතකය)" },
     L1_ITEM_GPU: { en: "🎮 GPU (Graphics)", si: "🎮 GPU (ග්‍රැෆික් කාඩ්)" },
     L1_ITEM_SSD: { en: "💿 SSD (Storage)", si: "💿 SSD (ආචයනය)" },
+    L1_ITEM_PSU: { en: "🔋 PSU (Power)", si: "🔋 PSU (බල සැපයුම)" },
+    L1_ITEM_FAN: { en: "❄️ FAN (Cooling)", si: "❄️ FAN (සිසිලකය)" },
 
     L1_ZONE_SOCKET: { en: "SOCKET", si: "සොකට් එක" },
     L1_ZONE_DIMM: { en: "DIMM", si: " රැම් ස්ලොට්" }, // Transliterated/Common usage
     L1_ZONE_PCIE: { en: "PCIe X16", si: "PCIe X16" },
     L1_ZONE_SATA: { en: "SATA BAY", si: "SATA තොට" },
+    L1_ZONE_PSU: { en: "PSU BAY", si: "බල සැපයුම් කුටිය" },
+    L1_ZONE_FAN: { en: "FAN MOUNT", si: "සිසිලක රඳවනය" },
 
     L1_MSG_SUCCESS: { en: "Component installed successfully.", si: "උපාංගය සාර්ථකව සවි කරන ලදී." },
     L1_MSG_ERR_TITLE: { en: "COMPATIBILITY ERROR", si: " නොගැලපෙන උපාංගයකි" },
@@ -65,6 +73,8 @@ export const LANG = {
     L3_LAYER_3: { en: "3. Network", si: "3. ජාල (Network)" },
     L3_LAYER_2: { en: "2. Data Link", si: "2. දත්ත සබැඳි (Data Link)" },
     L3_LAYER_1: { en: "1. Physical", si: "1. භෞතික (Physical)" },
+    L3_PROTO_TITLE: { en: "PHASE 2: PROTOCOLS", si: "අදියර 2: ප්‍රොටෝකෝල" },
+    L3_PROTO_DESC: { en: "Match the protocols to their correct OSI Layer.", si: "ප්‍රොටෝකෝල ඒවාට අදාළ OSI ස්ථරයට ගැලපෙන්න." },
 
     // Level 4: Logic Gates
     L4_TITLE: { en: "MISSION: CIRCUIT LOGIC", si: "මෙහෙයුම: තර්ක ද්වාර (Logic Gates)" },
@@ -72,7 +82,22 @@ export const LANG = {
     L4_GATE_AND: { en: "AND GATE", si: "AND ද්වාරය" },
     L4_GATE_OR: { en: "OR GATE", si: "OR ද්වාරය" },
     L4_GATE_NOT: { en: "NOT GATE", si: "NOT ද්වාරය" },
+    L4_GATE_XOR: { en: "XOR GATE", si: "XOR ද්වාරය" },
+    L4_GATE_COMBO: { en: "COMBO LOGIC", si: "මිශ්‍ර තර්ක" },
     L4_BTN_CHECK: { en: "VERIFY CIRCUIT", si: "පරීක්ෂා කරන්න" },
+
+    // Level 5: Binary
+    L5_TITLE: { en: "MISSION: BINARY TRANSLATION", si: "මෙහෙයුම: ද්වීමය පරිවර්තනය" },
+    L5_DESC: { en: "Convert the Decimal numbers to Binary by toggling the bits.", si: "බිටු සක්‍රීය කිරීම මගින් දශම සංඛ්‍යා ද්වීමය සංඛ්‍යා බවට හරවන්න." },
+    L5_TARGET_LBL: { en: "TARGET DECIMAL:", si: "ඉලක්කගත දශම අංකය:" },
+    L5_CURRENT_LBL: { en: "CURRENT VALUE:", si: "වත්මන් අගය:" },
+    L5_BTN_CHECK: { en: "VERIFY SYSTEM", si: "පද්ධතිය පරීක්ෂා කරන්න" },
+
+    // Level 6: MCQ
+    L6_TITLE: { en: "MISSION: FINAL EXAM", si: "මෙහෙයුම: අවසාන පරීක්ෂණය" },
+    L6_DESC: { en: "Prove your mastery. Answer all questions correctly to secure the network.", si: "ඔබේ දැනුම තහවුරු කරන්න. ජාලය ආරක්ෂා කිරීමට සියලු ප්‍රශ්නවලට නිවැරදිව පිළිතුරු දෙන්න." },
+    L6_Q_PREFIX: { en: "QUESTION", si: "ප්‍රශ්නය" },
+    L6_BTN_NEXT: { en: "CONFIRM ANSWER", si: "පිළිතුර තහවුරු කරන්න" },
 
     // Persistence & Menus
     BTN_MISSIONS: { en: "Select Mission", si: "මෙහෙයුම් තෝරන්න" },

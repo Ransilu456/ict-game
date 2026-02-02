@@ -31,7 +31,21 @@ export default {
                 type: 'NAND', // AND then NOT
                 inputs: [1, 1],
                 target: 0,
-                gate_key: 'NAND GATE (AND + NOT)' // Helper text if key missing
+                gate_key: 'NAND GATE (AND + NOT)'
+            },
+            {
+                id: 4,
+                type: 'XOR', // Exclusive OR
+                inputs: [1, 1],
+                target: 0, // 1^1 = 0
+                gate_key: 'L4_GATE_XOR'
+            },
+            {
+                id: 5,
+                type: 'COMBO', // (A AND B) OR C
+                inputs: [0, 1, 0],
+                target: 1,
+                gate_key: 'L4_GATE_COMBO'
             }
         ];
 
@@ -42,37 +56,44 @@ export default {
         const stage = this.stages[this.currentStage];
         const gateLabel = stage.gate_key.startsWith('L4') ? this.game.getText(stage.gate_key) : stage.gate_key;
 
+        let subText = '';
+        if (stage.type === 'COMBO') subText = '(Input 1 & 2) OR Input 3';
+        if (stage.type === 'XOR') subText = 'Input 1 ≠ Input 2';
+
         this.container.innerHTML = `
             <h2>${this.game.getText('L4_TITLE')}</h2>
             <p>${this.game.getText('L4_DESC')}</p>
             
             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:60%;">
                 
-                <h3 style="color:var(--color-secondary);">${gateLabel}</h3>
+                <h3 style="color:var(--color-secondary); margin-bottom: 0.5rem;">${gateLabel}</h3>
+                ${subText ? `<div style="color:var(--color-text-muted); margin-bottom:1rem; font-family:var(--font-mono);">${subText}</div>` : ''}
                 
                 <div class="circuit-board" style="
                     display:flex; gap:2rem; align-items:center; 
                     background:rgba(255,255,255,0.05); padding:2rem; border-radius:16px; border:2px solid var(--color-primary);
                 ">
                     <!-- Inputs -->
-                    <div style="display:flex; flex-direction:column; gap:2rem;">
+                    <div style="display:flex; flex-direction:column; gap:1.5rem;">
                         ${stage.inputs.map((val, idx) => `
                             <button class="btn-toggle" data-idx="${idx}" style="
                                 width:60px; height:60px; border-radius:50%; border:2px solid var(--color-text);
                                 background: ${val ? 'var(--color-success)' : 'transparent'};
                                 color: ${val ? '#000' : 'var(--color-text)'};
                                 font-size:1.5rem; cursor:pointer; font-weight:bold;
+                                display: flex; align-items: center; justify-content: center;
                             ">
                                 ${val}
                             </button>
                         `).join('')}
                     </div>
 
-                    <!-- Gate Visual (Simple Box for now) -->
+                    <!-- Gate Visual -->
                     <div style="
-                        width:100px; height:100px; background:var(--color-bg-secondary);
+                        width:120px; height:120px; background:var(--color-bg-secondary);
                         border:2px solid var(--color-secondary); display:flex; align-items:center; justify-content:center;
-                        font-size:2rem; border-radius:8px;
+                        font-size:1.5rem; border-radius:8px; font-weight:bold; color:var(--color-primary);
+                        box-shadow: 0 0 15px rgba(0,243,255,0.1);
                     ">
                         ${this.getGateIcon(stage.type)}
                     </div>
@@ -82,7 +103,7 @@ export default {
                         width:80px; height:80px; border-radius:50%; 
                         border:4px solid var(--color-text-muted);
                         display:flex; align-items:center; justify-content:center; font-size:1.5rem;
-                        background: #333;
+                        background: #333; transition: all 0.3s;
                     ">
                         ?
                     </div>
@@ -99,20 +120,24 @@ export default {
     },
 
     getGateIcon(type) {
-        if (type === 'AND') return '&';
-        if (type === 'OR') return '>=1';
-        if (type === 'NOT') return '1';
-        if (type === 'NAND') return '!&';
+        if (type === 'AND') return 'AND';
+        if (type === 'OR') return 'OR';
+        if (type === 'NOT') return 'NOT';
+        if (type === 'NAND') return 'NAND';
+        if (type === 'XOR') return 'XOR';
+        if (type === 'COMBO') return 'A·B + C';
         return '?';
     },
 
     calculateOutput(type, inputs) {
-        const [a, b] = inputs;
+        const [a, b, c] = inputs; // c might be undefined for 2-input gates
         switch (type) {
             case 'AND': return (a && b) ? 1 : 0;
             case 'OR': return (a || b) ? 1 : 0;
             case 'NOT': return (!a) ? 1 : 0;
             case 'NAND': return (!(a && b)) ? 1 : 0;
+            case 'XOR': return (a !== b) ? 1 : 0;
+            case 'COMBO': return ((a && b) || c) ? 1 : 0; // Custom (A AND B) OR C
             default: return 0;
         }
     },
@@ -120,7 +145,10 @@ export default {
     attachEvents() {
         this.container.querySelectorAll('.btn-toggle').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const idx = parseInt(e.target.dataset.idx);
+                const target = e.target.closest('.btn-toggle');
+                if (!target) return;
+
+                const idx = parseInt(target.dataset.idx);
                 const stage = this.stages[this.currentStage];
 
                 // Toggle 0 <-> 1

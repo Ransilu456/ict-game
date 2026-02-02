@@ -103,17 +103,25 @@ export const LANG = {
     L7_TITLE: { en: "MISSION: DECRYPTION", si: "මෙහෙයුම: රහස් කේත අගුළු හැරීම" },
     L7_DESC: { en: "Decrypt the message using the Caesar Cipher shift.", si: "Caesar Cipher ක්‍රමය භාවිතයෙන් පණිවිඩය කියවන්න." },
     L7_BTN_DECRYPT: { en: "DECRYPT", si: "විශේධනය කරන්න" },
+    L7_HINT_TITLE: { en: "HOW TO PLAY", si: "ක්‍රීඩා කරන ආකාරය" },
+    L7_HINT_BODY: { en: "1. The 'Intercepted Data' is scrambled.\n2. Use the slider to shift letters back (e.g. A->B is Shift 1).\n3. Find the key where the text makes sense.\n4. Click Decrypt.", si: "1. දත්ත වෙනස් කර ඇත.\n2. ස්ලයිඩරය භාවිතයෙන් අකුරු මාරු කරන්න.\n3. අර්ථවත් වචනයක් ලැබෙන පරිදි සකසන්න.\n4. විශේධනය ක්ලික් කරන්න." },
 
     // Level 8: SQL
     L8_TITLE: { en: "MISSION: DATABASE QUERY", si: "මෙහෙයුම: දත්ත සමුදාය" },
     L8_DESC: { en: "Construct the correct SQL query to retrieve data.", si: "දත්ත ලබා ගැනීම සඳහා නිවැරදි SQL විධානය සකසන්න." },
     L8_BTN_RUN: { en: "RUN QUERY", si: "විධානය ක්‍රියාත්මක කරන්න" },
 
-    // Persistence & Menus
+    // Sidebar & Menus
     BTN_MISSIONS: { en: "Select Mission", si: "මෙහෙයුම් තෝරන්න" },
     BTN_RESET: { en: "Reset Progress", si: "මුල සිට අරඹන්න" },
     BTN_UNLOCK: { en: "Unlock All (Debug)", si: "සියල්ල විවෘත කරන්න (Debug)" },
-    MENU_TITLE_SELECT: { en: "MISSION SELECT", si: "මෙහෙයුම් තේරීම" },
+    MENU_TITLE_SELECT: { en: "CAMPAIGN MAP", si: "මෙහෙයුම් සිතියම" },
+    MENU_TITLE_PROFILE: { en: "PROFILE / LOGIN", si: "ගිණුම / පිවිසුම" },
     LBL_LOCKED: { en: "LOCKED", si: "අගුළු දමා ඇත" },
-    MSG_RESET_CONFIRM: { en: "Are you sure? All progress will be lost.", si: "ඔබට විශ්වාසද? සියලුම දත්ත මැකී යනු ඇත." }
+    MSG_RESET_CONFIRM: { en: "Are you sure? All progress will be lost.", si: "ඔබට විශ්වාසද? සියලුම දත්ත මැකී යනු ඇත." },
+
+    // Sidebar Labels
+    SB_ID: { en: "ID", si: "අංකය" },
+    SB_XP: { en: "XP", si: "XP" },
+    SB_SCORE: { en: "Score", si: "ලකුණු" }
 };

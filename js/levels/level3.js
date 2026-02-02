@@ -2,6 +2,7 @@
  * Level 3: Networking (OSI Model)
  * Phase 1: Sort OSI Layers
  * Phase 2: Match Protocols
+ * Refactored for Dashboard UI + Tailwind
  */
 
 export default {
@@ -10,6 +11,7 @@ export default {
         this.game = gameEngine;
         this.correctOrder = [7, 6, 5, 4, 3, 2, 1]; // Top to Bottom
         this.score = 0;
+        this.startTime = Date.now();
 
         // Phase 1 Setup
         this.currentOrder = [...this.correctOrder].sort(() => Math.random() - 0.5);
@@ -29,29 +31,46 @@ export default {
     /* PHASE 1: OSI SORT */
     renderPhase1() {
         this.container.innerHTML = `
-            <h2>${this.game.getText('L3_TITLE')}</h2>
-            <p>${this.game.getText('L3_DESC')}</p>
-            
-            <div style="display:flex; justify-content:center; margin-top:2rem;">
-                <div id="osi-stack" style="width:300px; display:flex; flex-direction:column; gap:5px;">
-                    ${this.currentOrder.map(layerNum => `
-                        <div class="osi-layer" draggable="true" data-layer="${layerNum}" style="
-                            background: rgba(0, 243, 255, 0.1);
-                            border: 1px solid var(--color-primary);
-                            padding: 1rem;
-                            text-align: center;
-                            cursor: grab;
-                            font-family: var(--font-mono);
-                            transition: all 0.2s;
-                        ">
-                            ${this.game.getText(`L3_LAYER_${layerNum}`)}
-                        </div>
-                    `).join('')}
+            <div class="flex flex-col h-full items-center justify-center animate-fade-in gap-6">
+                
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold text-white mb-2">${this.game.getText('L3_TITLE')}</h2>
+                    <p class="text-slate-400 max-w-lg mx-auto">${this.game.getText('L3_DESC')}</p>
                 </div>
-            </div>
-            
-            <div style="text-align:center; margin-top:2rem;">
-                <button id="btn-check-osi" class="btn">VERIFY CONNECTION</button>
+
+                <div class="flex gap-8 items-start">
+                    <!-- Layer Stack -->
+                    <div id="osi-stack" class="flex flex-col gap-2 p-6 glass-panel rounded-xl border border-indigo-500/30 w-80 min-h-[500px] shadow-2xl">
+                        <div class="text-xs text-slate-500 font-bold uppercase text-center mb-2 tracking-widest">Application Layer (Top)</div>
+                        
+                        ${this.currentOrder.map(layerNum => `
+                            <div class="osi-layer p-4 bg-slate-800/80 border border-slate-600 rounded-lg text-center cursor-move hover:border-indigo-500 hover:bg-slate-700 transition-all font-mono font-bold text-slate-200 shadow-sm" 
+                                draggable="true" data-layer="${layerNum}">
+                                <div class="flex items-center justify-between">
+                                    <iconify-icon icon="solar:hamburger-menu-linear" class="text-slate-500"></iconify-icon>
+                                    <span>${this.game.getText(`L3_LAYER_${layerNum}`)}</span>
+                                    <span class="text-xs text-slate-500 bg-slate-900 px-2 py-0.5 rounded">L${layerNum}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                        
+                        <div class="text-xs text-slate-500 font-bold uppercase text-center mt-auto tracking-widest">Physical Layer (Bottom)</div>
+                    </div>
+
+                    <!-- Instructions / Status -->
+                    <div class="w-64 flex flex-col gap-4 pt-12">
+                        <div class="glass-panel p-4 rounded-lg border border-slate-700">
+                             <h4 class="text-white font-bold mb-2">Objective</h4>
+                             <p class="text-sm text-slate-400">Drag and drop layers to arrange the OSI Model in the correct descending order (7 to 1).</p>
+                        </div>
+                        
+                        <button id="btn-check-osi" class="w-full px-6 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold tracking-wide shadow-lg shadow-indigo-900/20 transition-all hover:scale-105 flex items-center justify-center gap-2">
+                             <iconify-icon icon="solar:check-circle-bold"></iconify-icon>
+                             VERIFY STACK
+                        </button>
+                    </div>
+                </div>
+
             </div>
         `;
         this.attachEventsPhase1();
@@ -62,8 +81,10 @@ export default {
         let draggedItem = null;
 
         list.addEventListener('dragstart', (e) => {
-            draggedItem = e.target;
-            e.target.style.opacity = '0.5';
+            draggedItem = e.target.closest('.osi-layer');
+            e.dataTransfer.effectAllowed = 'move';
+            // setTimeout(() => draggedItem.classList.add('opacity-50'), 0);
+            draggedItem.style.opacity = '0.5';
         });
 
         list.addEventListener('dragend', (e) => {
@@ -73,20 +94,41 @@ export default {
 
         list.addEventListener('dragover', (e) => {
             e.preventDefault();
-        });
-
-        list.addEventListener('drop', (e) => {
-            e.preventDefault();
-            if (e.target.classList.contains('osi-layer') && e.target !== draggedItem) {
-                const rect = e.target.getBoundingClientRect();
-                const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
-                list.insertBefore(draggedItem, next ? e.target.nextSibling : e.target);
+            const afterElement = this.getDragAfterElement(list, e.clientY);
+            if (afterElement == null) {
+                // Insert before the bottom label div (last-child logic check)
+                // Actually our structure has divs then a label div.
+                // We typically append if no afterElement, but exclude the "text-xs" div at bottom?
+                // Let's keep it simple: insertBefore logic.
+                // If null, we might be at bottom.
+                // list.appendChild(draggedItem); // Be careful of the bottom label
+                // Let's target only .osi-layer container or keep labels outside?
+                // I put labels INSIDE #osi-stack. Better to put them inside but use logic to ignore them.
+                // Or easier: insertBefore the "Physical Layer" label which is last child.
+                const bottomLabel = list.lastElementChild;
+                list.insertBefore(draggedItem, bottomLabel);
+            } else {
+                list.insertBefore(draggedItem, afterElement);
             }
         });
 
         this.container.querySelector('#btn-check-osi').addEventListener('click', () => {
             this.verifyStack();
         });
+    },
+
+    getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.osi-layer:not(.dragging)')];
+
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
     },
 
     verifyStack() {
@@ -96,73 +138,69 @@ export default {
 
         if (isCorrect) {
             layers.forEach(l => {
-                l.style.background = 'rgba(10, 255, 10, 0.2)';
-                l.style.borderColor = 'var(--color-success)';
+                l.classList.remove('bg-slate-800/80', 'border-slate-600');
+                l.classList.add('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-300');
+                l.querySelector('iconify-icon').className = "text-emerald-500";
             });
 
             this.score += 500;
-            this.game.showFeedback('LAYER 1-7 ESTABLISHED', 'Architecture verified. Constructing Protocols...');
+            this.game.showFeedback(this.game.getText('RES_SUCCESS'), 'OSI Stack Verified. Initializing Protocol Handshake...');
 
             setTimeout(() => {
                 this.phase = 2;
                 this.render();
             }, 1500);
         } else {
-            this.game.showFeedback('CONNECTION ERROR', 'Layers are misaligned. Packets dropped.');
+            this.game.showFeedback(this.game.getText('RES_FAIL'), 'Layer Mismatch detected. Connection unstable.');
             this.score = Math.max(0, this.score - 50);
-            this.game.updateHUD();
+            this.game.updateHUD(); // Sync score penalty
         }
     },
 
     /* PHASE 2: PROTOCOLS */
     renderPhase2() {
-        // We know the stack is correct at Phase 2, so show it static with drop zones?
-        // Or just show 3 buckets.
-        // Let's show the stack on left, and protocols on right to drag onto it.
         const protocols = [
-            { id: 'http', label: 'HTTP/HTTPS', layer: 7 },
-            { id: 'ip', label: 'IP Address', layer: 3 },
-            { id: 'mac', label: 'MAC Address', layer: 2 }
+            { id: 'http', label: 'HTTP/HTTPS', layer: 7, icon: 'solar:globe-bold' },
+            { id: 'ip', label: 'IP Address', layer: 3, icon: 'solar:routing-2-bold' },
+            { id: 'mac', label: 'MAC Address', layer: 2, icon: 'solar:network-bold' }
         ];
 
         this.container.innerHTML = `
-            <h2>${this.game.getText('L3_PROTO_TITLE')}</h2>
-            <p>${this.game.getText('L3_PROTO_DESC')}</p>
-
-            <div style="display:flex; justify-content:center; gap: 4rem; margin-top:2rem;">
+             <div class="flex flex-col h-full items-center justify-center animate-fade-in gap-8">
                 
-                <!-- Fixed Stack (Drop Target) -->
-                <div id="osi-stack-static" style="width:300px; display:flex; flex-direction:column; gap:5px;">
-                    ${this.correctOrder.map(layerNum => `
-                        <div class="osi-drop-target" data-layer="${layerNum}" style="
-                            background: rgba(0, 243, 255, 0.05);
-                            border: 1px dashed var(--color-secondary);
-                            padding: 0.8rem;
-                            text-align: center;
-                            font-family: var(--font-mono);
-                            font-size: 0.9rem;
-                        ">
-                            ${this.game.getText(`L3_LAYER_${layerNum}`)}
-                        </div>
-                    `).join('')}
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold text-white mb-2">${this.game.getText('L3_PROTO_TITLE')}</h2>
+                    <p class="text-slate-400 max-w-lg mx-auto">${this.game.getText('L3_PROTO_DESC')}</p>
                 </div>
 
-                <!-- Protocol Tray -->
-                <div style="display:flex; flex-direction:column; gap:1rem;">
-                    <h3>PROTOCOLS</h3>
-                    ${protocols.map(p => `
-                        <div class="draggable-proto" draggable="true" data-id="${p.id}" data-layer="${p.layer}" style="
-                            background: var(--color-primary);
-                            color: #000;
-                            padding: 1rem;
-                            border-radius: 4px;
-                            cursor: grab;
-                            font-weight: bold;
-                        ">
-                            ${p.label}
+                <div class="flex flex-col md:flex-row gap-12 w-full max-w-4xl justify-center">
+                    
+                    <!-- Stack Targets -->
+                    <div class="flex flex-col w-64 gap-2">
+                         <div class="text-xs text-slate-500 font-bold uppercase mb-2">Target Layers</div>
+                         ${this.correctOrder.map(layerNum => `
+                            <div class="osi-drop-target p-3 border-2 border-dashed border-slate-700 rounded-lg flex items-center justify-between transition-all bg-slate-900/50" data-layer="${layerNum}">
+                                <span class="text-sm font-mono text-slate-500">Layer ${layerNum}</span>
+                                <span class="text-xs text-slate-600 hidden md:block">${this.game.getText(`L3_LAYER_${layerNum}`)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- Protocol Tray -->
+                    <div class="flex flex-col w-64 gap-4">
+                        <div class="text-xs text-slate-500 font-bold uppercase mb-2">Available Protocols</div>
+                        <div class="glass-panel p-4 rounded-xl border border-slate-700 flex flex-col gap-3 min-h-[300px]" id="proto-tray">
+                            ${protocols.map(p => `
+                                <div class="draggable-proto p-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg shadow-lg cursor-grab active:cursor-grabbing flex items-center gap-3 font-bold border-b-4 border-indigo-800" draggable="true" data-id="${p.id}" data-layer="${p.layer}">
+                                    <iconify-icon icon="${p.icon}" class="text-xl opacity-80"></iconify-icon>
+                                    ${p.label}
+                                </div>
+                            `).join('')}
                         </div>
-                    `).join('')}
+                    </div>
+
                 </div>
+
             </div>
         `;
 
@@ -178,60 +216,80 @@ export default {
         draggables.forEach(d => {
             d.addEventListener('dragstart', (e) => {
                 e.dataTransfer.setData('text/plain', e.target.dataset.layer);
-                e.dataTransfer.setData('id', e.target.dataset.id); // Hacky ID storage
-                e.target.style.opacity = '0.5';
+                e.dataTransfer.setData('id', e.target.dataset.id);
+                setTimeout(() => d.classList.add('opacity-50'), 0);
             });
-            d.addEventListener('dragend', (e) => e.target.style.opacity = '1');
+            d.addEventListener('dragend', (e) => e.target.classList.remove('opacity-50'));
         });
 
         zones.forEach(z => {
             z.addEventListener('dragover', (e) => {
                 e.preventDefault();
-                z.style.borderColor = 'var(--color-primary)';
+                if (!z.classList.contains('matched')) {
+                    z.classList.add('border-indigo-500', 'bg-indigo-500/10');
+                }
             });
+
             z.addEventListener('dragleave', () => {
-                z.style.borderColor = 'var(--color-secondary)';
+                z.classList.remove('border-indigo-500', 'bg-indigo-500/10');
             });
+
             z.addEventListener('drop', (e) => {
                 e.preventDefault();
-                z.style.borderColor = 'var(--color-secondary)';
+                z.classList.remove('border-indigo-500', 'bg-indigo-500/10');
+
+                if (z.classList.contains('matched')) return;
 
                 const layer = parseInt(e.dataTransfer.getData('text/plain'));
+                const draggedId = e.dataTransfer.getData('id');
                 const targetLayer = parseInt(z.dataset.layer);
-                // Also remove the element from tray if correct
-                // But dragging logic needs references.
-                // Assuming simple check:
 
                 if (layer === targetLayer) {
-                    if (z.classList.contains('matched')) return; // Already matched
+                    // Success
+                    z.classList.add('matched', 'border-emerald-500', 'bg-emerald-500/20');
+                    z.classList.remove('border-dashed', 'border-slate-700', 'text-slate-500', 'bg-slate-900/50');
 
-                    z.classList.add('matched');
-                    z.style.background = 'var(--color-success)';
-                    z.style.color = '#000';
-                    z.innerText += " ✅";
+                    // Find actual dragged element and remove or move it
+                    // Simple approach: Set content of Drop Zone
+                    const protoLabel = document.querySelector(`.draggable-proto[data-id="${draggedId}"]`).innerText; // Get text
+                    z.innerHTML = `
+                        <div class="flex items-center gap-2 text-emerald-300 font-bold w-full justify-center">
+                            <iconify-icon icon="solar:check-circle-bold"></iconify-icon>
+                            <span>${protoLabel}</span>
+                        </div>
+                    `;
 
-                    // Remove from list visually
-                    // We need to find the specific element.
-                    // This is simplified.
+                    // Remove from tray
+                    const originalDraggable = document.querySelector(`.draggable-proto[data-id="${draggedId}"]`);
+                    if (originalDraggable) originalDraggable.remove();
+
                     matchedCount++;
+                    this.game.showFeedback(this.game.getText('RES_SUCCESS'), `Protocol Assigned to Layer ${layer}.`);
 
                     if (matchedCount >= totalToMatch) {
                         this.finishLevel();
                     }
                 } else {
-                    this.game.showFeedback('PROTOCOL MISMATCH', `Incorrect Layer. Try again.`);
+                    this.game.showFeedback(this.game.getText('RES_FAIL'), 'Protocol Incompatible with this Layer.');
+                    this.game.gameState.score -= 20;
+                    this.game.updateHUD(); // Sync penalty
                 }
             });
         });
     },
 
     finishLevel() {
-        this.game.completeLevel({
-            success: true,
-            score: this.score + 1000,
-            xp: 1500,
-            accuracy: 100,
-            timeBonus: 200
-        });
+        const elapsedSec = Math.floor((Date.now() - this.startTime) / 1000);
+        const timeBonus = Math.max(0, (120 - elapsedSec) * 5); // 2 mins generous
+
+        setTimeout(() => {
+            this.game.completeLevel({
+                success: true,
+                score: this.score + 1000 + timeBonus,
+                xp: 1500,
+                accuracy: 100,
+                timeBonus: timeBonus
+            });
+        }, 1000);
     }
 };

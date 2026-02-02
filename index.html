@@ -62,7 +62,7 @@
                 <button onclick="game.showScreen('intro')"
                     class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 transition-all text-sm font-medium text-left">
                     <iconify-icon icon="solar:user-circle-linear" class="text-lg"></iconify-icon>
-                    <span data-key="BTN_QUIT">Profile / Login</span>
+                    <span data-key="MENU_TITLE_PROFILE">Profile / Login</span>
                 </button>
                 <!-- Language Toggle -->
                 <div class="pt-4 mt-4 border-t border-slate-800/50">
@@ -82,7 +82,7 @@
             <div class="flex items-center gap-3 mb-3">
                 <div
                     class="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs font-semibold border border-indigo-500/30">
-                    ID
+                    <span data-key="SB_ID">ID</span>
                 </div>
                 <div class="flex-1">
                     <div class="flex justify-between items-end mb-1">
@@ -96,11 +96,11 @@
             </div>
             <div class="grid grid-cols-2 gap-2 mt-4">
                 <div class="glass-panel p-2 rounded flex flex-col items-center">
-                    <span class="text-xs text-slate-500">XP</span>
+                    <span class="text-xs text-slate-500" data-key="SB_XP">XP</span>
                     <span class="text-sm font-semibold text-white tracking-tight" id="hud-xp-val">0</span>
                 </div>
                 <div class="glass-panel p-2 rounded flex flex-col items-center">
-                    <span class="text-xs text-slate-500">Score</span>
+                    <span class="text-xs text-slate-500" data-key="SB_SCORE">Score</span>
                     <span class="text-sm font-semibold text-white tracking-tight" id="hud-score-val">0</span>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 /**
  * Level 1: Hardware Basics
  * Objective: Assemble the PC components correctly.
+ * Refactored for Dashboard UI + Tailwind
  */
 
 export default {
@@ -17,101 +18,151 @@ export default {
 
     render() {
         this.container.innerHTML = `
-            <h2>${this.game.getText('L1_TITLE')}</h2>
-            <p>${this.game.getText('L1_DESC')}</p>
-            
-            <div class="pc-build-area">
-                <!-- Parts Tray -->
-                <div class="parts-tray">
-                    <h3>${this.game.getText('L1_TRAY_TITLE')}</h3>
-                    <div class="draggable-item" draggable="true" data-type="cpu">
-                        ${this.game.getText('L1_ITEM_CPU')}
-                    </div>
-                    <div class="draggable-item" draggable="true" data-type="ram">
-                        ${this.game.getText('L1_ITEM_RAM')}
-                    </div>
-                    <div class="draggable-item" draggable="true" data-type="gpu">
-                        ${this.game.getText('L1_ITEM_GPU')}
-                    </div>
-                    <div class="draggable-item" draggable="true" data-type="storage">
-                        ${this.game.getText('L1_ITEM_SSD')}
-                    </div>
-                    <div class="draggable-item" draggable="true" data-type="psu">
-                        ${this.game.getText('L1_ITEM_PSU')}
-                    </div>
-                    <div class="draggable-item" draggable="true" data-type="fan">
-                        ${this.game.getText('L1_ITEM_FAN')}
-                    </div>
+            <div class="flex flex-col h-full gap-6 animate-fade-in">
+                
+                <!-- Header -->
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold text-white mb-2">${this.game.getText('L1_TITLE')}</h2>
+                    <p class="text-slate-400 max-w-2xl mx-auto">${this.game.getText('L1_DESC')}</p>
                 </div>
 
-                <!-- Computer Case / Motherboard View -->
-                <div class="computer-case" id="drop-target-area">
-                    <!-- Drop Zones -->
+                <div class="flex flex-col lg:flex-row gap-8 flex-1 overflow-hidden">
                     
-                    <!-- CPU Socket -->
-                    <div class="drop-zone" data-accept="cpu" style="
-                        top: 12.5%; left: 37.5%; width: 25%; height: 25%;
-                    ">
-                        ${this.game.getText('L1_ZONE_SOCKET')}
+                    <!-- Parts Tray -->
+                    <div class="w-full lg:w-1/3 flex flex-col gap-4">
+                        <div class="glass-panel p-4 rounded-xl border border-indigo-500/30">
+                            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-700 pb-2">Component Tray</h3>
+                            <div class="grid grid-cols-2 gap-3" id="parts-tray">
+                                <div class="draggable-item" draggable="true" data-type="cpu">
+                                    <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 hover:border-indigo-500 cursor-grab active:cursor-grabbing text-center">
+                                        <iconify-icon icon="solar:cpu-bold" class="text-3xl text-indigo-400 mb-2"></iconify-icon>
+                                        <div class="text-xs font-bold text-slate-300">CPU</div>
+                                    </div>
+                                </div>
+                                <div class="draggable-item" draggable="true" data-type="ram">
+                                    <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 hover:border-indigo-500 cursor-grab active:cursor-grabbing text-center">
+                                        <iconify-icon icon="solar:ssd-square-bold" class="text-3xl text-emerald-400 mb-2"></iconify-icon>
+                                        <div class="text-xs font-bold text-slate-300">RAM</div>
+                                    </div>
+                                </div>
+                                <div class="draggable-item" draggable="true" data-type="gpu">
+                                    <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 hover:border-indigo-500 cursor-grab active:cursor-grabbing text-center">
+                                        <iconify-icon icon="solar:videocamera-record-bold" class="text-3xl text-rose-400 mb-2"></iconify-icon>
+                                        <div class="text-xs font-bold text-slate-300">GPU</div>
+                                    </div>
+                                </div>
+                                <div class="draggable-item" draggable="true" data-type="storage">
+                                    <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 hover:border-indigo-500 cursor-grab active:cursor-grabbing text-center">
+                                        <iconify-icon icon="solar:server-square-bold" class="text-3xl text-amber-400 mb-2"></iconify-icon>
+                                        <div class="text-xs font-bold text-slate-300">SSD</div>
+                                    </div>
+                                </div>
+                                <div class="draggable-item" draggable="true" data-type="psu">
+                                    <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 hover:border-indigo-500 cursor-grab active:cursor-grabbing text-center">
+                                        <iconify-icon icon="solar:bolt-circle-bold" class="text-3xl text-yellow-400 mb-2"></iconify-icon>
+                                        <div class="text-xs font-bold text-slate-300">Power</div>
+                                    </div>
+                                </div>
+                                <div class="draggable-item" draggable="true" data-type="fan">
+                                    <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 hover:border-indigo-500 cursor-grab active:cursor-grabbing text-center">
+                                        <iconify-icon icon="solar:wind-bold" class="text-3xl text-sky-400 mb-2"></iconify-icon>
+                                        <div class="text-xs font-bold text-slate-300">Cooling</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- RAM Slots -->
-                    <div class="drop-zone" data-accept="ram" style="
-                        top: 12.5%; left: 67.5%; width: 12.5%; height: 37.5%;
-                    ">
-                        ${this.game.getText('L1_ZONE_DIMM')}
+                    <!-- Motherboard / Case Area -->
+                    <div class="w-full lg:w-2/3 flex flex-col">
+                        <div class="glass-panel p-6 rounded-xl border border-slate-700 flex-1 relative bg-slate-900/50 flex items-center justify-center">
+                            
+                            <!-- Schematic View -->
+                            <div class="relative w-full max-w-md aspect-[3/4] border-4 border-slate-800 rounded-xl bg-slate-900 shadow-2xl p-4 grid grid-cols-2 grid-rows-4 gap-4">
+                                
+                                <!-- Fan (Top Left) -->
+                                <div class="drop-zone col-span-1 row-span-1 border-2 border-dashed border-slate-700 rounded-lg flex items-center justify-center transition-all bg-slate-800/30" data-accept="fan">
+                                    <span class="text-xs text-slate-600 font-bold uppercase pointer-events-none">Cooling Mount</span>
+                                </div>
+                                
+                                <!-- PSU (Bottom Left) -->
+                                <div class="drop-zone col-span-1 row-span-1 row-start-4 border-2 border-dashed border-slate-700 rounded-lg flex items-center justify-center transition-all bg-slate-800/30" data-accept="psu">
+                                    <span class="text-xs text-slate-600 font-bold uppercase pointer-events-none">PSU Bay</span>
+                                </div>
+
+                                <!-- Motherboard Area (Span Right) -->
+                                <div class="col-span-1 row-span-4 col-start-2 border border-slate-700 bg-slate-800/20 rounded-lg p-2 flex flex-col gap-2">
+                                    <div class="text-[10px] text-slate-500 text-center uppercase">Motherboard</div>
+                                    
+                                    <!-- CPU -->
+                                    <div class="drop-zone h-24 border-2 border-dashed border-slate-600 rounded flex items-center justify-center transition-all" data-accept="cpu">
+                                        <span class="text-[10px] text-slate-500 font-bold uppercase pointer-events-none">CPU Socket</span>
+                                    </div>
+                                    
+                                    <!-- RAM -->
+                                    <div class="drop-zone h-32 border-2 border-dashed border-slate-600 rounded flex items-center justify-center transition-all" data-accept="ram">
+                                        <span class="text-[10px] text-slate-500 font-bold uppercase pointer-events-none vertical-text">DIMM Slots</span>
+                                    </div>
+
+                                    <!-- GPU -->
+                                    <div class="drop-zone h-16 border-2 border-dashed border-slate-600 rounded flex items-center justify-center transition-all" data-accept="gpu">
+                                        <span class="text-[10px] text-slate-500 font-bold uppercase pointer-events-none">PCI-E Slot</span>
+                                    </div>
+
+                                    <!-- Storage -->
+                                    <div class="drop-zone h-16 border-2 border-dashed border-slate-600 rounded flex items-center justify-center transition-all mt-auto" data-accept="storage">
+                                        <span class="text-[10px] text-slate-500 font-bold uppercase pointer-events-none">SATA</span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
                     </div>
 
-                    <!-- GPU Slot -->
-                    <div class="drop-zone" data-accept="gpu" style="
-                        top: 60%; left: 12.5%; width: 75%; height: 10%;
-                    ">
-                        ${this.game.getText('L1_ZONE_PCIE')}
-                    </div>
-
-                    <!-- Storage Bay -->
-                    <div class="drop-zone" data-accept="storage" style="
-                        bottom: 5%; right: 7.5%; width: 30%; height: 20%;
-                    ">
-                        ${this.game.getText('L1_ZONE_SATA')}
-                    </div>
-
-                    <!-- PSU Bay (Bottom Left) -->
-                    <div class="drop-zone" data-accept="psu" style="
-                        bottom: 5%; left: 5%; width: 25%; height: 25%;
-                    ">
-                        ${this.game.getText('L1_ZONE_PSU')}
-                    </div>
-
-                    <!-- Fan Mount (Top Left) -->
-                    <div class="drop-zone" data-accept="fan" style="
-                        top: 5%; left: 5%; width: 20%; height: 20%;
-                    ">
-                        ${this.game.getText('L1_ZONE_FAN')}
-                    </div>
                 </div>
             </div>
+            
+            <style>
+                .drop-zone.hover {
+                    border-color: #6366f1;
+                    background-color: rgba(99, 102, 241, 0.1);
+                }
+                .drop-zone.occupied {
+                    border-color: #10b981;
+                    background-color: rgba(16, 185, 129, 0.1);
+                }
+                .drop-zone.correct {
+                    border-color: #10b981;
+                }
+                .vertical-text {
+                    writing-mode: vertical-rl;
+                    text-orientation: mixed;
+                }
+            </style>
         `;
     },
 
     attachEvents() {
+        // Since we re-render, dragging refs need to be fresh
         const draggables = this.container.querySelectorAll('.draggable-item');
         const zones = this.container.querySelectorAll('.drop-zone');
 
         draggables.forEach(drag => {
             drag.addEventListener('dragstart', (e) => {
                 e.dataTransfer.setData('text/plain', e.target.dataset.type);
-                e.target.classList.add('dragging');
+                // Visual feedback
+                setTimeout(() => drag.classList.add('opacity-50'), 0);
             });
 
             drag.addEventListener('dragend', (e) => {
-                e.target.classList.remove('dragging');
+                drag.classList.remove('opacity-50');
             });
         });
 
         zones.forEach(zone => {
             zone.addEventListener('dragover', (e) => {
-                e.preventDefault(); // Allow drop
+                e.preventDefault(); // Required for drop
                 if (!zone.classList.contains('occupied')) {
                     zone.classList.add('hover');
                 }
@@ -126,7 +177,7 @@ export default {
                 zone.classList.remove('hover');
 
                 const type = e.dataTransfer.getData('text/plain');
-                this.handleDrop(zone, type);
+                if (type) this.handleDrop(zone, type);
             });
         });
     },
@@ -135,48 +186,46 @@ export default {
         if (zone.classList.contains('occupied')) return;
 
         if (zone.dataset.accept === type) {
-            // Correct Drop
+            // Correct
             zone.classList.add('occupied', 'correct');
-            // Assuming type matches key suffix for nice display, or just show type
-            // To be proper, we probably want localized item names, but existing logic uses 'type' string.
-            // Let's keep it simple: "CPU" etc are universal enough or we can map them.
-            zone.innerHTML = `✅ ${type.toUpperCase()}`;
+            zone.innerHTML = `
+                <div class="flex flex-col items-center justify-center text-emerald-400 animate-pulse">
+                    <iconify-icon icon="solar:check-circle-bold" class="text-2xl"></iconify-icon>
+                    <span class="text-[10px] font-bold uppercase">${type}</span>
+                </div>
+            `;
 
-            // Remove from tray (find the dragging element)
+            // Remove from tray
             const dragger = this.container.querySelector(`.draggable-item[data-type="${type}"]`);
-            if (dragger) dragger.remove();
+            if (dragger) {
+                dragger.style.visibility = 'hidden'; // Hide instead of remove to keep grid stable? Or remove.
+                dragger.remove();
+            }
 
             this.placedItems++;
-            // Title: System Integrity? We don't have a key for that yet. Let's use a generic success title or add to LANG.
-            // For now, using 'L1_MSG_SUCCESS' for body. Title can be hardcoded or new key.
-            // Let's use "SYSTEM" for title.
-            this.game.showFeedback('SYSTEM', this.game.getText('L1_MSG_SUCCESS'));
+            this.game.showFeedback(this.game.getText('L1_MSG_SUCCESS') || 'INSTALLED', `${type.toUpperCase()} module integrated successfully.`);
 
             if (this.placedItems >= this.totalItems) {
                 this.finishLevel();
             }
         } else {
-            // Incorrect Drop
-            this.game.showFeedback(this.game.getText('L1_MSG_ERR_TITLE'), this.game.getText('L1_MSG_ERR_BODY'));
-            // Penalize score?
-            this.game.gameState.score -= 50;
+            // Incorrect
+            this.game.showFeedback(this.game.getText('L1_MSG_ERR_TITLE') || 'ERROR', this.game.getText('L1_MSG_ERR_BODY') || 'Incompatible Interface selected.');
+            this.game.gameState.score = Math.max(0, this.game.gameState.score - 50);
             this.game.updateHUD();
         }
     },
 
     finishLevel() {
-        const endTime = Date.now();
-        const duration = Math.floor((endTime - this.startTime) / 1000);
-        const timeBonus = Math.max(0, 600 - duration * 10); // Simple time bonus
+        const elapsedSec = Math.floor((Date.now() - this.startTime) / 1000);
+        const timeBonus = Math.max(0, (60 - elapsedSec) * 10);
 
-        setTimeout(() => {
-            this.game.completeLevel({
-                success: true,
-                score: 1000 + timeBonus,
-                xp: 500,
-                accuracy: 100, // Simplification for MVP
-                timeBonus: timeBonus
-            });
-        }, 1500);
+        this.game.completeLevel({
+            success: true,
+            score: 1000 + timeBonus,
+            xp: 500,
+            accuracy: 100,
+            timeBonus: timeBonus
+        });
     }
 };

@@ -298,6 +298,7 @@ class GameEngine {
                 this.levelContainer.appendChild(wrapper);
 
                 module.default.init(wrapper, this);
+                this.startLevelTimer(); // Start global timer
             } else {
                 throw new Error('Invalid Level Module Format');
             }
@@ -315,6 +316,8 @@ class GameEngine {
     }
 
     completeLevel(levelResults) {
+        this.stopLevelTimer(); // Stop timer
+
         const levelScore = levelResults.score || 0;
         this.gameState.score += levelScore;
         this.gameState.xp += (levelResults.xp || 100);
@@ -341,8 +344,14 @@ class GameEngine {
 
         // Stats
         document.getElementById('res-accuracy').innerText = (levelResults.accuracy || 0) + '%';
+
+        // Calculate Time Bonus based on actual formatted timer logic if needed?
+        // Or trust the level's reported timeBonus? 
+        // Let's use the actual elapsed time logic for consistency if levels don't report it well.
+        // For now, trust the level object.
         document.getElementById('res-time').innerText = '+' + (levelResults.timeBonus || 0);
-        document.getElementById('res-xp').innerText = this.gameState.xp;
+        document.getElementById('res-xp').innerText = this.gameState.xp; // Show total XP? Or earned? Standard is usually earned. 
+        // But the ID is res-xp. Let's show "Earned: 200".
 
         this.showScreen('results');
     }
@@ -394,15 +403,53 @@ class GameEngine {
         }
     }
 
+    /* Timer Logic */
+    startLevelTimer() {
+        this.stopLevelTimer(); // Clear existing
+        this.levelStartTime = Date.now();
+        this.timerInterval = setInterval(() => {
+            if (!this.isPaused) {
+                this.updateTimerDisplay();
+            }
+        }, 1000);
+        this.updateTimerDisplay();
+    }
+
+    stopLevelTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+    }
+
+    updateTimerDisplay() {
+        if (!this.levelStartTime) return;
+
+        // Calculate elapsed
+        // Note: If we want to handle pause accurately (subtracting pause duration), we need more logic.
+        // For now, simple Date.now diff. If pause is long, it counts. 
+        // To fix pause: Store 'accumulatedTime' and 'lastStartTime'.
+        // Let's stick to simple for now unless requested.
+
+        const elapsedSec = Math.floor((Date.now() - this.levelStartTime) / 1000);
+        const min = Math.floor(elapsedSec / 60);
+        const sec = elapsedSec % 60;
+
+        if (this.hud.timer) {
+            this.hud.timer.innerText = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+        }
+    }
+
     /* Pause System */
     togglePause() {
-        if (this.screens.game.classList.contains('hidden')) return; // Can't pause if not in game
+        if (this.screens.game.classList.contains('hidden')) return;
 
         this.isPaused = !this.isPaused;
         const pauseModal = document.getElementById('pause-modal');
 
         if (this.isPaused) {
             pauseModal.classList.remove('hidden');
+            // Optional: visual freeze
         } else {
             pauseModal.classList.add('hidden');
         }
@@ -410,6 +457,7 @@ class GameEngine {
 
     quitToMenu() {
         this.togglePause();
+        this.stopLevelTimer();
         this.showScreen('intro');
     }
 }

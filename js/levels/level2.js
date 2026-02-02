@@ -1,6 +1,7 @@
 /**
  * Level 2: Python Logic
  * Mechanics: Multiple Choice / "Fix the Bug"
+ * Refactored for Dashboard UI + Tailwind
  */
 
 export default {
@@ -11,18 +12,19 @@ export default {
         this.score = 0;
         this.startTime = Date.now();
 
-        // Define Challenges (Python Syntax & Logic)
+        // Data for challenges
         this.challenges = [
             {
                 id: 1,
                 title: "Variables & Types",
-                // Pre-highlighted HTML to avoid regex issues
-                codeHTML: `user_age = <span class="str">"twenty"</span>\n<span class="kw">if</span> user_age > <span class="num">18</span>:\n    <span class="func">print</span>(<span class="str">"Access Granted"</span>)`,
+                desc: "Fix the type mismatch error.",
+                // Pre-colored HTML matches
+                codeHTML: `<span class="text-sky-300">user_age</span> = <span class="text-orange-300">"twenty"</span>\n<span class="text-purple-400">if</span> <span class="text-sky-300">user_age</span> > <span class="text-emerald-300">18</span>:\n    <span class="text-blue-300">print</span>(<span class="text-orange-300">"Access Granted"</span>)`,
                 rawCode: `user_age = "twenty"\nif user_age > 18:\n    print("Access Granted")`,
                 options: [
                     { id: 'a', text: 'user_age = 20', correct: true },
-                    { id: 'b', text: 'user_age = "20"', correct: false }, // Still string
-                    { id: 'c', text: 'int user_age = 20', correct: false } // Java style
+                    { id: 'b', text: 'user_age = "20"', correct: false },
+                    { id: 'c', text: 'int user_age = 20', correct: false }
                 ],
                 feedback: {
                     correct: "Correct! Ages must be integers (numbers) to be compared with > 18.",
@@ -32,7 +34,8 @@ export default {
             {
                 id: 2,
                 title: "Loops",
-                codeHTML: `<span class="kw">for</span> i <span class="kw">in</span> <span class="func">range</span>(<span class="num">5</span>)\n    <span class="func">print</span>(i)`,
+                desc: "Identify the syntax error.",
+                codeHTML: `<span class="text-purple-400">for</span> <span class="text-sky-300">i</span> <span class="text-purple-400">in</span> <span class="text-blue-300">range</span>(<span class="text-emerald-300">5</span>)\n    <span class="text-blue-300">print</span>(<span class="text-sky-300">i</span>)`,
                 rawCode: `for i in range(5)\n    print(i)`,
                 options: [
                     { id: 'a', text: 'Add colon (:)', correct: true },
@@ -40,18 +43,19 @@ export default {
                     { id: 'c', text: 'i++', correct: false }
                 ],
                 feedback: {
-                    correct: "Syntax Fixed! Python loops (and if/def) require a colon at the end.",
+                    correct: "Syntax Fixed! Python loops require a colon at the end of the statement.",
                     incorrect: "Look closely at the end of the 'for' line. Something is missing."
                 }
             },
             {
                 id: 3,
                 title: "Conditionals",
-                codeHTML: `password = <span class="str">"secret"</span>\n<span class="kw">if</span> password = <span class="str">"admin"</span>:\n    <span class="func">print</span>(<span class="str">"Welcome"</span>)`,
+                desc: "Fix the assignment vs comparison logic.",
+                codeHTML: `<span class="text-sky-300">password</span> = <span class="text-orange-300">"secret"</span>\n<span class="text-purple-400">if</span> <span class="text-sky-300">password</span> = <span class="text-orange-300">"admin"</span>:\n    <span class="text-blue-300">print</span>(<span class="text-orange-300">"Welcome"</span>)`,
                 rawCode: `password = "secret"\nif password = "admin":\n    print("Welcome")`,
                 options: [
                     { id: 'a', text: 'Change = to ==', correct: true },
-                    { id: 'b', text: 'Change "admin" to "secret"', correct: false }, // Logic change, but we want syntax fix? Actually = is assignment.
+                    { id: 'b', text: 'Change "admin" to "secret"', correct: false },
                     { id: 'c', text: 'Remove :', correct: false }
                 ],
                 feedback: {
@@ -62,7 +66,8 @@ export default {
             {
                 id: 4,
                 title: "Syntax Error",
-                codeHTML: `<span class="func">print</span> <span class="str">"Hello World"</span>`,
+                desc: "Fix the legacy syntax.",
+                codeHTML: `<span class="text-blue-300">print</span> <span class="text-orange-300">"Hello World"</span>`,
                 rawCode: `print "Hello World"`,
                 options: [
                     { id: 'a', text: 'Add parentheses ()', correct: true },
@@ -77,7 +82,8 @@ export default {
             {
                 id: 5,
                 title: "List Logic",
-                codeHTML: `items = [<span class="str">"A"</span>, <span class="str">"B"</span>]\n<span class="func">print</span>(items[<span class="num">2</span>])`,
+                desc: "Fix the IndexOutOfBounds error.",
+                codeHTML: `<span class="text-sky-300">items</span> = [<span class="text-orange-300">"A"</span>, <span class="text-orange-300">"B"</span>]\n<span class="text-blue-300">print</span>(<span class="text-sky-300">items</span>[<span class="text-emerald-300">2</span>])`,
                 rawCode: `items = ["A", "B"]\nprint(items[2])`,
                 options: [
                     { id: 'a', text: 'Change index to 1', correct: true },
@@ -96,107 +102,149 @@ export default {
 
     render() {
         this.container.innerHTML = `
-            <h2>${this.game.getText('L2_TITLE')}</h2>
-            <p>${this.game.getText('L2_DESC')}</p>
-            
-            <div class="code-challenge-container">
-                <!-- List -->
-                <div class="challenge-list" style="width:200px; display:flex; flex-direction:column; gap:0.5rem;">
-                    ${this.challenges.map((c, i) => `
-                        <button class="btn btn-sm ${i === this.currentChallengeIndex ? 'btn-primary' : 'btn-secondary'}" 
-                                onclick="document.dispatchEvent(new CustomEvent('l2-select', {detail:${i}}))">
-                            ${this.game.getText('L2_TASK_PREFIX')} ${i + 1}
-                        </button>
-                    `).join('')}
+            <div class="flex flex-col md:flex-row h-full gap-6 animate-fade-in">
+                
+                <!-- Left Panel: Navigation & Info -->
+                <div class="w-full md:w-1/3 flex flex-col gap-4">
+                    <div class="glass-panel p-6 rounded-xl border border-indigo-500/30">
+                        <h2 class="text-2xl font-bold text-white mb-2">${this.game.getText('L2_TITLE')}</h2>
+                        <p class="text-sm text-slate-400">${this.game.getText('L2_DESC')}</p>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-xl border border-slate-700 flex-1 overflow-y-auto">
+                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Task Queue</h3>
+                        <div class="flex flex-col gap-2" id="task-list">
+                            ${this.challenges.map((c, i) => `
+                                <button class="task-btn w-full text-left px-4 py-3 rounded-lg border transition-all flex items-center justify-between group
+                                    ${i === this.currentChallengeIndex
+                ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-900/20'
+                : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800 hover:border-slate-600'}"
+                                    data-idx="${i}">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs opacity-70">Task ${String(i + 1).padStart(2, '0')}</span>
+                                        <span class="font-medium truncate">${c.title}</span>
+                                    </div>
+                                    <iconify-icon icon="solar:code-circle-linear" class="text-xl opacity-50 group-hover:opacity-100"></iconify-icon>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Editor Area -->
-                <div class="code-editor-area" style="flex:1;">
-                    <h3 id="c-title"></h3>
-                    <div class="code-editor" id="c-code" style="min-height:150px; font-size:1.1rem; line-height:1.5;"></div>
+                <!-- Right Panel: IDE -->
+                <div class="w-full md:w-2/3 flex flex-col gap-4">
                     
-                    <div id="c-options" style="margin-top:1.5rem; display:flex; flex-direction:column; gap:0.5rem;">
-                        <!-- Options go here -->
+                    <!-- Editor Window -->
+                    <div class="glass-panel rounded-xl border border-slate-700 shadow-xl overflow-hidden flex flex-col flex-1 relative">
+                        <!-- Toolbar -->
+                        <div class="bg-slate-900 border-b border-slate-800 px-4 py-2 flex items-center gap-2">
+                            <div class="flex gap-1.5">
+                                <div class="w-3 h-3 rounded-full bg-rose-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                            </div>
+                            <span class="text-xs text-slate-500 ml-2 font-mono">script.py</span>
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="p-6 bg-[#1e1e1e] flex-1 font-mono text-sm md:text-base leading-relaxed relative">
+                            <!-- Line Numbers -->
+                            <div class="absolute left-3 top-6 text-slate-600 text-right select-none w-6" style="line-height: inherit;">
+                                1<br>2<br>3<br>4
+                            </div>
+                            <div class="pl-10" id="code-display"></div>
+                        </div>
                     </div>
-                    
-                    <div style="margin-top:1.5rem; text-align:right;">
-                        <button id="btn-run-code" class="btn">${this.game.getText('L2_BTN_RUN')}</button>
+
+                    <!-- Fix Options -->
+                    <div class="glass-panel p-6 rounded-xl border border-slate-700">
+                        <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">Debug Options</h4>
+                        <div class="grid grid-cols-1 gap-3" id="options-grid">
+                            <!-- Options Injected Here -->
+                        </div>
                     </div>
+
+                    <!-- Actions -->
+                    <div class="flex justify-end gap-3 mt-auto">
+                        <button id="btn-run-code" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold shadow-lg shadow-emerald-900/20 transition-all flex items-center gap-2">
+                            <iconify-icon icon="solar:play-circle-bold" class="text-xl"></iconify-icon>
+                            <span>${this.game.getText('L2_BTN_RUN') || 'Run Code'}</span>
+                        </button>
+                    </div>
+
                 </div>
             </div>
-            
-            <style>
-                .kw { color: #c586c0; font-weight:bold; }
-                .func { color: #dcdcaa; }
-                .str { color: #ce9178; }
-                .num { color: #b5cea8; }
-            </style>
         `;
 
-        // Re-attach listeners safely
-        // We use a document listener for the button clicks (delegated or custom event)
-        // But to be safe vs memory leaks, let's just grab the buttons directly now that they exist
-        const buttons = this.container.querySelectorAll('.challenge-list button');
-        buttons.forEach((btn, idx) => {
-            btn.onclick = (e) => {
-                e.stopPropagation(); // Prevent bubbling if needed
-                this.currentChallengeIndex = idx;
-                this.render();
-            };
+        this.attachEvents();
+        this.loadChallenge(); // Load first
+    },
+
+    attachEvents() {
+        const taskBtns = this.container.querySelectorAll('.task-btn');
+        taskBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.currentChallengeIndex = parseInt(btn.dataset.idx);
+                this.render(); // Re-render full UI to update active state
+            });
         });
 
-        this.container.querySelector('#btn-run-code').onclick = () => this.checkAnswer();
-
-        this.loadChallenge();
+        this.container.querySelector('#btn-run-code').addEventListener('click', () => this.checkAnswer());
     },
 
     loadChallenge() {
         const challenge = this.challenges[this.currentChallengeIndex];
 
-        this.container.querySelector('#c-title').innerText = challenge.title;
-        this.container.querySelector('#c-code').innerHTML = challenge.codeHTML; // Safe HTML
+        // Set Code
+        const codeDisplay = this.container.querySelector('#code-display');
+        codeDisplay.innerHTML = challenge.codeHTML;
 
-        const optsContainer = this.container.querySelector('#c-options');
-        optsContainer.innerHTML = '';
+        // Set Options
+        const optsGrid = this.container.querySelector('#options-grid');
+        optsGrid.innerHTML = '';
 
         challenge.options.forEach(opt => {
             const btn = document.createElement('button');
-            btn.className = 'btn btn-option btn-secondary';
-            btn.style.textAlign = 'left';
-            btn.style.width = '100%';
-            btn.innerText = `> ${opt.text}`;
+            btn.className = `option-btn w-full text-left px-4 py-3 rounded-lg border border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:border-indigo-500 hover:text-white transition-all font-mono text-sm flex items-center gap-3`;
+            btn.innerHTML = `
+                <div class="w-4 h-4 rounded-full border border-slate-500 flex items-center justify-center shrink-0">
+                    <div class="w-2 h-2 rounded-full bg-transparent transition-all dot"></div>
+                </div>
+                <span>${opt.text}</span>
+            `;
+
             btn.onclick = () => this.selectOption(btn, opt);
-            optsContainer.appendChild(btn);
+            optsGrid.appendChild(btn);
         });
 
         this.selectedOption = null;
     },
 
     selectOption(btnElement, optionData) {
-        this.container.querySelectorAll('.btn-option').forEach(b => {
-            b.classList.remove('selected');
-            b.style.borderColor = 'var(--color-secondary)';
-            b.style.background = 'transparent';
+        // Clear previous
+        this.container.querySelectorAll('.option-btn').forEach(b => {
+            b.classList.remove('bg-indigo-600/20', 'border-indigo-500', 'text-indigo-300');
+            b.querySelector('.dot').classList.remove('bg-indigo-400');
         });
 
-        btnElement.classList.add('selected');
-        btnElement.style.borderColor = 'var(--color-primary)';
-        btnElement.style.background = 'rgba(0, 243, 255, 0.1)';
+        // Set Active
+        btnElement.classList.add('bg-indigo-600/20', 'border-indigo-500', 'text-indigo-300');
+        btnElement.querySelector('.dot').classList.add('bg-indigo-400');
 
         this.selectedOption = optionData;
     },
 
     checkAnswer() {
         if (!this.selectedOption) {
-            this.game.showFeedback('No Selection', 'Please select a fix before executing the script.');
+            this.game.showFeedback('No Fix Selected', 'Please select a code fix before running the script.');
             return;
         }
 
         const challenge = this.challenges[this.currentChallengeIndex];
 
         if (this.selectedOption.correct) {
-            this.game.showFeedback('COMPILATION SUCCESS', challenge.feedback.correct);
-            this.score += 100; // Award points
+            this.game.showFeedback('BUILD SUCCESSFUL', `<span class="text-emerald-400">${challenge.feedback.correct}</span>`);
+            this.score += 100;
 
             setTimeout(() => {
                 if (this.currentChallengeIndex < this.challenges.length - 1) {
@@ -207,23 +255,23 @@ export default {
                 }
             }, 1500);
         } else {
-            this.score = Math.max(0, this.score - 20); // Penalty for wrong guess
-            this.game.showFeedback('RUNTIME ERROR', challenge.feedback.incorrect);
+            this.score = Math.max(0, this.score - 20);
+            this.game.showFeedback('RUNTIME ERROR', `<span class="text-rose-400">${challenge.feedback.incorrect}</span>`);
         }
     },
 
     finishLevel() {
-        const total = this.challenges.length * 100; // Max raw score
+        const total = this.challenges.length * 100;
         const accuracy = Math.round((this.score / total) * 100);
 
-        // Time Bonus: Start with 60s, subtract elapsed. Min 0.
+        // Time Bonus
         const elapsedSec = Math.floor((Date.now() - this.startTime) / 1000);
-        const timeBonus = Math.max(0, (60 - elapsedSec) * 10);
+        const timeBonus = Math.max(0, (90 - elapsedSec) * 5); // 90s par time
 
         this.game.completeLevel({
             success: true,
             score: this.score + timeBonus,
-            xp: 750 + (accuracy > 90 ? 250 : 0),
+            xp: 750 + (accuracy >= 100 ? 250 : 0),
             accuracy: accuracy,
             timeBonus: timeBonus
         });

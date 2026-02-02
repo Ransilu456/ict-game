@@ -7,6 +7,7 @@ import { LANG } from './lang.js';
 import Sidebar from './components/Sidebar.js';
 import Header from './components/Header.js';
 import LandingPage from './components/LandingPage.js';
+import TechLab from './components/TechLab.js';
 
 class GameEngine {
     constructor() {
@@ -23,6 +24,7 @@ class GameEngine {
         this.sidebar = new Sidebar(this);
         this.header = new Header(this);
         this.landingPage = new LandingPage(this);
+        this.techLab = new TechLab(this);
 
         this.screens = {};
         this.hud = {};
@@ -73,7 +75,8 @@ class GameEngine {
             game: document.getElementById('game-screen'),
             results: document.getElementById('results-screen'),
             select: document.getElementById('select-screen'),
-            landing: document.getElementById('landing-container')
+            landing: document.getElementById('landing-container'),
+            techlab: document.getElementById('techlab-screen')
         };
 
         // HUD (Common game elements, not component internals)
@@ -143,7 +146,7 @@ class GameEngine {
         this.headerContainer.classList.remove('hidden');
 
         // Hide all main screens
-        ['intro', 'game', 'results', 'select'].forEach(key => {
+        ['intro', 'game', 'results', 'select', 'techlab'].forEach(key => {
             this.screens[key].classList.add('hidden');
         });
 
@@ -157,6 +160,11 @@ class GameEngine {
             this.header.updateMission('Sector Map');
         } else if (screenName === 'intro') {
             this.header.updateMission('Authentication');
+        } else if (screenName === 'techlab') {
+            this.header.updateMission('Tech Lab');
+            const container = this.screens.techlab;
+            container.innerHTML = this.techLab.render();
+            this.techLab.attachEvents(container);
         }
 
         this.updateHUD();

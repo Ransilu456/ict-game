@@ -28,6 +28,10 @@ export default class Sidebar {
                             <iconify-icon icon="solar:user-circle-linear" class="text-lg group-hover:scale-110 transition-transform"></iconify-icon>
                             <span data-key="MENU_TITLE_PROFILE">Profile / Login</span>
                         </button>
+                        <button id="nav-tech-lab" data-screen="techlab" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 transition-all text-sm font-medium text-left group">
+                            <iconify-icon icon="solar:database-bold" class="text-lg group-hover:scale-110 transition-transform"></iconify-icon>
+                            <span data-key="MENU_TITLE_TECH_LAB">Tech Lab</span>
+                        </button>
 
                         <div class="pt-4 mt-4 border-t border-slate-800/50">
                             <div class="px-3 mb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest" data-key="LBL_LANGUAGE">Language</div>
@@ -90,6 +94,7 @@ export default class Sidebar {
     attachEvents() {
         document.getElementById('nav-map')?.addEventListener('click', () => this.game.showScreen('select'));
         document.getElementById('nav-profile')?.addEventListener('click', () => this.game.showScreen('intro'));
+        document.getElementById('nav-tech-lab')?.addEventListener('click', () => this.game.showScreen('techlab'));
 
         document.getElementById('lang-en')?.addEventListener('click', () => window.setLang('en'));
         document.getElementById('lang-si')?.addEventListener('click', () => window.setLang('si'));

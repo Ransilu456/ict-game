@@ -12,6 +12,10 @@ export const LANG = {
     BTN_RESTART: { en: "RESTART LEVEL", si: "නැවත මුලසිට අරඹන්න" },
     BTN_QUIT: { en: "QUIT TO MENU", si: "ප්‍රධාන මෙනුවට" },
     PAUSE_TITLE: { en: "GAME PAUSED", si: "තාවකාලිකව නවතා ඇත" },
+    // Navigation
+    MENU_TITLE_SELECT: { en: "Campaign Map", si: "මෙහෙයුම් සිතියම" },
+    MENU_TITLE_PROFILE: { en: "Profile / Login", si: "ප්‍රෝෆයිලය / ඇතුල්වීම" },
+    MENU_TITLE_TECH_LAB: { en: "Tech Lab", si: "තාක්ෂණික පර්යේෂණාගාරය" },
 
     // Intro Screen
     INTRO_TITLE_TOP: { en: "ICT QUEST", si: "ICT QUEST" }, // Keep English or transliterate? Keeping English for "Brand"

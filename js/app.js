@@ -10,6 +10,7 @@ class GameEngine {
         this.gameState = {
             playerName: '',
             currentLevel: 1,
+            maxLevel: 1, // Ensure default exists
             score: 0,
             xp: 0,
             lang: 'en' // Default Language
@@ -26,68 +27,35 @@ class GameEngine {
         this.hud = {
             level: document.getElementById('hud-level'),
             score: document.getElementById('hud-score'),
-            timer: document.getElementById('hud-timer')
+            timer: document.getElementById('hud-timer'),
+
+            // Sidebar Stats
+            playerName: document.getElementById('hud-player-name'),
+            levelSm: document.getElementById('hud-level-sm'),
+            xpBar: document.getElementById('hud-xp-bar'),
+            xpVal: document.getElementById('hud-xp-val'),
+            scoreVal: document.getElementById('hud-score-val'),
+            statsPanel: document.getElementById('user-stats-panel')
         };
 
         this.levelContainer = document.getElementById('level-container');
         this.modal = document.getElementById('feedback-modal');
         this.overlay = document.getElementById('overlay');
 
-        this.initCanvas();
+        // Expose globally for HTML onclicks
+        window.game = this;
+
         this.init();
-    }
-
-    initCanvas() {
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
-
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            columns = Math.floor(width / fontSize);
-            drops = Array(columns).fill(1);
-        });
-
-        // Matrix Rain
-        const fontSize = 16;
-        let columns = Math.floor(width / fontSize);
-        let drops = Array(columns).fill(1);
-        const chars = "0101010101ABCDEF"; // Binary + Hex
-
-        const draw = () => {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            ctx.fillRect(0, 0, width, height);
-
-            ctx.fillStyle = '#0F0'; // Green text
-            ctx.font = fontSize + 'px monospace';
-
-            for (let i = 0; i < drops.length; i++) {
-                const text = chars[Math.floor(Math.random() * chars.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-                if (drops[i] * fontSize > height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-                drops[i]++;
-            }
-            requestAnimationFrame(draw);
-        }
-        draw();
     }
 
     init() {
         // Event Listeners
         document.getElementById('btn-start').addEventListener('click', () => this.startGame());
-        document.getElementById('btn-missions').addEventListener('click', () => this.showMissionSelect());
-        document.getElementById('btn-reset').addEventListener('click', () => this.resetProgress());
+        document.getElementById('btn-missions')?.addEventListener('click', () => this.showMissionSelect()); // Optional btn now
         document.getElementById('btn-next-level').addEventListener('click', () => this.nextLevel());
 
         // Pause Menu Events
-        document.getElementById('btn-pause').addEventListener('click', () => this.togglePause());
-        document.getElementById('btn-resume').addEventListener('click', () => this.togglePause());
+        document.getElementById('btn-resume').addEventListener('click', () => this.togglePause()); // Close pause menu
         document.getElementById('btn-restart').addEventListener('click', () => {
             this.togglePause();
             this.loadLevel(this.gameState.currentLevel);
@@ -116,12 +84,14 @@ class GameEngine {
     saveData() {
         const data = {
             playerName: this.gameState.playerName,
-            maxLevel: Math.max(this.gameState.currentLevel, this.gameState.maxLevel || 1), // Track max unlocked
+            maxLevel: Math.max(this.gameState.currentLevel, this.gameState.maxLevel || 1),
             xp: this.gameState.xp,
+            score: this.gameState.score,
             lang: this.gameState.lang
         };
         localStorage.setItem('ictQuestSave', JSON.stringify(data));
         console.log('[System] Progress Saved.');
+        this.updateHUD(); // Sync stats on save
     }
 
     loadData() {
@@ -131,32 +101,37 @@ class GameEngine {
                 const data = JSON.parse(raw);
                 this.gameState.playerName = data.playerName || '';
                 this.gameState.xp = data.xp || 0;
+                this.gameState.score = data.score || 0;
                 this.gameState.maxLevel = data.maxLevel || 1;
                 if (data.lang) this.setLanguage(data.lang);
 
                 // If name exists, pre-fill
-                if (this.gameState.playerName) {
-                    document.getElementById('player-name').value = this.gameState.playerName;
+                const nameInput = document.getElementById('player-name');
+                if (this.gameState.playerName && nameInput) {
+                    nameInput.value = this.gameState.playerName;
                 }
             } catch (e) {
                 console.error('Save File Corrupted', e);
             }
-        } else {
-            this.gameState.maxLevel = 1;
         }
     }
 
     checkResume() {
+        // If player has a name, show "Resume" style or Mission Select logic
         if (this.gameState.playerName) {
-            document.getElementById('btn-missions').style.display = 'inline-block';
-            document.getElementById('btn-start').innerText = this.gameState.lang === 'si' ? 'දිගටම කරගෙන යන්න' : 'Resume'; // Quick override or add to LANG
-        }
-    }
-
-    resetProgress() {
-        if (confirm(this.getText('MSG_RESET_CONFIRM'))) {
-            localStorage.removeItem('ictQuestSave');
-            location.reload();
+            const btnStart = document.getElementById('btn-start');
+            if (btnStart) {
+                // Change text to indicate resume
+                // We'll update the inner text directly or via key
+                // For now, let's just ensure the UI reflects a "logged in" state if we were to support auto-login
+                // But user requested "Connect to Server" flow.
+                // We can show the "Select Mission" button on intro if logged in previously
+                const btnMissions = document.getElementById('btn-missions');
+                if (btnMissions) btnMissions.classList.remove('hidden');
+            }
+            // Show stats panel
+            this.hud.statsPanel.style.display = 'block';
+            this.updateHUD();
         }
     }
 
@@ -166,11 +141,10 @@ class GameEngine {
         this.gameState.lang = langCode;
         this.updateUIText();
 
-        // If in level, re-render level (simple approach)
-        if (this.screens.game.classList.contains('active') && this.currentLevelModule) {
+        // If in level, re-render level module
+        if (!this.screens.game.classList.contains('hidden') && this.currentLevelModule) {
             this.currentLevelModule.render();
-            // Re-attach events since we wiped innerHTML
-            this.currentLevelModule.attachEvents();
+            if (this.currentLevelModule.attachEvents) this.currentLevelModule.attachEvents();
         }
     }
 
@@ -181,41 +155,38 @@ class GameEngine {
     }
 
     updateUIText() {
-        // Find all elements with data-key
         document.querySelectorAll('[data-key]').forEach(el => {
             const key = el.getAttribute('data-key');
-            el.innerText = this.getText(key); // Use innerText to preserve styling on parents if careful, but for buttons/headers it's standard.
-            // Note: For elements with nested HTML (like Intro Title), we might need targeted handling or avoid full overwrite.
-            // Fix for Title which has a span:
-            if (el.querySelector('*')) {
-                // Skip complex children updating here, handled individually or structured differently.
-                // Actually, let's just target leaf nodes or specific IDs in HTML.
-                // For now, let's be careful.
+            // Check if element has children we shouldn't overwrite (like icons)
+            // Ideally, wrap text in span. For now, simple replace.
+            if (el.children.length === 0) {
+                el.innerText = this.getText(key);
+            } else {
+                // Try to find a span or text node? 
+                // Allow overwrite if it's just text + icon and logic handles it?
+                // Let's just update title attribute if it exists, or innerText if safe.
+                // For buttons with icons, we wrapped text in span in new HTML.
+                const span = el.querySelector('span[data-key]');
+                if (span) return; // handled by the child loop
+
+                // If the element itself has the key but also children (e.g. icon), 
+                // maybe we shouldn't overwrite innerHTML.
+                // Safe approach: Only update if no children, or specific "text-only" children.
             }
         });
 
-        // Handle placeholders
         document.querySelectorAll('[data-key-placeholder]').forEach(el => {
             const key = el.getAttribute('data-key-placeholder');
             el.placeholder = this.getText(key);
         });
 
-        // Specific updates for formatted strings
-        if (this.screens.game.classList.contains('active')) {
-            this.updateHUD();
-        }
-
-        // Intro Title special case (Nested SPAN)
-        // We can just rely on data-keys being on the span itself, which we added.
-        // But the H1 top-level text gets wiped.
-        // Solution: Split the H1 text into a span or handle in HTML.
-        // Let's assume the HTML update handles granular data-keys.
+        this.updateHUD();
     }
 
     /* Screen Management */
     showScreen(screenName) {
-        Object.values(this.screens).forEach(s => s.classList.remove('active'));
-        this.screens[screenName].classList.add('active');
+        Object.values(this.screens).forEach(s => s.classList.add('hidden'));
+        this.screens[screenName].classList.remove('hidden');
 
         if (screenName === 'select') {
             this.renderLevelSelect();
@@ -230,36 +201,42 @@ class GameEngine {
         const list = document.getElementById('mission-list');
         list.innerHTML = '';
 
-        // Config: Total Levels? We have 8 implemented.
-        const totalLevels = 8;
+        const totalLevels = 8; // Updated count
 
         for (let i = 1; i <= totalLevels; i++) {
             const isLocked = i > this.gameState.maxLevel;
             const btn = document.createElement('div');
-            btn.className = `btn ${isLocked ? 'btn-secondary' : ''}`; // Style diff for locked? Or simpler
-            btn.style.width = '150px';
-            btn.style.height = '150px';
-            btn.style.display = 'flex';
-            btn.style.flexDirection = 'column';
-            btn.style.justifyContent = 'center';
-            btn.style.alignItems = 'center';
-            btn.style.padding = '1rem';
-            btn.style.opacity = isLocked ? '0.5' : '1';
-            btn.style.cursor = isLocked ? 'not-allowed' : 'pointer';
 
-            // Content
+            // Tailwind definition for Level Card
+            btn.className = `group relative overflow-hidden rounded-xl p-5 border transition-all cursor-pointer shadow-lg hover:shadow-xl
+                ${isLocked
+                    ? 'bg-slate-900/40 border-slate-800 opacity-60 grayscale cursor-not-allowed'
+                    : 'glass-panel border-indigo-500/30 hover:border-indigo-500 hover:bg-slate-900/60'
+                }`;
+
+            // Inner Content
             btn.innerHTML = `
-                <div style="font-size:2rem; margin-bottom:0.5rem;">${isLocked ? '🔒' : '🔓'}</div>
-                <div>${this.getText('LBL_LEVEL')} ${i}</div>
-                <div style="font-size:0.8rem; margin-top:0.5rem; color:var(--color-text-muted);">
-                    ${isLocked ? this.getText('LBL_LOCKED') : ''}
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl border ${isLocked ? 'bg-slate-800 border-slate-700 text-slate-500' : 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400'}">
+                        <iconify-icon icon="${isLocked ? 'solar:lock-keyhole-linear' : 'solar:code-square-linear'}"></iconify-icon>
+                    </div>
+                    ${!isLocked ? '<iconify-icon icon="solar:check-circle-bold" class="text-emerald-500 text-xl opacity-0 group-hover:opacity-100 transition-opacity"></iconify-icon>' : ''}
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-white mb-1">${this.getText('LBL_LEVEL')} ${i}</h4>
+                    <p class="text-xs text-slate-500 line-clamp-2">${isLocked ? this.getText('LBL_LOCKED') : this.getText('L' + i + '_TITLE') || 'Mission Ready'}</p>
+                </div>
+                
+                <!-- Progress Line -->
+                <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden mt-4">
+                    <div class="bg-indigo-500 h-full w-${isLocked ? '0' : (i < this.gameState.maxLevel ? 'full' : '0')}"></div>
                 </div>
             `;
 
             if (!isLocked) {
                 btn.onclick = () => {
                     this.gameState.currentLevel = i;
-                    this.startGame(true); // Skip name check if already has name
+                    this.startGame(true);
                 };
             }
 
@@ -274,83 +251,97 @@ class GameEngine {
             const name = nameInput.value.trim();
 
             if (!name) {
-                this.showFeedback('Access Denied', 'Please enter your Agent Name to proceed.');
+                this.showFeedback(this.getText('ERROR_NO_NAME_TITLE'), this.getText('ERROR_NO_NAME_MSG'));
                 return;
             }
             this.gameState.playerName = name;
 
-            // ADMIN HACK
+            // Admin Logic
             if (name.toUpperCase() === 'ADMIN' || name.toUpperCase() === 'SUDO') {
                 this.gameState.maxLevel = 8;
-                console.log('*** ADMIN ACCESS GRANTED: ALL LEVELS UNLOCKED ***');
+                console.log('*** ADMIN ACCESS GRANTED ***');
             }
         }
 
-        // Check if level was set via menu, else continue from max?
-        // Default behavior: if coming from "Connect/Resume", maybe load maxLevel.
-        // If from Menu, load currentLevel.
         if (!skipCheck) {
-            // For "Connect" button, define behavior: Start at maxLevel
             this.gameState.currentLevel = this.gameState.maxLevel;
         }
 
-        this.saveData(); // Save initial login
-        console.log(`[System] Player ${this.gameState.playerName} logged in.`);
+        // Show HUD stats immediately
+        this.hud.statsPanel.style.display = 'block';
+        this.saveData();
         this.loadLevel(this.gameState.currentLevel);
     }
 
     async loadLevel(levelNum) {
         this.showScreen('game');
         this.updateHUD();
-        this.levelContainer.innerHTML = '<div style="text-align:center; padding:2rem;">Loading Mission Data...</div>';
+        this.levelContainer.innerHTML = `
+            <div class="h-full w-full flex flex-col items-center justify-center text-slate-500 animate-pulse">
+                <iconify-icon icon="solar:hourglass-line-linear" class="text-4xl mb-2"></iconify-icon>
+                <span>Loading Mission Data...</span>
+            </div>
+        `;
 
         try {
-            // Dynamic Import of Level Logic
             const module = await import(`./levels/level${levelNum}.js`);
+            this.levelContainer.innerHTML = ''; // Clear loader
 
-            // Clear Loading
-            this.levelContainer.innerHTML = '';
-
-            // Initialize Level
             if (module.default && typeof module.default.init === 'function') {
                 this.currentLevelModule = module.default;
-                module.default.init(this.levelContainer, this);
+
+                // Wrap in a padding container or let level handle it?
+                // The container #level-container is flex-col flex-1.
+                // Let's create a wrapper div for padding.
+                const wrapper = document.createElement('div');
+                wrapper.className = "w-full h-full overflow-y-auto p-4 md:p-8 level-content";
+                this.levelContainer.appendChild(wrapper);
+
+                module.default.init(wrapper, this);
             } else {
                 throw new Error('Invalid Level Module Format');
             }
 
         } catch (error) {
             console.error('Failed to load level:', error);
-            this.levelContainer.innerHTML = `<div style="color:var(--color-error)">CRITICAL ERROR: Failed to load Mission ${levelNum}.<br>${error.message}</div>`;
+            this.levelContainer.innerHTML = `
+                <div class="h-full flex flex-col items-center justify-center text-rose-500 text-center p-6">
+                    <iconify-icon icon="solar:danger-triangle-bold" class="text-4xl mb-2"></iconify-icon>
+                    <h3 class="font-bold">Mission Load Failure</h3>
+                    <p class="text-sm mt-1 text-rose-400/80">${error.message}</p>
+                </div>
+            `;
         }
     }
 
     completeLevel(levelResults) {
-        // Calculate Score & XP
         const levelScore = levelResults.score || 0;
         this.gameState.score += levelScore;
         this.gameState.xp += (levelResults.xp || 100);
 
-        // Update Max Level if proceeding
         if (levelResults.success && this.gameState.currentLevel === this.gameState.maxLevel) {
             this.gameState.maxLevel++;
         }
 
         this.saveData();
 
-        // Show Results
+        // Update Results Screen
         const outcomeKey = levelResults.success ? 'RES_SUCCESS' : 'RES_FAIL';
         const outcomeEl = document.getElementById('mission-outcome');
         outcomeEl.innerText = this.getText(outcomeKey);
-        outcomeEl.style.color = levelResults.success ? 'var(--color-success)' : 'var(--color-error)';
 
-        // Update Labels (Static ones handled by updateUIText, but dynamic values need care)
-        document.getElementById('res-accuracy-lbl').innerText = this.getText('RES_ACCURACY');
-        document.getElementById('res-time-lbl').innerText = this.getText('RES_TIME_BONUS');
-        document.getElementById('res-xp-lbl').innerText = this.getText('RES_TOTAL_XP');
+        // Dynamic Class for Success/Fail color
+        if (levelResults.success) {
+            outcomeEl.classList.add('from-emerald-400', 'to-cyan-400');
+            outcomeEl.classList.remove('from-rose-500', 'to-orange-500');
+        } else {
+            outcomeEl.classList.remove('from-emerald-400', 'to-cyan-400');
+            outcomeEl.classList.add('from-rose-500', 'to-orange-500');
+        }
 
+        // Stats
         document.getElementById('res-accuracy').innerText = (levelResults.accuracy || 0) + '%';
-        document.getElementById('res-time').innerText = levelResults.timeBonus || 0;
+        document.getElementById('res-time').innerText = '+' + (levelResults.timeBonus || 0);
         document.getElementById('res-xp').innerText = this.gameState.xp;
 
         this.showScreen('results');
@@ -358,53 +349,67 @@ class GameEngine {
 
     nextLevel() {
         this.gameState.currentLevel++;
-        // Check if level exists (for now just loop or stop)
-        // TODO: Add max level check
+        // Max check
+        if (this.gameState.currentLevel > 8) { // Updated max
+            this.showFeedback("CAMPAIGN COMPLETE", "You have completed all available missions! Check back later for updates.");
+            this.showScreen('select');
+            return;
+        }
         this.loadLevel(this.gameState.currentLevel);
     }
 
     /* HUD Updates */
     updateHUD() {
-        this.hud.level.innerText = `${this.getText('LBL_LEVEL')}: ${String(this.gameState.currentLevel).padStart(2, '0')}`;
-        this.hud.score.innerText = `${this.getText('LBL_SCORE')}: ${String(this.gameState.score).padStart(4, '0')}`;
+        // Top HUD
+        this.hud.level.innerText = String(this.gameState.currentLevel).padStart(2, '0');
+        this.hud.score.innerText = String(this.gameState.score).padStart(4, '0');
+
+        // Sidebar Stats
+        if (this.hud.playerName) this.hud.playerName.innerText = this.gameState.playerName;
+        if (this.hud.levelSm) this.hud.levelSm.innerText = 'Lvl ' + Math.floor(this.gameState.currentLevel); // Or calc level from XP
+        if (this.hud.xpVal) this.hud.xpVal.innerText = this.gameState.xp;
+        if (this.hud.scoreVal) this.hud.scoreVal.innerText = this.gameState.score;
+
+        // XP Bar (Visual only, fake math for now: (XP % 1000) / 10)
+        if (this.hud.xpBar) {
+            const progress = (this.gameState.xp % 2000) / 20; // 2000 xp per level visual
+            this.hud.xpBar.style.width = `${Math.min(100, Math.max(5, progress))}%`;
+        }
     }
 
     /* Utilities */
     showFeedback(title, message) {
-        document.getElementById('feedback-title').innerText = title; // Title might need to be a key if passed as key
+        document.getElementById('feedback-title').innerText = title;
         document.getElementById('feedback-msg').innerHTML = message;
         this.toggleModal(true);
     }
 
     toggleModal(show) {
         if (show) {
-            this.modal.classList.add('active');
-            this.overlay.classList.add('active');
+            this.modal.classList.remove('hidden');
+            this.overlay.classList.remove('hidden');
         } else {
-            this.modal.classList.remove('active');
-            this.overlay.classList.remove('active');
+            this.modal.classList.add('hidden');
+            this.overlay.classList.add('hidden');
         }
     }
 
     /* Pause System */
     togglePause() {
-        if (!this.screens.game.classList.contains('active')) return;
+        if (this.screens.game.classList.contains('hidden')) return; // Can't pause if not in game
 
         this.isPaused = !this.isPaused;
         const pauseModal = document.getElementById('pause-modal');
 
         if (this.isPaused) {
-            pauseModal.style.display = 'flex';
-            this.overlay.classList.add('active'); // Reuse overlay? Or pause has its own
-            // Pause start time could be tracked here if we want to subtract duration later
+            pauseModal.classList.remove('hidden');
         } else {
-            pauseModal.style.display = 'none';
-            this.overlay.classList.remove('active');
+            pauseModal.classList.add('hidden');
         }
     }
 
     quitToMenu() {
-        this.togglePause(); // Close menu
+        this.togglePause();
         this.showScreen('intro');
     }
 }

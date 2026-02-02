@@ -9,19 +9,24 @@ export default {
         this.game = gameEngine;
         this.score = 0;
         this.currentIndex = 0;
-        this.totalQuestions = 10;
+        this.totalQuestions = 15;
 
         this.questions = [
             { q: 'Which layer of OSI handles IP routing?', a: 'Network', opts: ['Data Link', 'Network', 'Transport', 'Session'] },
             { q: 'In Python, what keyword defines a function?', a: 'def', opts: ['func', 'define', 'def', 'function'] },
             { q: 'Binary 1010 is equal to decimal:', a: '10', opts: ['8', '10', '12', '15'] },
             { q: 'Default Port for HTTPS:', a: '443', opts: ['80', '443', '21', '22'] },
-            { q: 'CPU stands for:', a: 'Central Processing Unit', opts: ['Core Processing Unit', 'Central Power Utility', 'Central Processing Unit', 'Computer Primary Unit'] },
-            { q: 'A CIDR /24 mask has how many host bits?', a: '8', opts: ['8', '16', '24', '32'] },
-            { q: 'Which protocol is used for secure remote login?', a: 'SSH', opts: ['FTP', 'HTTP', 'SSH', 'SMTP'] },
-            { q: 'A Logic Gate that returns TRUE only if both inputs are TRUE:', a: 'AND', opts: ['OR', 'AND', 'XOR', 'NOT'] },
-            { q: 'Main component that connects all hardware:', a: 'Motherboard', opts: ['CPU', 'Motherboard', 'RAM', 'PSU'] },
-            { q: 'Standard for wireless local area networking:', a: '802.11', opts: ['802.3', '802.11', 'TCP/IP', 'DNS'] }
+            { q: 'What does VPN stand for?', a: 'Virtual Private Network', opts: ['Virtual Personal Node', 'Virtual Private Network', 'Verified Private Network', 'Visual Peripheral Network'] },
+            { q: 'Which CIDR mask represents 255.255.255.192?', a: '/26', opts: ['/24', '/25', '/26', '/28'] },
+            { q: 'Standard for secure data transmission in Cloud:', a: 'TLS', opts: ['UDP', 'TLS', 'ICMP', 'IGMP'] },
+            { q: 'First point of contact for external traffic:', a: 'Gateway', opts: ['Hub', 'Switch', 'Gateway', 'Repeater'] },
+            { q: 'What is the Caesar Cipher shift of A to D?', a: '3', opts: ['1', '2', '3', '4'] },
+            { q: 'Main advantage of Redis Cache:', a: 'Low Latency', opts: ['Cheap Storage', 'Durability', 'Low Latency', 'SQL compatibility'] },
+            { q: 'Binary 1111 in Decimal:', a: '15', opts: ['14', '15', '16', '17'] },
+            { q: 'The most secure Wireless encryption:', a: 'WPA3', opts: ['WEP', 'WPA', 'WPA2', 'WPA3'] },
+            { q: 'Port used for SSH:', a: '22', opts: ['21', '22', '23', '25'] },
+            { q: 'A 4-bit nibble can represent how many values?', a: '16', opts: ['4', '8', '16', '32'] },
+            { q: 'Protocols used to map IP to MAC:', a: 'ARP', opts: ['DNS', 'BGP', 'ARP', 'DHCP'] }
         ];
 
         this.render();
@@ -125,7 +130,7 @@ export default {
                     this.nextQuestion();
                 } else {
                     this.game.showFeedback('NEURAL COLLAPSE', 'Incorrect response. Mental integrity fading. System stability critical.');
-                    this.score = Math.max(0, this.score - 100);
+                    this.score = Math.max(0, this.score - 250);
                 }
             };
         });

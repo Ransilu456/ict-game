@@ -9,13 +9,16 @@ export default {
         this.game = gameEngine;
         this.score = 0;
         this.currentIndex = 0;
-        this.totalTasks = 3;
+        this.totalTasks = 5;
 
         this.scenarios = [
-            { ip: '192.168.1.5/24', mask: '255.255.255.0', netId: '192.168.1.0', broadcast: '192.168.1.255' },
-            { ip: '10.0.0.12/8', mask: '255.0.0.0', netId: '10.0.0.0', broadcast: '10.255.255.255' },
-            { ip: '172.16.50.40/16', mask: '255.255.0.0', netId: '172.16.0.0', broadcast: '172.16.255.255' }
+            { ip: '192.168.1.10/24', mask: '255.255.255.0', netId: '192.168.1.0', broadcast: '192.168.1.255' },
+            { ip: '172.16.50.40/26', mask: '255.255.255.192', netId: '172.16.50.0', broadcast: '172.16.50.63' },
+            { ip: '10.0.0.12/29', mask: '255.255.255.248', netId: '10.0.0.8', broadcast: '10.0.0.15' },
+            { ip: '192.168.5.100/30', mask: '255.255.255.252', netId: '192.168.5.100', broadcast: '192.168.5.103' },
+            { ip: '172.30.0.1/16', mask: '255.255.0.0', netId: '172.30.0.0', broadcast: '172.30.255.255' }
         ];
+
 
         this.render();
     },

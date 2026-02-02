@@ -9,7 +9,7 @@ export default {
         this.game = gameEngine;
         this.score = 0;
         this.currentPacketIndex = 0;
-        this.totalPackets = 6;
+        this.totalPackets = 10;
 
         this.packets = [
             { port: 80, protocol: 'HTTP', payload: 'Web Request', action: 'ALLOW' },
@@ -17,7 +17,11 @@ export default {
             { port: 443, protocol: 'HTTPS', payload: 'Secure Sub', action: 'ALLOW' },
             { port: 3306, protocol: 'MySQL', payload: 'DB Query', action: 'DROP' },
             { port: 53, protocol: 'DNS', payload: 'Name Lookup', action: 'ALLOW' },
-            { port: 666, protocol: 'TROJAN', payload: 'Backdoor', action: 'DROP' }
+            { port: 666, protocol: 'TROJAN', payload: 'Backdoor', action: 'DROP' },
+            { port: 8080, protocol: 'PROXY', payload: 'Traffic Forward', action: 'ALLOW' },
+            { port: 23, protocol: 'TELNET', payload: 'Insecure Shell', action: 'DROP' },
+            { port: 445, protocol: 'SMB', payload: 'File Share', action: 'DROP' },
+            { port: 123, protocol: 'NTP', payload: 'Time Sync', action: 'ALLOW' }
         ];
 
         this.render();
@@ -123,6 +127,7 @@ export default {
                     this.nextPacket();
                 } else {
                     this.game.showFeedback('SECURITY BREACH', 'Unauthorized packet allowed or critical service dropped. Security integrity compromised.');
+                    this.score = Math.max(0, this.score - 250);
                 }
             };
         });

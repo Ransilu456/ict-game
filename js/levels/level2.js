@@ -257,7 +257,7 @@ export default {
                 }
             }, 1500);
         } else {
-            this.score = Math.max(0, this.score - 20);
+            this.score = Math.max(0, this.score - 250);
             this.game.showFeedback('RUNTIME ERROR', `<span class="text-rose-400">${challenge.feedback.incorrect}</span>`);
         }
     },

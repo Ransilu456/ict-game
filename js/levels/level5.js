@@ -9,20 +9,20 @@ export default {
         this.game = gameEngine;
         this.currentStage = 0;
 
-        // Bit values for 8-bit integer
-        this.bitValues = [128, 64, 32, 16, 8, 4, 2, 1];
+        // Bit values for 12-bit integer
+        this.bitValues = [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
 
         // Initial state for bits (all 0)
-        this.currentBits = [0, 0, 0, 0, 0, 0, 0, 0];
+        this.currentBits = Array(12).fill(0);
 
-        // Challenge Stages
+        // Challenge Stages (Hard Mode)
         this.stages = [
-            { id: 1, target: 10 },    // 00001010
-            { id: 2, target: 45 },    // 00101101
-            { id: 3, target: 150 },   // 10010110
-            { id: 4, target: 213 },   // 11010101
-            { id: 5, target: 170 },   // 10101010
-            { id: 6, target: 255 }    // 11111111
+            { id: 1, target: 1050 },
+            { id: 2, target: 2049 },
+            { id: 3, target: 512 },
+            { id: 4, target: 4095 },
+            { id: 5, target: 1701 },
+            { id: 6, target: 3333 }
         ];
 
         this.render();
@@ -51,17 +51,18 @@ export default {
                 </div>
 
                 <!-- Bits Interface -->
-                <div style="display:flex; gap:10px; justify-content: center; flex-wrap: wrap;">
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; justify-content: center;">
                     ${this.bitValues.map((val, idx) => `
                         <div style="display:flex; flex-direction:column; align-items:center; gap: 5px;">
-                            <div style="font-size:0.8rem; color:var(--color-text-muted);">${val}</div>
+                            <div style="font-size:0.7rem; color:var(--color-text-muted); font-weight:bold;">${val}</div>
                             <button class="btn-bit" data-idx="${idx}" style="
-                                width:50px; height:60px; border-radius:8px; 
-                                border: 2px solid ${this.currentBits[idx] ? 'var(--color-success)' : 'var(--color-text-muted)'};
-                                background: ${this.currentBits[idx] ? 'rgba(0,255,100,0.2)' : 'rgba(0,0,0,0.3)'};
-                                color: ${this.currentBits[idx] ? 'var(--color-success)' : 'var(--color-text-muted)'};
+                                width:100%; height:80px; border-radius:12px; 
+                                border: 2px solid ${this.currentBits[idx] ? 'white' : 'rgba(255,255,255,0.1)'};
+                                background: ${this.currentBits[idx] ? 'var(--color-primary)' : 'rgba(0,0,0,0.3)'};
+                                color: ${this.currentBits[idx] ? 'white' : 'rgba(255,255,255,0.4)'};
                                 font-size: 1.5rem; font-family: monospace; cursor:pointer;
                                 transition: all 0.2s ease;
+                                box-shadow: ${this.currentBits[idx] ? '0 0 15px var(--color-primary-shadow)' : 'none'};
                             ">
                                 ${this.currentBits[idx]}
                             </button>

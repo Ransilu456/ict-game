@@ -153,7 +153,7 @@ export default {
             }, 1500);
         } else {
             this.game.showFeedback(this.game.getText('RES_FAIL'), 'Layer Mismatch detected. Connection unstable.');
-            this.score = Math.max(0, this.score - 50);
+            this.score = Math.max(0, this.score - 250);
             this.game.updateHUD(); // Sync score penalty
         }
     },
@@ -273,7 +273,7 @@ export default {
                     }
                 } else {
                     this.game.showFeedback(this.game.getText('RES_FAIL'), 'Protocol Incompatible with this Layer.');
-                    this.game.gameState.score -= 20;
+                    this.game.gameState.score = Math.max(0, this.game.gameState.score - 250);
                     this.game.updateHUD(); // Sync penalty
                 }
             });

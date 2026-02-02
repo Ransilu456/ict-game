@@ -9,18 +9,23 @@ export default {
         this.game = gameEngine;
         this.score = 0;
         this.installedCount = 0;
-        this.totalComponents = 3;
+        this.installedCount = 0;
+        this.totalComponents = 6;
 
         this.nodes = [
-            { id: 'web', name: this.game.getText('L9_NODE_WEB'), env: 'public', icon: 'solar:globus-linear' },
-            { id: 'db', name: this.game.getText('L9_NODE_DB'), env: 'onprem', icon: 'solar:database-linear' },
-            { id: 'cache', name: this.game.getText('L9_NODE_CACHE'), env: 'private', icon: 'solar:flash-drive-linear' }
+            { id: 'web1', name: 'Web Server Alpha', env: 'public', icon: 'solar:globus-linear' },
+            { id: 'web2', name: 'Web Server Beta', env: 'public', icon: 'solar:globus-linear' },
+            { id: 'db', name: 'Secure DB Cluster', env: 'onprem', icon: 'solar:database-linear' },
+            { id: 'cache', name: 'Global Cache', env: 'private', icon: 'solar:flash-drive-linear' },
+            { id: 'proxy', name: 'Traffic Proxy', env: 'edge', icon: 'solar:shield-up-linear' },
+            { id: 'cdn', name: 'CDN Node', env: 'edge', icon: 'solar:video-library-linear' }
         ];
 
         this.environments = [
-            { id: 'public', name: this.game.getText('L9_ENV_PUBLIC'), color: 'border-blue-500/30 bg-blue-500/5' },
-            { id: 'private', name: this.game.getText('L9_ENV_PRIVATE'), color: 'border-indigo-500/30 bg-indigo-500/5' },
-            { id: 'onprem', name: this.game.getText('L9_ENV_ONPREM'), color: 'border-slate-500/30 bg-slate-500/5' }
+            { id: 'public', name: 'Public Cloud', color: 'border-blue-500/30 bg-blue-500/5' },
+            { id: 'private', name: 'Private VNET', color: 'border-indigo-500/30 bg-indigo-500/5' },
+            { id: 'onprem', name: 'Local Datacenter', color: 'border-slate-500/30 bg-slate-500/5' },
+            { id: 'edge', name: 'Edge Gateway', color: 'border-emerald-500/30 bg-emerald-500/5' }
         ];
 
         this.render();
@@ -101,6 +106,7 @@ export default {
                     this.handleCorrectDrop(nodeId, zone);
                 } else {
                     this.game.showFeedback('DEPLOYMENT FAILURE', 'Node incompatible with selected environment latency/security policy.');
+                    this.score = Math.max(0, this.score - 250);
                 }
             });
         });

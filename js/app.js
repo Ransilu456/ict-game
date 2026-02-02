@@ -230,8 +230,8 @@ class GameEngine {
         const list = document.getElementById('mission-list');
         list.innerHTML = '';
 
-        // Config: Total Levels? We have 6 implemented.
-        const totalLevels = 6;
+        // Config: Total Levels? We have 8 implemented.
+        const totalLevels = 8;
 
         for (let i = 1; i <= totalLevels; i++) {
             const isLocked = i > this.gameState.maxLevel;

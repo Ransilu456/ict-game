@@ -99,6 +99,16 @@ export const LANG = {
     L6_Q_PREFIX: { en: "QUESTION", si: "ප්‍රශ්නය" },
     L6_BTN_NEXT: { en: "CONFIRM ANSWER", si: "පිළිතුර තහවුරු කරන්න" },
 
+    // Level 7: Cryptography
+    L7_TITLE: { en: "MISSION: DECRYPTION", si: "මෙහෙයුම: රහස් කේත අගුළු හැරීම" },
+    L7_DESC: { en: "Decrypt the message using the Caesar Cipher shift.", si: "Caesar Cipher ක්‍රමය භාවිතයෙන් පණිවිඩය කියවන්න." },
+    L7_BTN_DECRYPT: { en: "DECRYPT", si: "විශේධනය කරන්න" },
+
+    // Level 8: SQL
+    L8_TITLE: { en: "MISSION: DATABASE QUERY", si: "මෙහෙයුම: දත්ත සමුදාය" },
+    L8_DESC: { en: "Construct the correct SQL query to retrieve data.", si: "දත්ත ලබා ගැනීම සඳහා නිවැරදි SQL විධානය සකසන්න." },
+    L8_BTN_RUN: { en: "RUN QUERY", si: "විධානය ක්‍රියාත්මක කරන්න" },
+
     // Persistence & Menus
     BTN_MISSIONS: { en: "Select Mission", si: "මෙහෙයුම් තෝරන්න" },
     BTN_RESET: { en: "Reset Progress", si: "මුල සිට අරඹන්න" },

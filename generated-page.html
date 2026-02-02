@@ -1,0 +1,418 @@
+<html lang="en" class="antialiased"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICT Quest – Learn by Playing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712; /* Slate 950 */
+            color: #e2e8f0; /* Slate 200 */
+        }
+        /* Custom Scrollbar for subtle look */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155; 
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569; 
+        }
+        
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #fff;
+            margin-top: -6px;
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #334155;
+            border-radius: 2px;
+        }
+        
+        /* Custom Checkbox */
+        .custom-checkbox input:checked + div {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+        .custom-checkbox input:checked + div svg {
+            display: block;
+        }
+        
+        /* Glass morphism utilities not in standard tailwind config */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 min-h-screen flex flex-col md:flex-row overflow-hidden selection:bg-indigo-500/30">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-64 border-r border-slate-800 bg-slate-900/40 flex flex-col justify-between h-auto md:h-screen shrink-0 z-20">
+        <div>
+            <!-- Logo Area -->
+            <div class="p-6 flex items-center gap-3 border-b border-slate-800/50">
+                <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-slate-950 font-semibold tracking-tighter shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                    IQ
+                </div>
+                <div>
+                    <h1 class="text-sm font-semibold tracking-tight text-white">ICT QUEST</h1>
+                    <p class="text-xs text-slate-500">Student Portal</p>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="p-4 space-y-1">
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50 text-white text-sm font-medium border border-slate-700/50 shadow-sm">
+                    <iconify-icon icon="solar:gamepad-linear" class="text-lg"></iconify-icon>
+                    Campaign Map
+                </a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 transition-all text-sm font-medium">
+                    <iconify-icon icon="solar:users-group-two-rounded-linear" class="text-lg"></iconify-icon>
+                    Multiplayer Arena
+                </a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 transition-all text-sm font-medium">
+                    <iconify-icon icon="solar:medal-ribbons-star-linear" class="text-lg"></iconify-icon>
+                    Achievements
+                </a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 transition-all text-sm font-medium">
+                    <iconify-icon icon="solar:library-linear" class="text-lg"></iconify-icon>
+                    Knowledge Base
+                </a>
+            </nav>
+        </div>
+
+        <!-- User Stats -->
+        <div class="p-4 border-t border-slate-800/50 bg-slate-900/20">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs font-semibold border border-indigo-500/30">
+                    S1
+                </div>
+                <div class="flex-1">
+                    <div class="flex justify-between items-end mb-1">
+                        <span class="text-xs font-medium text-slate-300">Student #129</span>
+                        <span class="text-xs text-indigo-400 font-mono">Lvl 4</span>
+                    </div>
+                    <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-indigo-500 w-[75%] rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 mt-4">
+                <div class="glass-panel p-2 rounded flex flex-col items-center">
+                    <span class="text-xs text-slate-500">XP</span>
+                    <span class="text-sm font-semibold text-white tracking-tight">2,450</span>
+                </div>
+                <div class="glass-panel p-2 rounded flex flex-col items-center">
+                    <span class="text-xs text-slate-500">Rank</span>
+                    <span class="text-sm font-semibold text-white tracking-tight">#14</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+        <!-- Background Grid Effect -->
+        <div class="absolute inset-0 z-0 opacity-[0.03]" style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+        <!-- Header -->
+        <header class="h-16 border-b border-slate-800 flex items-center justify-between px-6 z-10 bg-slate-950/80 backdrop-blur-sm">
+            <div>
+                <h2 class="text-base font-semibold text-white tracking-tight">Mission Control</h2>
+                <div class="flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                    <span class="text-xs text-emerald-500 font-medium">System Online</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="p-2 text-slate-400 hover:text-white transition-colors relative">
+                    <iconify-icon icon="solar:bell-linear" class="text-xl"></iconify-icon>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-slate-950"></span>
+                </button>
+                <div class="h-8 w-[1px] bg-slate-800"></div>
+                <button class="flex items-center gap-2 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-md transition-all border border-slate-700">
+                    <iconify-icon icon="solar:settings-linear"></iconify-icon>
+                    Settings
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Grid -->
+        <div class="flex-1 overflow-auto p-6 z-10">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Left Column: Level Map (Grid) -->
+                <div class="lg:col-span-7 space-y-6">
+                    
+                    <!-- Section Header -->
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-semibold text-slate-200">Active Modules</h3>
+                        <div class="flex gap-1">
+                            <span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Core</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full bg-slate-900 text-slate-600 border border-slate-800">Elective</span>
+                        </div>
+                    </div>
+
+                    <!-- Level Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        
+                        <!-- Level 1: Completed -->
+                        <div class="group glass-panel rounded-xl p-5 hover:border-slate-600 transition-all cursor-pointer relative overflow-hidden">
+                            <div class="absolute top-0 right-0 p-3 opacity-100 transition-opacity">
+                                <iconify-icon icon="solar:check-circle-bold" class="text-emerald-500 text-xl"></iconify-icon>
+                            </div>
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20">
+                                    <iconify-icon icon="solar:cpu-linear" class="text-xl"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-medium text-white group-hover:text-emerald-400 transition-colors">Hardware Architect</h4>
+                                    <p class="text-xs text-slate-500 mt-1">CPU, RAM, &amp; Storage logic</p>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                <div class="bg-emerald-500 h-full w-full"></div>
+                            </div>
+                        </div>
+
+                        <!-- Level 2: Completed -->
+                        <div class="group glass-panel rounded-xl p-5 hover:border-slate-600 transition-all cursor-pointer relative overflow-hidden">
+                             <div class="absolute top-0 right-0 p-3 opacity-100 transition-opacity">
+                                <iconify-icon icon="solar:check-circle-bold" class="text-emerald-500 text-xl"></iconify-icon>
+                            </div>
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20">
+                                    <iconify-icon icon="solar:server-square-linear" class="text-xl"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-medium text-white group-hover:text-indigo-400 transition-colors">OS Operator</h4>
+                                    <p class="text-xs text-slate-500 mt-1">Memory management tasks</p>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full w-full"></div>
+                            </div>
+                        </div>
+
+                         <!-- Level 3: Active -->
+                         <div class="group glass-panel rounded-xl p-5 border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.1)] relative overflow-hidden ring-1 ring-blue-500/20">
+                            <div class="absolute top-3 right-3 flex gap-1">
+                                <span class="animate-pulse w-2 h-2 rounded-full bg-blue-500"></span>
+                            </div>
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-lg bg-blue-500 text-white flex items-center justify-center shadow-lg shadow-blue-500/20">
+                                    <iconify-icon icon="solar:shield-warning-linear" class="text-xl"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-white">Cyber Sentinel</h4>
+                                    <p class="text-xs text-blue-200/70 mt-1">Phishing &amp; Encryption</p>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center text-xs text-slate-400 mb-2">
+                                <span>Progress</span>
+                                <span class="text-blue-400">45%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                <div class="bg-blue-500 h-full w-[45%]"></div>
+                            </div>
+                            <button class="mt-4 w-full py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium rounded-lg transition-colors shadow-lg shadow-blue-900/20">
+                                Resume Mission
+                            </button>
+                        </div>
+
+                        <!-- Level 4: Locked -->
+                        <div class="group glass-panel rounded-xl p-5 border-slate-800 opacity-60 grayscale cursor-not-allowed">
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-slate-500 border border-slate-700">
+                                    <iconify-icon icon="solar:lock-keyhole-linear" class="text-xl"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-medium text-slate-400">Network Engineer</h4>
+                                    <p class="text-xs text-slate-600 mt-1">Packet routing challenge</p>
+                                </div>
+                            </div>
+                             <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                <div class="bg-slate-700 h-full w-0"></div>
+                            </div>
+                        </div>
+
+                         <!-- Level 5: Locked -->
+                         <div class="group glass-panel rounded-xl p-5 border-slate-800 opacity-60 grayscale cursor-not-allowed">
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-slate-500 border border-slate-700">
+                                    <iconify-icon icon="solar:lock-keyhole-linear" class="text-xl"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-medium text-slate-400">Code Breaker</h4>
+                                    <p class="text-xs text-slate-600 mt-1">Python Logic Puzzles</p>
+                                </div>
+                            </div>
+                             <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                <div class="bg-slate-700 h-full w-0"></div>
+                            </div>
+                        </div>
+
+                         <!-- Level 6: Locked -->
+                         <div class="group glass-panel rounded-xl p-5 border-slate-800 opacity-60 grayscale cursor-not-allowed">
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-slate-500 border border-slate-700">
+                                    <iconify-icon icon="solar:lock-keyhole-linear" class="text-xl"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-medium text-slate-400">Data Keeper</h4>
+                                    <p class="text-xs text-slate-600 mt-1">Database &amp; SQL basics</p>
+                                </div>
+                            </div>
+                             <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                <div class="bg-slate-700 h-full w-0"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Right Column: Active Game Panel (Simulation) -->
+                <div class="lg:col-span-5 flex flex-col h-full">
+                    
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-sm font-semibold text-slate-200">Current Simulation</h3>
+                        <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
+                            <iconify-icon icon="solar:clock-circle-linear"></iconify-icon>
+                            <span>04:12 remaining</span>
+                        </div>
+                    </div>
+
+                    <!-- Game Interface Card -->
+                    <div class="flex-1 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden flex flex-col shadow-2xl relative">
+                        <!-- Game Header -->
+                        <div class="bg-slate-950/50 p-4 border-b border-slate-800 flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <iconify-icon icon="solar:shield-warning-bold" class="text-orange-500"></iconify-icon>
+                                <span class="text-xs font-semibold text-slate-200 tracking-wide uppercase">Scenario: Phishing Attack</span>
+                            </div>
+                            <div class="text-xs text-slate-500">XP Reward: +150</div>
+                        </div>
+
+                        <!-- Game Content: Email Simulation -->
+                        <div class="flex-1 p-6 overflow-y-auto bg-slate-900">
+                            
+                            <div class="mb-4 bg-blue-500/10 border border-blue-500/20 p-3 rounded-lg flex gap-3 items-start">
+                                <iconify-icon icon="solar:info-circle-linear" class="text-blue-400 text-lg shrink-0 mt-0.5"></iconify-icon>
+                                <p class="text-xs text-blue-200 leading-relaxed">
+                                    <strong class="font-semibold">Objective:</strong> Analyze the incoming email below. Identify suspicious elements and decide if it's safe to click the link.
+                                </p>
+                            </div>
+
+                            <!-- Mock Email -->
+                            <div class="bg-white rounded-lg text-slate-900 overflow-hidden shadow-lg border border-slate-700">
+                                <div class="bg-slate-100 p-3 border-b border-slate-200 flex justify-between items-start">
+                                    <div>
+                                        <div class="text-xs font-bold text-slate-800">Security Alert &lt;admin@goggle-security-update.com&gt;</div>
+                                        <div class="text-xs text-slate-500 mt-0.5">To: student@school.edu</div>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400">10:42 AM</div>
+                                </div>
+                                <div class="p-4">
+                                    <p class="text-xs font-semibold mb-2">Urgent: Your account password has expired.</p>
+                                    <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                                        Dear User,<br><br>
+                                        Your account has been compromised. You must reset your password immediately to avoid data loss.
+                                    </p>
+                                    <div class="bg-red-600 text-white text-xs font-bold py-2 px-4 rounded inline-block cursor-pointer hover:bg-red-700 mb-4">
+                                        Reset Password Now
+                                    </div>
+                                    <p class="text-[10px] text-slate-400">
+                                        Best Regards,<br>IT Support Team
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Interactive Controls -->
+                            <div class="mt-6 space-y-4">
+                                <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Analysis Tools</p>
+                                
+                                <div class="grid grid-cols-1 gap-2">
+                                    <label class="custom-checkbox flex items-center gap-3 p-3 rounded-lg border border-slate-800 bg-slate-950/50 cursor-pointer hover:border-slate-700 transition-colors">
+                                        <input type="checkbox" class="hidden">
+                                        <div class="w-4 h-4 rounded border border-slate-600 flex items-center justify-center transition-colors">
+                                            <svg class="w-2.5 h-2.5 text-white hidden pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                                        </div>
+                                        <span class="text-xs text-slate-300">Check Sender Address</span>
+                                    </label>
+
+                                    <label class="custom-checkbox flex items-center gap-3 p-3 rounded-lg border border-slate-800 bg-slate-950/50 cursor-pointer hover:border-slate-700 transition-colors">
+                                        <input type="checkbox" class="hidden">
+                                        <div class="w-4 h-4 rounded border border-slate-600 flex items-center justify-center transition-colors">
+                                            <svg class="w-2.5 h-2.5 text-white hidden pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                                        </div>
+                                        <span class="text-xs text-slate-300">Hover over Link URL</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Game Footer Actions -->
+                        <div class="p-4 bg-slate-950 border-t border-slate-800 grid grid-cols-2 gap-3">
+                            <button class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-emerald-600/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-600/20 transition-all text-xs font-medium">
+                                <iconify-icon icon="solar:shield-check-linear" class="text-lg"></iconify-icon>
+                                Mark as Safe
+                            </button>
+                            <button class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-rose-600 hover:bg-rose-500 text-white border border-rose-500 transition-all text-xs font-medium shadow-lg shadow-rose-900/20">
+                                <iconify-icon icon="solar:danger-triangle-linear" class="text-lg"></iconify-icon>
+                                Report Phishing
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Overlay/Modal for "Mission Success" visual (Hidden by default logic, shown here for design completeness as a floating element) -->
+    <!-- This represents what happens after a correct choice -->
+    <div class="hidden absolute bottom-6 right-6 z-50 animate-bounce">
+         <div class="bg-slate-900 border border-emerald-500/30 p-4 rounded-xl shadow-2xl flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-slate-900">
+                <iconify-icon icon="solar:star-bold" class="text-xl"></iconify-icon>
+            </div>
+            <div>
+                <h5 class="text-sm font-semibold text-white">Logic Upgraded!</h5>
+                <p class="text-xs text-slate-400">+50 XP Earned</p>
+            </div>
+         </div>
+    </div>
+
+
+</body></html>

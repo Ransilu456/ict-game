@@ -30,7 +30,7 @@ export default class Sidebar {
                         </button>
 
                         <div class="pt-4 mt-4 border-t border-slate-800/50">
-                            <div class="px-3 mb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Language</div>
+                            <div class="px-3 mb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest" data-key="LBL_LANGUAGE">Language</div>
                             <div class="flex gap-2 px-3">
                                 <button id="lang-en" class="lang-btn text-xs font-mono px-2 py-1 rounded border border-slate-700 hover:bg-slate-800 text-slate-400 hover:text-white transition-all">EN</button>
                                 <button id="lang-si" class="lang-btn text-xs font-mono px-2 py-1 rounded border border-slate-700 hover:bg-slate-800 text-slate-400 hover:text-white transition-all">සිං</button>

@@ -250,7 +250,7 @@ class GameEngine {
             }
             this.gameState.playerName = name;
             // Admin Check
-            if (name.toUpperCase() === 'ADMIN') this.gameState.maxLevel = 8;
+            if (name.toUpperCase() === 'ADMIN') this.gameState.maxLevel = 15;
         }
 
         if (!skipCheck) this.gameState.currentLevel = this.gameState.maxLevel;
@@ -295,13 +295,15 @@ class GameEngine {
     renderLevelSelect() {
         const list = document.getElementById('mission-list');
         list.innerHTML = '';
-        const totalLevels = 10;
+        const totalLevels = 15;
 
         const categories = [
-            { name: 'Core Architecture', levels: [1, 5, 4], icon: 'solar:cpu-bold', color: 'text-indigo-400' },
-            { name: 'Network & Code', levels: [3, 2, 8, 9], icon: 'solar:globus-bold', color: 'text-blue-400' },
-            { name: 'Logic & Security', levels: [6, 7, 10], icon: 'solar:shield-keyhole-bold', color: 'text-emerald-400' }
+            { name: 'Core Architecture', levels: [1, 5, 4, 15], icon: 'solar:cpu-bold', color: 'text-indigo-400' },
+            { name: 'Network & Code', levels: [3, 2, 8, 9, 11, 13, 14], icon: 'solar:globus-bold', color: 'text-blue-400' },
+            { name: 'Logic & Security', levels: [6, 7, 10, 12], icon: 'solar:shield-keyhole-bold', color: 'text-emerald-400' }
         ];
+
+
 
         categories.forEach(cat => {
             const catHeader = document.createElement('div');
@@ -383,7 +385,7 @@ class GameEngine {
 
     nextLevel() {
         this.gameState.currentLevel++;
-        if (this.gameState.currentLevel > 8) {
+        if (this.gameState.currentLevel > 15) {
             this.showFeedback("CAMPAIGN COMPLETE", "You have completed all missions.");
             this.showScreen('select');
             return;

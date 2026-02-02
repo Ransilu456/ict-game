@@ -26,6 +26,7 @@ export const LANG = {
     LBL_LEVEL: { en: "LEVEL", si: "අදියර" },
     LBL_SCORE: { en: "SCORE", si: "ලකුණු" },
     LBL_TIME: { en: "TIME", si: "කාලය" },
+    LBL_LANGUAGE: { en: "Language", si: "භාෂාව" },
 
     // Results Screen
     RES_TITLE: { en: "Mission Status", si: "මෙහෙයුමේ තත්වය" },
@@ -107,6 +108,8 @@ export const LANG = {
     L7_HINT_BODY: { en: "1. The 'Intercepted Data' is scrambled.\n2. Use the slider to shift letters back (e.g. A->B is Shift 1).\n3. Find the key where the text makes sense.\n4. Click Decrypt.", si: "1. දත්ත වෙනස් කර ඇත.\n2. ස්ලයිඩරය භාවිතයෙන් අකුරු මාරු කරන්න.\n3. අර්ථවත් වචනයක් ලැබෙන පරිදි සකසන්න.\n4. විශේධනය ක්ලික් කරන්න." },
 
     // Level 8: SQL
+    L8_TITLE: { en: "MISSION: DATABASE QUERY", si: "මෙහෙයුම: දත්ත සමුදාය" },
+    L8_DESC: { en: "Construct the correct SQL query to retrieve data.", si: "දත්ත ලබා ගැනීම සඳහා නිවැරදි SQL විධානය සකසන්න." },
     L8_BTN_RUN: { en: "RUN QUERY", si: "විධානය ක්‍රියාත්මක කරන්න" },
 
     // Level 9: Cloud
@@ -125,6 +128,42 @@ export const LANG = {
     L10_POLICY_HEADER: { en: "ACTIVE POLICY", si: "ක්‍රියාකාරී නීති" },
     L10_ALLOW: { en: "ALLOW", si: "අවසර දෙන්න" },
     L10_DROP: { en: "DROP", si: "ප්‍රතික්ෂේප කරන්න" },
+
+    // Level 11: IoT
+    L11_TITLE: { en: "MISSION: SMART NETWORK", si: "මෙහෙයුම: ස්මාර්ට් ජාලය (IoT)" },
+    L11_DESC: { en: "Link the sensors to the central gateway to activate the smart system.", si: "ස්මාර්ට් පද්ධතිය සක්‍රීය කිරීම සඳහා සංවේදක මධ්‍යම ඒකකය වෙත සම්බන්ධ කරන්න." },
+    L11_HUB: { en: "IoT Gateway", si: "IoT ද්වාරය" },
+    L11_SENSOR_TEMP: { en: "Temp Sensor", si: "උෂ්ණත්ව සංවේදකය" },
+    L11_SENSOR_LIGHT: { en: "Light Sensor", si: "ආලෝක සංවේදකය" },
+    L11_SENSOR_MOTION: { en: "Motion Sensor", si: "චලන සංවේදකය" },
+
+    // Level 12: AI
+    L12_TITLE: { en: "MISSION: NEURAL TRAINING", si: "මෙහෙයුම: කෘතිම බුද්ධිය (AI)" },
+    L12_DESC: { en: "Classify incoming data packets as Signal or Noise for the AI model.", si: "කෘතිම බුද්ධි ආකෘතිය සඳහා දත්ත 'සංඥා' (Signal) හෝ 'ශබ්ද' (Noise) ලෙස වර්ගීකරණය කරන්න." },
+    L12_SIGNAL: { en: "SIGNAL", si: "සංඥාව (Signal)" },
+    L12_NOISE: { en: "NOISE", si: "ශබ්දය (Noise)" },
+
+    // Level 13: Subnetting
+    L13_TITLE: { en: "MISSION: ADVANCED SUBNETTING", si: "මෙහෙයුම: උප-ජාලකරණය (Subnetting)" },
+    L13_DESC: { en: "Analyze the CIDR notation to identify the Network and Broadcast IDs.", si: "CIDR ක්‍රමය භාවිතයෙන් ජාල සහ විකාශන අංක හඳුනාගන්න." },
+    L13_IP_LBL: { en: "ASSIGNED IP:", si: "ලැබුණු IP ලිපිනය:" },
+    L13_MASK_LBL: { en: "SUBNET MASK:", si: "උප-ජාල ආවරණය:" },
+    L13_NETID_LBL: { en: "NETWORK ID:", si: "ජාල අංකය (Network ID):" },
+    L13_BC_LBL: { en: "BROADCAST:", si: "විකාශන අංකය (Broadcast):" },
+
+    // Level 14: History & Ports
+    L14_TITLE: { en: "MISSION: TRANSMISSION HISTORY", si: "මෙහෙයුම: සන්නිවේදන ඉතිහාසය" },
+    L14_DESC: { en: "Sequence the evolution of networking and match standard service ports.", si: "ජාලකරණ ඉතිහාසය පෙළගස්වා සේවා තොටවල් (Ports) ගැලපෙන්න." },
+    L14_PORT_LBL: { en: "CORE PORTS", si: "ප්‍රධාන පෝට් අංක" },
+    L14_HIST_LBL: { en: "TIMELINE", si: "කාලරාමුව" },
+
+    // Level 15: Media Hardware
+    L15_TITLE: { en: "MISSION: MULTIMEDIA ARCHITECTURE", si: "මෙහෙයුම: බහුමාධ්‍ය දෘඩාංග" },
+    L15_DESC: { en: "Assemble the digital imaging system and classify media compression codecs.", si: "ඩිජිටල් රූප පද්ධතිය එකලස් කර මාධ්‍ය කේතක (Codecs) වර්ගීකරණය කරන්න." },
+    L15_ITEM_SENSOR: { en: "Image Sensor", si: "රූප සංවේදකය" },
+    L15_ITEM_DSP: { en: "Processor (DSP)", si: "සකසනය (DSP)" },
+    L15_ITEM_STORAGE: { en: "Flash Storage", si: "ෆ්ලෑෂ් මතකය" },
+    L15_CODEC_LBL: { en: "CODEC BANK", si: "කේතක බැංකුව" },
 
     // Sidebar & Menus
     BTN_MISSIONS: { en: "Select Mission", si: "මෙහෙයුම් තෝරන්න" },

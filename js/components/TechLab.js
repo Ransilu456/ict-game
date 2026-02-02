@@ -3,6 +3,7 @@
  * Displays interactive info about hardware devices and signals.
  */
 
+import LabSimulation from './techlab/LabSimulation.js';
 import OpticsLab from './techlab/OpticsLab.js';
 import SignalLab from './techlab/SignalLab.js';
 import NetworkLab from './techlab/NetworkLab.js';
@@ -11,6 +12,7 @@ import FiberLab from './techlab/FiberLab.js';
 import ThermalLab from './techlab/ThermalLab.js';
 import HDMILab from './techlab/HDMILab.js';
 import CameraSwitcher from './techlab/CameraSwitcher.js';
+import WiFiLab from './techlab/WiFiLab.js';
 
 export default class TechLab {
     constructor(game) {
@@ -146,6 +148,15 @@ export default class TechLab {
                 desc: 'The core of a live broadcast studio for switching between multiple video sources.',
                 how: 'Mixes multiple SDI/HDMI inputs and manages Preview/Program buses for seamless live cuts.',
                 extra: 'Supports hardware-accelerated transitions and upstream keyers.'
+            },
+            {
+                id: 'wifi-router',
+                category: 'net',
+                title: 'MIMO WiFi 6 Router',
+                icon: 'solar:wi-fi-bold',
+                desc: 'A wireless access point that broadcasts internet data via radio waves.',
+                how: 'Converts wired Ethernet data into RF signals; uses Multiple Input Multiple Output (MIMO) to serve many devices at once.',
+                extra: 'Operates on 2.4GHz for distance and 5GHz for short-range speed.'
             }
         ];
     }
@@ -316,7 +327,8 @@ export default class TechLab {
             'switch': NetworkLab,
             'thermal-cam': ThermalLab,
             'hdmi': HDMILab,
-            'switcher': CameraSwitcher
+            'switcher': CameraSwitcher,
+            'wifi-router': WiFiLab
         };
 
         const LabClass = labMap[id];

@@ -102,7 +102,8 @@ export default {
 
     render() {
         this.container.innerHTML = `
-            <div class="flex flex-col md:flex-row h-full gap-6 animate-fade-in">
+            <div class="flex flex-col md:flex-row gap-6 animate-fade-in">
+
                 
                 <!-- Left Panel: Navigation & Info -->
                 <div class="w-full md:w-1/3 flex flex-col gap-4">
@@ -135,7 +136,8 @@ export default {
                 <div class="w-full md:w-2/3 flex flex-col gap-4">
                     
                     <!-- Editor Window -->
-                    <div class="glass-panel rounded-xl border border-slate-700 shadow-xl overflow-hidden flex flex-col flex-1 relative">
+                <div class="glass-panel rounded-xl border border-slate-700 shadow-xl flex flex-col flex-1 relative">
+
                         <!-- Toolbar -->
                         <div class="bg-slate-900 border-b border-slate-800 px-4 py-2 flex items-center gap-2">
                             <div class="flex gap-1.5">

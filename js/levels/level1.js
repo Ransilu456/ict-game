@@ -18,7 +18,7 @@ export default {
 
     render() {
         this.container.innerHTML = `
-            <div class="flex flex-col h-full gap-6 animate-fade-in">
+            <div class="flex flex-col gap-6 animate-fade-in">
                 
                 <!-- Header -->
                 <div class="text-center">
@@ -26,7 +26,7 @@ export default {
                     <p class="text-slate-400 max-w-2xl mx-auto">${this.game.getText('L1_DESC')}</p>
                 </div>
 
-                <div class="flex flex-col lg:flex-row gap-8 flex-1 overflow-hidden">
+                <div class="flex flex-col lg:flex-row gap-8">
                     
                     <!-- Parts Tray -->
                     <div class="w-full lg:w-1/3 flex flex-col gap-4">

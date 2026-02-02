@@ -36,7 +36,8 @@ export default {
             <h2>${this.game.getText('L5_TITLE')}</h2>
             <p>${this.game.getText('L5_DESC')}</p>
 
-            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap: 2rem;">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap: 2rem;">
+
                 
                 <!-- Target Display -->
                 <div style="

@@ -65,7 +65,8 @@ export default {
         // Ensure inputs wrap if screen is small.
 
         this.container.innerHTML = `
-            <div class="flex flex-col items-center justify-center h-full w-full gap-4 md:gap-8 animate-fade-in relative z-10 p-2 md:p-6 overflow-y-auto">
+            <div class="flex flex-col items-center justify-center w-full gap-4 md:gap-8 animate-fade-in relative z-10 p-2 md:p-6">
+
                 
                 <div class="text-center shrink-0">
                     <h2 class="text-2xl md:text-3xl font-bold text-white mb-1 md:mb-2">${this.game.getText('L4_TITLE')}</h2>

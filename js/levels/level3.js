@@ -31,7 +31,8 @@ export default {
     /* PHASE 1: OSI SORT */
     renderPhase1() {
         this.container.innerHTML = `
-            <div class="flex flex-col h-full items-center justify-center animate-fade-in gap-6">
+            <div class="flex flex-col items-center justify-center animate-fade-in gap-6">
+
                 
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-white mb-2">${this.game.getText('L3_TITLE')}</h2>
@@ -166,7 +167,8 @@ export default {
         ];
 
         this.container.innerHTML = `
-             <div class="flex flex-col h-full items-center justify-center animate-fade-in gap-8">
+             <div class="flex flex-col items-center justify-center animate-fade-in gap-8">
+
                 
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-white mb-2">${this.game.getText('L3_PROTO_TITLE')}</h2>

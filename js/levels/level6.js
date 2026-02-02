@@ -61,14 +61,16 @@ export default {
 
     render() {
         this.container.innerHTML = `
-            <div class="flex flex-col h-full items-center justify-center animate-fade-in max-w-4xl mx-auto gap-8">
+            <div class="flex flex-col items-center justify-center animate-fade-in max-w-4xl mx-auto gap-8">
+
                 
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-white mb-2">${this.game.getText('L6_TITLE')}</h2>
                     <p class="text-slate-400">${this.game.getText('L6_DESC')}</p>
                 </div>
 
-                <div class="w-full glass-panel p-8 rounded-2xl border border-indigo-500/30 shadow-2xl bg-slate-900/40 relative overflow-hidden" id="quiz-card">
+                <div class="w-full glass-panel p-8 rounded-2xl border border-indigo-500/30 shadow-2xl bg-slate-900/40 relative" id="quiz-card">
+
                     
                     <!-- Progress Bar -->
                     <div class="absolute top-0 left-0 w-full h-1 bg-slate-800">

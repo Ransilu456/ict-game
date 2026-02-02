@@ -41,7 +41,8 @@ export default {
         this.currentSlots = []; // Reset current attempt
 
         this.container.innerHTML = `
-            <div class="flex flex-col h-full max-w-4xl mx-auto space-y-6 animate-fade-in p-2">
+            <div class="flex flex-col max-w-4xl mx-auto space-y-6 animate-fade-in p-2">
+
                 
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-white tracking-wider mb-2">${this.game.getText('L8_TITLE')}</h2>

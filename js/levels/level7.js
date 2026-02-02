@@ -68,7 +68,8 @@ export default {
         // Let's just put it plainly visible for the first level or always visible in a compact way.
 
         this.container.innerHTML = `
-            <div class="flex flex-col items-center h-full w-full max-w-5xl mx-auto space-y-6 animate-fade-in py-4 md:py-8 overflow-y-auto px-4">
+            <div class="flex flex-col items-center w-full max-w-5xl mx-auto space-y-6 animate-fade-in py-4 md:py-8 px-4">
+
                 
                 <div class="space-y-2 text-center shrink-0">
                     <h2 class="text-2xl md:text-3xl font-bold text-white tracking-wider">${this.game.getText('L7_TITLE')}</h2>
@@ -86,7 +87,8 @@ export default {
                 </div>` : ''}
 
                 <!-- Decryption Tool -->
-                <div class="w-full glass-panel p-6 md:p-10 rounded-2xl border border-indigo-500/30 shadow-2xl relative overflow-hidden bg-slate-900/40 shrink-0">
+                <div class="w-full glass-panel p-6 md:p-10 rounded-2xl border border-indigo-500/30 shadow-2xl relative bg-slate-900/40 shrink-0">
+
                     <div class="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-rose-500 to-transparent left-0 opacity-50"></div>
                     
                     <div class="flex flex-col md:flex-row gap-8 items-center justify-center">

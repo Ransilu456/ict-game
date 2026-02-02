@@ -278,6 +278,12 @@ class GameEngine {
                 return;
             }
             this.gameState.playerName = name;
+
+            // ADMIN HACK
+            if (name.toUpperCase() === 'ADMIN' || name.toUpperCase() === 'SUDO') {
+                this.gameState.maxLevel = 8;
+                console.log('*** ADMIN ACCESS GRANTED: ALL LEVELS UNLOCKED ***');
+            }
         }
 
         // Check if level was set via menu, else continue from max?

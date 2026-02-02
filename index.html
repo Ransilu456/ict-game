@@ -1,17 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" class="antialiased">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ICT Quest – Learn by Playing</title>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <!-- Iconify -->
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <!-- Custom Styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom Style -->
     <link rel="stylesheet" href="style.css">
 
     <script>
@@ -32,253 +36,166 @@
     </script>
 </head>
 
-<body
-    class="bg-slate-950 text-slate-200 min-h-screen flex flex-col md:flex-row overflow-hidden selection:bg-indigo-500/30">
+<body class="bg-slate-950 text-slate-200 min-h-screen selection:bg-indigo-500/30">
+    <!-- Roots for Components -->
+    <div id="app-root" class="flex h-screen w-full overflow-hidden relative">
 
-    <!-- Sidebar Navigation -->
-    <aside
-        class="w-full md:w-64 border-r border-slate-800 bg-slate-900/40 flex flex-col justify-between h-auto md:h-screen shrink-0 z-20 transition-all duration-300">
-        <div>
-            <!-- Logo Area -->
-            <div class="p-6 flex items-center gap-3 border-b border-slate-800/50">
-                <div
-                    class="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-slate-950 font-semibold tracking-tighter shadow-[0_0_15px_rgba(255,255,255,0.2)]">
-                    IQ
-                </div>
-                <div>
-                    <h1 class="text-sm font-semibold tracking-tight text-white" data-key="INTRO_TITLE_TOP">ICT QUEST
-                    </h1>
-                    <p class="text-xs text-slate-500" data-key="INTRO_TITLE_SUB">Cyber City Portal</p>
-                </div>
-            </div>
+        <!-- Landing Page will be injected here if active, covering everything -->
+        <div id="landing-container" class="absolute inset-0 z-50"></div>
 
-            <!-- Navigation Links -->
-            <nav class="p-4 space-y-1">
-                <button onclick="game.showScreen('select')"
-                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50 text-white text-sm font-medium border border-slate-700/50 shadow-sm hover:bg-slate-800 transition-all text-left">
-                    <iconify-icon icon="solar:gamepad-linear" class="text-lg"></iconify-icon>
-                    <span data-key="MENU_TITLE_SELECT">Campaign Map</span>
-                </button>
-                <button onclick="game.showScreen('intro')"
-                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 transition-all text-sm font-medium text-left">
-                    <iconify-icon icon="solar:user-circle-linear" class="text-lg"></iconify-icon>
-                    <span data-key="MENU_TITLE_PROFILE">Profile / Login</span>
-                </button>
-                <!-- Language Toggle -->
-                <div class="pt-4 mt-4 border-t border-slate-800/50">
-                    <div class="flex gap-2 px-3">
-                        <button onclick="setLang('en')"
-                            class="text-xs font-mono px-2 py-1 rounded border border-slate-700 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">EN</button>
-                        <button onclick="setLang('si')"
-                            class="text-xs font-mono px-2 py-1 rounded border border-slate-700 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">සිං</button>
-                    </div>
-                </div>
-            </nav>
-        </div>
+        <!-- Sidebar (Injected) -->
+        <div id="sidebar-container" class="shrink-0 z-20"></div>
 
-        <!-- User Stats -->
-        <div class="p-4 border-t border-slate-800/50 bg-slate-900/20" id="user-stats-panel" style="display:none;">
-            <!-- Hidden until login -->
-            <div class="flex items-center gap-3 mb-3">
-                <div
-                    class="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs font-semibold border border-indigo-500/30">
-                    <span data-key="SB_ID">ID</span>
-                </div>
-                <div class="flex-1">
-                    <div class="flex justify-between items-end mb-1">
-                        <span class="text-xs font-medium text-slate-300" id="hud-player-name">Agent</span>
-                        <span class="text-xs text-indigo-400 font-mono" id="hud-level-sm">Lvl 1</span>
-                    </div>
-                    <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                        <div class="h-full bg-indigo-500 w-[0%]" id="hud-xp-bar"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-2 mt-4">
-                <div class="glass-panel p-2 rounded flex flex-col items-center">
-                    <span class="text-xs text-slate-500" data-key="SB_XP">XP</span>
-                    <span class="text-sm font-semibold text-white tracking-tight" id="hud-xp-val">0</span>
-                </div>
-                <div class="glass-panel p-2 rounded flex flex-col items-center">
-                    <span class="text-xs text-slate-500" data-key="SB_SCORE">Score</span>
-                    <span class="text-sm font-semibold text-white tracking-tight" id="hud-score-val">0</span>
-                </div>
-            </div>
-        </div>
-    </aside>
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col h-full relative z-10">
 
-    <!-- Main Content Area -->
-    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
-        <!-- Background Grid Effect -->
-        <div class="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
-            style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 40px 40px;">
-        </div>
+            <!-- Header (Injected) -->
+            <div id="header-container"></div>
 
-        <!-- Header -->
-        <header
-            class="h-16 border-b border-slate-800 flex items-center justify-between px-6 z-10 bg-slate-950/80 backdrop-blur-sm shrink-0">
-            <div>
-                <h2 class="text-base font-semibold text-white tracking-tight" id="header-title"
-                    data-key="INTRO_TITLE_TOP">Mission Control</h2>
-                <div class="flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
-                    <span class="text-xs text-emerald-500 font-medium">System Online</span>
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <button onclick="game.togglePause()"
-                    class="p-2 text-slate-400 hover:text-white transition-colors relative" title="Pause Game">
-                    <iconify-icon icon="solar:pause-circle-linear" class="text-xl"></iconify-icon>
-                </button>
-            </div>
-        </header>
+            <!-- Screens Container -->
+            <div id="screens-container" class="flex-1 relative overflow-hidden">
 
-        <!-- Content Grid (Pages) -->
-        <div class="flex-1 overflow-hidden relative z-10">
-
-            <!-- PAGE: INTRO / LOGIN -->
-            <div id="intro-screen"
-                class="absolute inset-0 flex flex-col items-center justify-center p-6 bg-slate-950 z-50 transition-opacity duration-500">
-                <div
-                    class="max-w-md w-full glass-panel p-8 rounded-2xl border border-slate-800 text-center relative overflow-hidden">
+                <!-- Screen: Intro / Login -->
+                <div id="intro-screen"
+                    class="absolute inset-0 flex flex-col items-center justify-center p-6 bg-slate-950 z-30 transition-opacity hidden">
                     <div
-                        class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent">
-                    </div>
-
-                    <div class="mb-6">
+                        class="max-w-md w-full glass-panel p-8 rounded-2xl border border-slate-800 text-center relative overflow-hidden">
                         <div
-                            class="w-16 h-16 bg-slate-900 rounded-2xl mx-auto flex items-center justify-center text-2xl mb-4 border border-slate-800 shadow-[0_0_30px_rgba(79,70,229,0.15)]">
-                            🚀
-                        </div>
-                        <h2 class="text-2xl font-bold text-white mb-2" data-key="INTRO_TITLE_TOP">ICT QUEST</h2>
-                        <p class="text-slate-400 text-sm" data-key="INTRO_DESC">Initialize your avatar to enter the
-                            simulation.</p>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div>
-                            <input type="text" id="player-name"
-                                class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-center tracking-wider"
-                                placeholder="ENTER AGENT NAME" data-key-placeholder="PLACEHOLDER_NAME"
-                                autocomplete="off" maxlength="15">
+                            class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent">
                         </div>
 
-                        <button id="btn-start"
-                            class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-lg transition-all shadow-lg shadow-indigo-900/20 flex items-center justify-center gap-2">
-                            <span data-key="BTN_START">Connect to Server</span>
-                            <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
-                        </button>
-
-                        <button id="btn-missions"
-                            class="w-full bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 rounded-lg transition-all border border-slate-700 hidden">
-                            <span data-key="BTN_MISSIONS">Select Mission</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PAGE: LEVEL SELECT -->
-            <div id="select-screen" class="absolute inset-0 overflow-auto p-6 hidden bg-slate-950">
-                <div class="max-w-7xl mx-auto">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg font-semibold text-slate-200 flex items-center gap-2">
-                            <iconify-icon icon="solar:map-point-wave-linear" class="text-indigo-400"></iconify-icon>
-                            <span data-key="MENU_TITLE_SELECT">Campaign Map</span>
-                        </h3>
-                    </div>
-
-                    <!-- Level Grid Container -->
-                    <div id="mission-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        <!-- Levels injected via JS -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- PAGE: GAMEPLAY (The "Active" Level) -->
-            <div id="game-screen" class="absolute inset-0 overflow-auto p-6 hidden flex flex-col">
-                <div class="max-w-7xl mx-auto w-full h-full flex flex-col gap-6">
-
-                    <!-- Top Info Bar (Level Specific) -->
-                    <div
-                        class="flex items-center justify-between bg-slate-900/50 border border-slate-800 p-4 rounded-xl shrink-0">
-                        <div class="flex items-center gap-4">
-                            <div class="flex flex-col">
-                                <span class="text-xs text-slate-500 uppercase tracking-widest"
-                                    data-key="LBL_LEVEL">LEVEL</span>
-                                <span class="text-xl font-bold text-white font-mono" id="hud-level">01</span>
+                        <div class="mb-6">
+                            <div
+                                class="w-16 h-16 bg-slate-900 rounded-2xl mx-auto flex items-center justify-center text-2xl mb-4 border border-slate-800 shadow-[0_0_30px_rgba(79,70,229,0.15)]">
+                                🚀
                             </div>
-                            <div class="h-8 w-px bg-slate-800"></div>
-                            <div class="flex flex-col">
+                            <h2 class="text-2xl font-bold text-white mb-2" data-key="INTRO_TITLE_TOP">ICT QUEST</h2>
+                            <p class="text-slate-400 text-sm" data-key="INTRO_DESC">Initialize your avatar to enter the
+                                simulation.</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <input type="text" id="player-name"
+                                    class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-center tracking-wider"
+                                    placeholder="ENTER AGENT NAME" data-key-placeholder="PLACEHOLDER_NAME"
+                                    autocomplete="off" maxlength="15">
+                            </div>
+
+                            <button id="btn-start"
+                                class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-lg transition-all shadow-lg shadow-indigo-900/20 flex items-center justify-center gap-2">
+                                <span data-key="BTN_START">Connect to Server</span>
+                                <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screen: Level Select -->
+                <div id="select-screen" class="absolute inset-0 overflow-auto p-6 hidden bg-slate-950">
+                    <div class="max-w-7xl mx-auto">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-slate-200 flex items-center gap-2">
+                                <iconify-icon icon="solar:map-point-wave-linear" class="text-indigo-400"></iconify-icon>
+                                <span data-key="MENU_TITLE_SELECT">Campaign Map</span>
+                            </h3>
+                        </div>
+
+                        <!-- Level Grid Container -->
+                        <div id="mission-list"
+                            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            <!-- Levels injected via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screen: Gameplay -->
+                <div id="game-screen" class="absolute inset-0 overflow-auto p-6 hidden flex flex-col">
+                    <div class="max-w-7xl mx-auto w-full h-full flex flex-col gap-6">
+
+                        <!-- Top Info Bar (Level Specific) -->
+                        <div
+                            class="flex items-center justify-between bg-slate-900/50 border border-slate-800 p-4 rounded-xl shrink-0">
+                            <div class="flex items-center gap-4">
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-slate-500 uppercase tracking-widest"
+                                        data-key="LBL_LEVEL">LEVEL</span>
+                                    <span class="text-xl font-bold text-white font-mono" id="hud-level">01</span>
+                                </div>
+                                <div class="h-8 w-px bg-slate-800"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-slate-500 uppercase tracking-widest"
+                                        data-key="LBL_TIME">TIME</span>
+                                    <span class="text-xl font-bold text-emerald-400 font-mono"
+                                        id="hud-timer">00:00</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
                                 <span class="text-xs text-slate-500 uppercase tracking-widest"
-                                    data-key="LBL_TIME">TIME</span>
-                                <span class="text-xl font-bold text-emerald-400 font-mono" id="hud-timer">00:00</span>
+                                    data-key="LBL_SCORE">SCORE</span>
+                                <div class="text-xl font-bold text-indigo-400 font-mono" id="hud-score">0000</div>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <span class="text-xs text-slate-500 uppercase tracking-widest"
-                                data-key="LBL_SCORE">SCORE</span>
-                            <div class="text-xl font-bold text-indigo-400 font-mono" id="hud-score">0000</div>
+
+                        <!-- Actual Game Canvas/DOM Area -->
+                        <div id="level-container"
+                            class="flex-1 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden relative shadow-2xl">
+                            <!-- Content Injected Here -->
                         </div>
-                    </div>
 
-                    <!-- Actual Game Canvas/DOM Area -->
-                    <div id="level-container"
-                        class="flex-1 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden relative shadow-2xl">
-                        <!-- Content Injected Here -->
                     </div>
-
                 </div>
-            </div>
 
-            <!-- PAGE: RESULTS -->
-            <div id="results-screen"
-                class="absolute inset-0 flex flex-col items-center justify-center p-6 bg-slate-950/90 z-40 hidden backdrop-blur-md">
-                <div
-                    class="max-w-md w-full glass-panel p-8 rounded-2xl border border-emerald-500/30 text-center relative shadow-[0_0_50px_rgba(16,185,129,0.1)]">
+                <!-- Screen: Results -->
+                <div id="results-screen"
+                    class="absolute inset-0 flex flex-col items-center justify-center p-6 bg-slate-950/90 z-40 hidden backdrop-blur-md">
                     <div
-                        class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-slate-900 rounded-full border-4 border-slate-950 flex items-center justify-center text-4xl shadow-xl">
-                        🏆
-                    </div>
-
-                    <h2 class="text-2xl font-bold text-white mt-8 mb-2" data-key="RES_TITLE">Mission Status</h2>
-                    <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-6"
-                        id="mission-outcome">MISSION SUCCESS</h1>
-
-                    <div class="space-y-3 bg-slate-900/50 p-4 rounded-xl border border-slate-800 mb-6">
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-slate-400" id="res-accuracy-lbl" data-key="RES_ACCURACY">Accuracy</span>
-                            <span class="text-white font-mono font-bold" id="res-accuracy">100%</span>
+                        class="max-w-md w-full glass-panel p-8 rounded-2xl border border-emerald-500/30 text-center relative shadow-[0_0_50px_rgba(16,185,129,0.1)]">
+                        <div
+                            class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-slate-900 rounded-full border-4 border-slate-950 flex items-center justify-center text-4xl shadow-xl">
+                            🏆
                         </div>
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-slate-400" id="res-time-lbl" data-key="RES_TIME_BONUS">Time Bonus</span>
-                            <span class="text-emerald-400 font-mono font-bold" id="res-time">+500</span>
-                        </div>
-                        <div class="h-px bg-slate-800 my-2"></div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-slate-200 font-medium" id="res-xp-lbl" data-key="RES_TOTAL_XP">Total
-                                XP</span>
-                            <span class="text-indigo-400 font-mono font-bold text-lg leading-none"
-                                id="res-xp">1250</span>
-                        </div>
-                    </div>
 
-                    <div class="grid grid-cols-2 gap-3">
-                        <button onclick="game.showScreen('select')"
-                            class="py-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-medium transition-all text-sm">
-                            Menu
-                        </button>
-                        <button id="btn-next-level"
-                            class="py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition-all shadow-lg shadow-emerald-900/20 text-sm">
-                            <span data-key="BTN_NEXT">Next Mission</span>
-                        </button>
+                        <h2 class="text-2xl font-bold text-white mt-8 mb-2" data-key="RES_TITLE">Mission Status</h2>
+                        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-6"
+                            id="mission-outcome">MISSION SUCCESS</h1>
+
+                        <div class="space-y-3 bg-slate-900/50 p-4 rounded-xl border border-slate-800 mb-6">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-slate-400" id="res-accuracy-lbl"
+                                    data-key="RES_ACCURACY">Accuracy</span>
+                                <span class="text-white font-mono font-bold" id="res-accuracy">100%</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-slate-400" id="res-time-lbl" data-key="RES_TIME_BONUS">Time
+                                    Bonus</span>
+                                <span class="text-emerald-400 font-mono font-bold" id="res-time">+500</span>
+                            </div>
+                            <div class="h-px bg-slate-800 my-2"></div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-200 font-medium" id="res-xp-lbl" data-key="RES_TOTAL_XP">Total
+                                    XP</span>
+                                <span class="text-indigo-400 font-mono font-bold text-lg leading-none"
+                                    id="res-xp">1250</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="game.showScreen('select')"
+                                class="py-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-medium transition-all text-sm border border-slate-700">
+                                Menu
+                            </button>
+                            <button id="btn-next-level"
+                                class="py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition-all shadow-lg shadow-emerald-900/20 text-sm">
+                                <span data-key="BTN_NEXT">Next Mission</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
+
             </div>
-
-        </div>
-    </main>
-
-    <!-- Modals -->
+        </main>
+    </div>
 
     <!-- Feedback Modal -->
     <div id="overlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden transition-opacity"></div>
@@ -324,6 +241,7 @@
             </button>
         </div>
     </div>
+
 
     <script src="js/app.js" type="module"></script>
 </body>

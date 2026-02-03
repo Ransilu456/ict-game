@@ -22,13 +22,7 @@ export default class LandingPage {
 
                 <div class="z-10 text-center flex flex-col items-center gap-12 p-6 relative max-w-4xl w-full">
                     
-                    <!-- Single 3D Centerpiece: The Cyber Core -->
-                    <div class="relative w-72 h-72 md:w-96 md:h-96 group transition-transform duration-700 hover:scale-105">
-                        <div class="absolute inset-0 bg-indigo-500/5 blur-[100px] rounded-full group-hover:bg-indigo-500/15 transition-colors"></div>
-                        <div class="relative z-10 w-full h-full animate-float drop-shadow-[0_0_30px_rgba(99,102,241,0.2)]">
-                            ${serverSVG}
-                        </div>
-                    </div>
+
 
                     <div class="flex flex-col items-center gap-4">
                         <div class="flex items-center gap-3 mb-2">

@@ -33,10 +33,7 @@ export default class Sidebar {
                             <span data-key="MENU_TITLE_PROFILE" class="tracking-wide">AGENT PROFILE</span>
                         </button>
                         
-                        <button id="nav-tech-lab" data-screen="techlab" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-sm font-bold text-left group border border-transparent hover:border-slate-700/50">
-                            <iconify-icon icon="solar:code-circle-bold" class="text-xl group-hover:scale-110 group-hover:text-indigo-400 transition-all"></iconify-icon>
-                            <span data-key="MENU_TITLE_TECH_LAB" class="tracking-wide">TECH LAB</span>
-                        </button>
+
 
                         <div class="pt-6 mt-6 border-t border-slate-800/50">
                             <div class="px-3 mb-3 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]" data-key="SB_LANG_TITLE">System Lang</div>
@@ -107,7 +104,7 @@ export default class Sidebar {
     attachEvents() {
         document.getElementById('nav-map')?.addEventListener('click', () => this.game.showScreen('select'));
         document.getElementById('nav-profile')?.addEventListener('click', () => this.game.showScreen('intro'));
-        document.getElementById('nav-tech-lab')?.addEventListener('click', () => this.game.showScreen('techlab'));
+
 
         document.getElementById('lang-en')?.addEventListener('click', () => window.setLang('en'));
         document.getElementById('lang-si')?.addEventListener('click', () => window.setLang('si'));

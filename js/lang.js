@@ -186,7 +186,52 @@ export const LANG = {
     MSG_RESET_CONFIRM: { en: "Are you sure? All progress will be lost.", si: "ඔබට විශ්වාසද? සියලුම දත්ත මැකී යනු ඇත." },
 
     // Sidebar Labels
-    SB_ID: { en: "ID", si: "අංකය" },
-    SB_XP: { en: "XP", si: "XP" },
-    SB_SCORE: { en: "Score", si: "ලකුණු" }
+    SB_ID: { en: "ID", si: "හඳුනාගැනීම" },
+    SB_XP: { en: "XP", si: "ප්‍රවීණතාව" },
+    SB_SCORE: { en: "Score", si: "ලකුණු" },
+
+    // Tech Lab Specifics
+    TL_CAT_ALL: { en: "All Devices", si: "සියලුම උපාංග" },
+    TL_CAT_OPTICS: { en: "Optics & Vision", si: "ප්‍රකාශ විද්‍යාව සහ දර්ශනය" },
+    TL_CAT_COMMS: { en: "Streaming & Comms", si: "සන්නිවේදනය" },
+    TL_CAT_PRINT: { en: "Output Devices", si: "ප්‍රතිදාන උපාංග" },
+    TL_CAT_NET: { en: "Networking", si: "ජාලකරණය" },
+    TL_CAT_CABLES: { en: "Connectivity", si: "සම්බන්ධතාවය" },
+
+    // Device Titles
+    TL_DEV_DSLR: { en: "Digital SLR Camera", si: "ඩිජිටල් SLR කැමරාව" },
+    TL_DEV_IP: { en: "Industrial IP Cam", si: "කාර්මික IP කැමරාව" },
+    TL_DEV_ROUTER: { en: "Enterprise Router", si: "ව්යවසාය රවුටරය" },
+    TL_DEV_SWITCH: { en: "Managed Switch", si: "කළමනාකරණය කළ ස්විචය" },
+    TL_DEV_STREAMER: { en: "Live Streamer", si: "සජීවී විකාශකය" },
+    TL_DEV_FIBER: { en: "Fiber Optic Cable", si: "ඔප්ටිකල් ෆයිබර් කේබලය" },
+    TL_DEV_THERMAL: { en: "Thermal Scanner", si: "තාප ස්කෑනරය" },
+
+    // Simulation Labels
+    TL_SIM_STATUS: { en: "STATUS", si: "තත්වය" },
+    TL_SIM_LIVE: { en: "LIVE LINK VALID", si: "සජීවී සම්බන්ධතාවය ක්‍රියාකාරීයි" },
+    TL_SIM_DIAG: { en: "DIAGNOSTICS OUTPUT", si: "රෝග විනිශ්චය ප්‍රතිදානය" },
+    TL_SIM_RETURN: { en: "Return to Terminal", si: "ප්‍රධාන මෙනුවට" },
+    TL_SIM_INTERFACE: { en: "Interface Node", si: "අතුරු මුහුණත් නෝඩය" },
+
+    // Header & Global Labels
+    HDR_LINK: { en: "Link Established", si: "සම්බන්ධතාවය ස්ථාපිතයි" },
+    HDR_SECTOR: { en: "Active Sector", si: "ක්‍රියාකාරී අංශය" },
+    HDR_TIME: { en: "Local Node Time", si: "පද්ධති වේලාව" },
+    HDR_PAUSE_HINT: { en: "INTERRUPT SESSION", si: "මෙහෙයුම නවත්වන්න" },
+    HDR_BOOTING: { en: "BOOTING...", si: "පද්ධතිය සක්‍රීය වේ..." },
+
+    // Sidebar Specifics
+    SB_NAV_TITLE: { en: "Navigation Modules", si: "යාත්‍රා මෙනුව" },
+    SB_LANG_TITLE: { en: "System Lang", si: "භාෂාව" },
+    SB_AGENT_LBL: { en: "Authenticated Agent", si: "සත්‍යාපිත බලධාරියා" },
+    SB_XP_LBL: { en: "Core XP", si: "ප්‍රධාන ප්‍රවීණතාව" },
+
+    // Landing Page
+    LP_SYS_STATUS: { en: "System Online", si: "පද්ධතිය සක්‍රීයයි" },
+    LP_DESC: { en: "Deep Dive into Cyber Architecture", si: "සයිබර් ලෝකයේ ගැඹුරටම යන්න" },
+    LP_BTN_BOOT: { en: "INITIATE BOOT", si: "පද්ධතිය අරඹන්න" },
+    LP_BTN_CONFIG: { en: "CORE CONFIG", si: "මූලික සැකසුම්" },
+    LP_STAT_SATELLITE: { en: "Satellite: Active", si: "සැටලයිට්: සක්‍රීයයි" },
+    LP_STAT_UPLINK: { en: "Uplink: Secure", si: "සම්බන්ධතාවය: විවෘතයි" }
 };

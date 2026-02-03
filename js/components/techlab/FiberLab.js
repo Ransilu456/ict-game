@@ -1,4 +1,5 @@
 import LabSimulation from './LabSimulation.js';
+import ThreeDComponents from '../ThreeDComponents.js';
 
 export default class FiberLab extends LabSimulation {
     cacheControls() {
@@ -50,18 +51,36 @@ export default class FiberLab extends LabSimulation {
 
     renderFunctional(root, a, i) {
         root.innerHTML = `
-            <svg viewBox="0 0 400 200" class="w-full">
-                <!-- Cable Cladding -->
-                <rect x="0" y="70" width="400" height="60" fill="#1e1b4b" fill-opacity="0.2" stroke="#312e81" stroke-width="2" />
-                <!-- Cable Core -->
-                <rect x="0" y="90" width="400" height="20" fill="#6366f1" fill-opacity="0.1" />
-                <!-- Light path -->
-                <path d="M 0 100 ${Array.from({ length: 10 }, (_, i) => `L ${i * 40 + 20} ${100 + (i % 2 ? -1 : 1) * (100 - a)}`).join(' ')}" 
-                    stroke="#22d3ee" stroke-width="${i / 20}" fill="none">
-                    <animate attributeName="stroke-dasharray" from="0,1000" to="1000,0" dur="2s" repeatCount="indefinite" />
-                </path>
-                <text x="200" y="160" text-anchor="middle" fill="#64748b" font-size="10" font-family="monospace">TOTAL INTERNAL REFLECTION (TIR)</text>
-            </svg>
+            <div class="flex flex-col items-center gap-10 w-full">
+                <div class="relative w-full h-48 bg-slate-950/50 rounded-[2rem] border border-slate-900 overflow-hidden">
+                    <div class="absolute inset-0 scanlines opacity-10"></div>
+                    
+                    <!-- 3D Cable Cross-section -->
+                    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-32 opacity-30">
+                        ${ThreeDComponents.getCableSVG('#22d3ee')}
+                    </div>
+
+                    <svg viewBox="0 0 400 200" class="absolute inset-0 z-20">
+                        <!-- Cable Core Visualization -->
+                        <rect x="0" y="95" width="400" height="10" fill="#22d3ee" fill-opacity="0.05" />
+                        
+                        <!-- Light path with TIR -->
+                        <path d="M 0 100 ${Array.from({ length: 15 }, (_, i) => `L ${i * 26 + 13} ${100 + (i % 2 ? -1 : 1) * (100 - a)}`).join(' ')}" 
+                            stroke="#22d3ee" stroke-width="${i / 20}" fill="none" filter="drop-shadow(0 0 5px #22d3ee)">
+                            <animate attributeName="stroke-dasharray" from="0,1000" to="1000,0" dur="2s" repeatCount="indefinite" />
+                        </path>
+                    </svg>
+                </div>
+                
+                <div class="flex gap-4">
+                    <div class="px-5 py-2.5 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl text-[10px] font-black text-indigo-400 uppercase tracking-widest">
+                        Reflectance: ${(a / 90 * 100).toFixed(1)}%
+                    </div>
+                    <div class="px-5 py-2.5 bg-slate-900 border border-slate-800 rounded-2xl text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                        Mode: ${a > 42 ? 'TIR ACTIVE' : 'REFRAC LOSS'}
+                    </div>
+                </div>
+            </div>
         `;
     }
 

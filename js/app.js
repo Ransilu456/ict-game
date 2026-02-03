@@ -336,23 +336,26 @@ class GameEngine {
                 if (isLocked) baseClass += "bg-slate-900/50 border-slate-800/50 opacity-40 grayscale pointer-events-none";
                 else baseClass += "bg-slate-900 border-slate-800 hover:border-indigo-500/50 hover:bg-slate-800/50 shadow-lg hover:shadow-indigo-500/10";
 
-                btn.className = baseClass;
+                btn.className = baseClass + " isometric-card group/card";
                 btn.innerHTML = `
-                    <div class="flex items-start justify-between mb-6">
-                        <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl border ${isLocked ? 'bg-slate-950 border-slate-800 text-slate-700' : 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400 shadow-inner group-hover:scale-110 transition-transform'}">
-                            <iconify-icon icon="${isLocked ? 'solar:lock-bold' : 'solar:play-circle-bold'}"></iconify-icon>
+                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-start justify-between mb-6">
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl border ${isLocked ? 'bg-slate-950 border-slate-800 text-slate-700' : 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)] group-hover/card:scale-110 transition-transform'}">
+                                <iconify-icon icon="${isLocked ? 'solar:lock-bold' : 'solar:play-circle-bold'}"></iconify-icon>
+                            </div>
+                            <div class="flex gap-0.5">
+                                ${Array(5).fill(0).map((_, idx) => `
+                                    <iconify-icon icon="solar:star-bold" class="text-[10px] ${idx < difficulty ? 'text-amber-500 drop-shadow-[0_0_5px_rgba(245,158,11,0.5)]' : 'text-slate-800'}"></iconify-icon>
+                                `).join('')}
+                            </div>
                         </div>
-                        <div class="flex gap-0.5">
-                            ${Array(5).fill(0).map((_, idx) => `
-                                <iconify-icon icon="solar:star-bold" class="text-[10px] ${idx < difficulty ? 'text-amber-500' : 'text-slate-800'}"></iconify-icon>
-                            `).join('')}
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-[10px] font-black text-slate-400 bg-slate-950 px-1.5 py-0.5 rounded uppercase tracking-tighter border border-slate-800 group-hover/card:border-indigo-500/50 transition-colors">Sector ${i}</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-white group-hover/card:text-indigo-300 transition-colors truncate">${isLocked ? 'CLASSIFIED' : this.getText('L' + i + '_TITLE')}</h4>
                         </div>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="text-[10px] font-black text-slate-600 bg-slate-950 px-1.5 py-0.5 rounded uppercase tracking-tighter border border-slate-800">Node ${i}</span>
-                        </div>
-                        <h4 class="text-sm font-bold text-white group-hover:text-indigo-300 transition-colors truncate">${isLocked ? 'Classified' : this.getText('L' + i + '_TITLE')}</h4>
                     </div>
                 `;
 
@@ -381,10 +384,9 @@ class GameEngine {
         const outcomeEl = document.getElementById('mission-outcome');
         outcomeEl.innerText = this.getText(results.success ? 'RES_SUCCESS' : 'RES_FAIL');
 
-        // Note: Gradient text classes in vanilla needed? 
-        // We defined .text-main, but for gradients we might keep Tailwind utils in style.css or add to utils.css
-        // For now, let's just set color.
-        outcomeEl.className = results.success ? "text-3xl font-extrabold text-emerald mb-6" : "text-3xl font-extrabold text-rose mb-6";
+        outcomeEl.className = results.success
+            ? "text-3xl font-extrabold text-emerald-400 mb-6 neon-text-emerald"
+            : "text-3xl font-extrabold text-rose-500 mb-6 neon-text-rose";
 
         document.getElementById('res-accuracy').innerText = (results.accuracy || 0) + '%';
         document.getElementById('res-time').innerText = '+' + (results.timeBonus || 0);

@@ -1,4 +1,5 @@
 import LabSimulation from './LabSimulation.js';
+import ThreeDComponents from '../ThreeDComponents.js';
 
 export default class ThermalLab extends LabSimulation {
     constructor(container, stats, device) {
@@ -67,19 +68,38 @@ export default class ThermalLab extends LabSimulation {
         const color2 = this.palette === 'iron' ? '#dc2626' : '#22c55e';
 
         root.innerHTML = `
-            <svg viewBox="0 0 400 200" class="w-full">
-                <defs>
-                    <radialGradient id="heatGradient">
-                        <stop offset="0%" stop-color="${color2}" stop-opacity="${r / 100}" />
-                        <stop offset="100%" stop-color="${color1}" />
-                    </radialGradient>
-                </defs>
-                <rect width="400" height="200" fill="${color1}" />
-                <!-- Detected Heat Source -->
-                <circle cx="200" cy="100" r="${40 + r / 2}" fill="url(#heatGradient)">
-                    <animate attributeName="r" values="${40 + r / 2}; ${50 + r / 2}; ${40 + r / 2}" dur="3s" repeatCount="indefinite" />
-                </circle>
-            </svg>
+            <div class="flex flex-col items-center gap-8 w-full h-full">
+                <div class="relative w-64 h-64">
+                    <div class="absolute inset-0 bg-rose-500/10 blur-3xl rounded-full"></div>
+                    ${ThreeDComponents.getIPCamSVG(color2)}
+                    
+                    <!-- Thermal Overlay -->
+                    <div class="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                         <svg viewBox="0 0 400 200" class="w-full h-full opacity-60">
+                            <defs>
+                                <radialGradient id="heatGradient">
+                                    <stop offset="0%" stop-color="${color2}" stop-opacity="${r / 100}" />
+                                    <stop offset="100%" stop-color="${color1}" stop-opacity="0" />
+                                </radialGradient>
+                            </defs>
+                            <circle cx="200" cy="100" r="${40 + r / 2}" fill="url(#heatGradient)">
+                                <animate attributeName="r" values="${40 + r / 2}; ${50 + r / 2}; ${40 + r / 2}" dur="3s" repeatCount="indefinite" />
+                            </circle>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 w-full max-w-sm">
+                    <div class="p-3 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col items-center">
+                        <span class="text-[8px] text-slate-500 uppercase font-black">Sensitiity</span>
+                        <span class="text-xs font-mono text-white">${r}%</span>
+                    </div>
+                    <div class="p-3 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col items-center">
+                        <span class="text-[8px] text-slate-500 uppercase font-black">Payload</span>
+                        <span class="text-xs font-mono text-rose-400 capitalize">${this.palette}</span>
+                    </div>
+                </div>
+            </div>
         `;
     }
 

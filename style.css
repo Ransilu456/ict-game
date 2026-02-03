@@ -5,23 +5,73 @@
 }
 
 ::-webkit-scrollbar-track {
-    background: #0f172a;
+    background: #020617;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #334155;
+    background: #1e293b;
     border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+    background: #334155;
+}
+
+/* Gaming Foundations */
+:root {
+    --neon-indigo: #6366f1;
+    --neon-emerald: #10b981;
+    --neon-rose: #f43f5e;
+    --glass: rgba(15, 23, 42, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+.glass-panel {
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.neon-glow-indigo {
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3), 0 0 30px rgba(99, 102, 241, 0.1);
+}
+
+.neon-text-indigo {
+    text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+}
+
+/* Scanline Effect */
+.scanlines::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 2;
+    background-size: 100% 4px, 3px 100%;
+    pointer-events: none;
+    opacity: 0.1;
+}
+
+/* 3D Isometric Utilities */
+.isometric-card {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s;
+    transform-style: preserve-3d;
+}
+
+.isometric-card:hover {
+    transform: rotateX(15deg) rotateY(-15deg) translateY(-10px);
+    box-shadow: 20px 20px 50px rgba(0, 0, 0, 0.5), -5px -5px 20px rgba(255, 255, 255, 0.05);
 }
 
 /* Custom Range Slider */
 input[type=range] {
     -webkit-appearance: none;
     appearance: none;
-    /* Lint fix */
     width: 100%;
     background: transparent;
 }
@@ -29,23 +79,27 @@ input[type=range] {
 input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    /* Lint fix */
     height: 16px;
     width: 16px;
     border-radius: 50%;
     background: #fff;
     margin-top: -6px;
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 10px var(--neon-indigo);
     cursor: pointer;
 }
 
-/* ... (lines 38-63 unchanged) */
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: #1e293b;
+    border-radius: 2px;
+}
 
 .gradient-text {
     background: linear-gradient(to right, #fff, #94a3b8);
     -webkit-background-clip: text;
     background-clip: text;
-    /* Lint fix */
     -webkit-text-fill-color: transparent;
 }
 
@@ -62,12 +116,106 @@ input[type=range]::-webkit-slider-thumb {
     }
 }
 
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+}
+
 .animate-fade-in {
     animation: fadeIn 0.5s ease-out forwards;
 }
 
-/* Game Level Specifics Override (Legacy support where Tailwind is too verbose) */
+.animate-pulse-glow {
+    animation: pulse-glow 3s infinite ease-in-out;
+}
+
 .circuit-board {
-    background-image: radial-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px);
-    background-size: 20px 20px;
+    background-image: radial-gradient(rgba(99, 102, 241, 0.15) 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+
+/* Glitch Effect placeholder if needed */
+.glitch-hover:hover {
+    animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+}
+
+@keyframes glitch {
+    0% {
+        transform: translate(0);
+    }
+
+    20% {
+        transform: translate(-2px, 2px);
+    }
+
+    40% {
+        transform: translate(-2px, -2px);
+    }
+
+    60% {
+        transform: translate(2px, 2px);
+    }
+
+    80% {
+        transform: translate(2px, -2px);
+    }
+
+    100% {
+        transform: translate(0);
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    #app-root {
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    #sidebar-container {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--glass-border);
+    }
+}
+
+@media (max-width: 768px) {
+    .isometric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .glass-panel {
+        padding: 1.5rem !important;
+    }
+
+    #landing-container h1 {
+        font-size: 3rem !important;
+    }
+}
+
+/* Performance Optimizations */
+.animate-float,
+.animate-float-delayed,
+.animate-pulse-glow,
+.animate-pulse {
+    will-change: transform, opacity;
+}
+
+/* Performance Optimizations */
+
+/* Font Smoothing */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }

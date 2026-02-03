@@ -1,143 +1,79 @@
-# 🎮 Project Title: ICT Quest – Learn by Playing
+# 🎮 ICT Quest & Tech Lab
 
-## 📌 Purpose
-Create a **browser-based educational game** for an ICT teacher’s website that helps **students learn ICT concepts through gameplay**.  
-The game must support **individual play** and **group/competitive play**, suitable for school environments.
+![Web-Based]
+![Premium UI]
+![Educational]
 
-Target users: **Advanced Level school students (Grades 12–13)**  
-Subject focus: **Information & Communication Technology (ICT)**
-
----
-
-## 🎯 Learning Objectives
-Players should learn and practice:
-- Computer hardware & software concepts
-- Operating systems basics
-- Networking fundamentals
-- Internet & cybersecurity awareness
-- Programming logic (conditions, loops, variables)
-- Databases & data representation
-- ICT ethics and digital safety
-
-Learning must be **implicit through gameplay**, not textbook-style.
+A high-fidelity, interactive educational platform designed for advanced ICT students. **ICT Quest** gamifies complex concepts, while the **Tech Lab** provides deep-dive hardware simulations with real-time circuitry analysis.
 
 ---
 
-## 🧠 Game Concept
-**Genre:** Educational RPG + Quiz + Strategy  
-**Theme:** Digital world / Cyber city / Virtual lab  
+## 🚀 Key Modules
 
-Players explore a virtual ICT world where:
-- Each level represents an **ICT topic**
-- Challenges simulate **real ICT problems**
-- Correct decisions unlock progress
-- Wrong choices teach through feedback, not punishment
+### 🧪 The Tech Lab
+A professional-grade simulation environment where students can analyze hardware components:
+- **Optics Lab**: Understand DSLR mirrors, photodiode arrays, and sensor gain (ISO).
+- **Signal Lab**: Visualize OFDM waves, frequency modulation, and radio broadcasting.
+- **Networking Hub**: Manage L2 Switches with MAC address tables and port forwarding.
+- **Circuitry View**: A specialized mode for *all* devices showing internal ASICs, ISPs, and hardware logic paths.
 
----
-
-## 🕹️ Game Modes
-
-### 1️⃣ Individual Mode
-- Single-player progression
-- Levels unlock sequentially
-- Score based on accuracy, speed, and logic
-- Save progress per student
-
-### 2️⃣ Group / Multiplayer Mode
-- Team-based challenges (2–5 players)
-- Competitive quizzes
-- Cooperative problem-solving missions
-- Leaderboards for classes or groups
+### 🕹️ Interactive Levels
+Progressive challenges covering the core ICT syllabus:
+- **Level 1 (Hardware)**: PC assembly and component identification.
+- **Level 2 (OS)**: Process scheduling and memory management.
+- **Level 3 (Networking)**: Packet routing and IP assignment.
+- **Level 4-8**: Advanced topics including Logic, Programming, and SQL.
 
 ---
 
-## 🧩 Gameplay Mechanics
+## 🛠️ Tech Stack
 
-### Core Mechanics
-- Multiple-choice challenges
-- Drag-and-drop logic puzzles
-- Match hardware to function
-- Network path-building mini-games
-- Simple coding challenges (pseudo-code)
-- Cybersecurity decision scenarios
-
-### Example Levels
-| Level | Topic | Gameplay |
-|----|------|--------|
-| 1 | Hardware Basics | Build a PC from parts |
-| 2 | OS Concepts | Manage processes & memory |
-| 3 | Networking | Route data packets |
-| 4 | Programming | Fix broken logic |
-| 5 | Cybersecurity | Detect phishing attacks |
+- **Engine**: Vanilla JavaScript (ES Modules)
+- **Visuals**: SVG-based dynamic rendering & Vanilla CSS
+- **Styling**: Tailwind CSS (for layout) & Custom Glassmorphic CSS
+- **Icons**: Iconify Framework
 
 ---
 
-## 🧪 Assessment System
-- XP (Experience Points)
-- Badges (e.g. “Network Master”, “Code Thinker”)
-- Timed challenges
-- Accuracy tracking
-- Teacher dashboard compatibility (future-ready)
+## 🔧 Getting Started
+
+### Prerequisites
+- Any modern web browser (Chrome, Firefox, Safari, Edge).
+
+### Running Locally
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Ransilu456/ict-game.git
+   ```
+2. Simply open `index.html` in your browser.
+   *Note: Using a local server (like VS Code Live Server) is recommended for ESM module support.*
 
 ---
 
-## 👩‍🏫 Teacher-Oriented Features
-- No account needed to play (optional login)
-- Easy classroom use
-- Non-distracting UI
-- Educational feedback after each question
-- Supports projector / shared screen play
+## 📂 Project Structure
 
----
-
-## 💻 Technical Requirements
-- Platform: **Web-based**
-- Devices: Laptop, desktop, tablet
-- Input: Keyboard & mouse / touch
-- Offline-friendly (optional)
-- No heavy graphics required
-
----
-
-## 🎨 UI / UX Style
-- Clean and modern
-- Bright but professional
-- Game-like, not exam-like
-- Icons, animations, progress bars
-- Clear instructions for beginners
-
----
-
-## 🛡️ Constraints
-- No violence
-- No gambling mechanics
-- Age-appropriate content
-- Educational-first design
-- Fast loading on school internet
-
----
-
-## 🚀 Deliverables Expected from Antigravity
-- Core game loop
-- Modular level system
-- Solo + group play logic
-- Scoring and progression system
-- Expandable structure for future ICT topics
+```text
+├── index.html          # Main Entry Point
+├── js/
+│   ├── app.js          # Main Application Coordinator
+│   ├── components/     # UI Components (LandingPage, TechLab, etc.)
+│   └── lib/            # Shared Utilities
+├── css/                # Custom Styles & Glassmorphism
+└── assets/             # Images & Multimedia
+```
 
 ---
 
 ## 🧠 Design Philosophy
-> “Students should **learn without realizing they are studying**.”
+> "Learn without realizing you are studying."
 
-Make the game:
-- Fun
-- Fair
-- Challenging
-- Educational
-- Scalable
+Focuses on **implicit learning** through interactive feedback loops rather than static textbook definitions.
 
 ---
 
-## 📎 Notes
-This game will be embedded into a **school ICT teacher’s website** and used as a **learning tool**, not just entertainment.
+## 🛡️ License
+Distributed under the MIT License. See `LICENSE` for more information.
 
+---
+
+*Developed with ❤️ for ICT Education.*

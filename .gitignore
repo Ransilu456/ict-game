@@ -1,0 +1,20 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDES
+.vscode/
+.idea/
+
+# Temp files
+*.log
+temp/
+dist/
+
+# Gemini/Agentic artifacts
+.gemini/
+.agent/
+brain/
+task.md
+implementation_plan.md
+walkthrough.md

@@ -5,69 +5,80 @@ export default class Sidebar {
 
     render() {
         return `
-            <aside class="w-full md:w-64 border-r border-slate-800 bg-slate-900/40 flex flex-col justify-between h-auto md:h-screen shrink-0 z-20 transition-all duration-300" id="main-sidebar">
-                <div class="overflow-y-auto flex-1">
+            <aside class="w-full md:w-64 border-r border-slate-800 bg-slate-900/40 flex flex-col justify-between h-auto md:h-screen shrink-0 z-20 transition-all duration-300 glass-panel" id="main-sidebar">
+                <div class="overflow-y-auto flex-1 scanlines">
                     <!-- Logo Area -->
-                    <div class="p-6 flex items-center gap-3 border-b border-slate-800/50">
-                        <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-slate-950 font-semibold tracking-tighter shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                    <div class="p-6 flex items-center gap-3 border-b border-slate-800/50 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black tracking-tighter shadow-[0_0_20px_rgba(99,102,241,0.3)] border border-indigo-400/30">
                             IQ
                         </div>
-                        <div>
-                            <h1 class="text-sm font-semibold tracking-tight text-white" data-key="INTRO_TITLE_TOP">ICT QUEST</h1>
-                            <p class="text-[10px] uppercase font-bold text-slate-500 tracking-[0.2em]" data-key="INTRO_TITLE_SUB">Cyber City</p>
+                        <div class="relative z-10">
+                            <h1 class="text-sm font-black tracking-widest text-white leading-none mb-1" data-key="INTRO_TITLE_TOP">ICT QUEST</h1>
+                            <p class="text-[9px] uppercase font-bold text-indigo-400 tracking-[0.3em] opacity-70" data-key="INTRO_TITLE_SUB">Terminal v3.0</p>
                         </div>
                     </div>
 
                     <!-- Navigation Links -->
-                    <nav class="p-4 space-y-1" id="sidebar-nav">
-                        <button id="nav-map" data-screen="select" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 transition-all text-sm font-medium text-left group">
-                            <iconify-icon icon="solar:gamepad-linear" class="text-lg group-hover:scale-110 transition-transform"></iconify-icon>
-                            <span data-key="MENU_TITLE_SELECT">Campaign Map</span>
+                    <nav class="p-4 space-y-2" id="sidebar-nav">
+                        <div class="px-3 mb-4 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]" data-key="SB_NAV_TITLE">Navigation Modules</div>
+                        
+                        <button id="nav-map" data-screen="select" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-sm font-bold text-left group border border-transparent hover:border-slate-700/50">
+                            <iconify-icon icon="solar:map-point-wave-bold" class="text-xl group-hover:scale-110 group-hover:text-indigo-400 transition-all"></iconify-icon>
+                            <span data-key="MENU_TITLE_SELECT" class="tracking-wide">MISSION MAP</span>
                         </button>
-                        <button id="nav-profile" data-screen="intro" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 transition-all text-sm font-medium text-left group">
-                            <iconify-icon icon="solar:user-circle-linear" class="text-lg group-hover:scale-110 transition-transform"></iconify-icon>
-                            <span data-key="MENU_TITLE_PROFILE">Profile / Login</span>
+                        
+                        <button id="nav-profile" data-screen="intro" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-sm font-bold text-left group border border-transparent hover:border-slate-700/50">
+                            <iconify-icon icon="solar:shield-user-bold" class="text-xl group-hover:scale-110 group-hover:text-indigo-400 transition-all"></iconify-icon>
+                            <span data-key="MENU_TITLE_PROFILE" class="tracking-wide">AGENT PROFILE</span>
                         </button>
-                        <button id="nav-tech-lab" data-screen="techlab" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 transition-all text-sm font-medium text-left group">
-                            <iconify-icon icon="solar:database-bold" class="text-lg group-hover:scale-110 transition-transform"></iconify-icon>
-                            <span data-key="MENU_TITLE_TECH_LAB">Tech Lab</span>
+                        
+                        <button id="nav-tech-lab" data-screen="techlab" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-sm font-bold text-left group border border-transparent hover:border-slate-700/50">
+                            <iconify-icon icon="solar:code-circle-bold" class="text-xl group-hover:scale-110 group-hover:text-indigo-400 transition-all"></iconify-icon>
+                            <span data-key="MENU_TITLE_TECH_LAB" class="tracking-wide">TECH LAB</span>
                         </button>
 
-                        <div class="pt-4 mt-4 border-t border-slate-800/50">
-                            <div class="px-3 mb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest" data-key="LBL_LANGUAGE">Language</div>
+                        <div class="pt-6 mt-6 border-t border-slate-800/50">
+                            <div class="px-3 mb-3 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]" data-key="SB_LANG_TITLE">System Lang</div>
                             <div class="flex gap-2 px-3">
-                                <button id="lang-en" class="lang-btn text-xs font-mono px-2 py-1 rounded border border-slate-700 hover:bg-slate-800 text-slate-400 hover:text-white transition-all">EN</button>
-                                <button id="lang-si" class="lang-btn text-xs font-mono px-2 py-1 rounded border border-slate-700 hover:bg-slate-800 text-slate-400 hover:text-white transition-all">සිං</button>
+                                <button id="lang-en" class="lang-btn flex-1 text-[10px] font-black px-2 py-2 rounded-lg border border-slate-800 bg-slate-950/50 hover:bg-slate-800 text-slate-500 hover:text-white transition-all tracking-widest">EN</button>
+                                <button id="lang-si" class="lang-btn flex-1 text-[10px] font-black px-2 py-2 rounded-lg border border-slate-800 bg-slate-950/50 hover:bg-slate-800 text-slate-500 hover:text-white transition-all tracking-widest">සිං</button>
                             </div>
                         </div>
                     </nav>
                 </div>
 
-                <!-- User Stats -->
-                <div class="p-4 border-t border-slate-800/50 bg-slate-900/40 hidden" id="user-stats-panel">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xs font-semibold border border-indigo-500/20 shadow-inner">
-                            <iconify-icon icon="solar:shield-user-bold" class="text-xl"></iconify-icon>
+                <!-- User Stats (HUD Style) -->
+                <div class="p-6 border-t border-slate-800/50 bg-slate-950/30 hidden" id="user-stats-panel">
+                    <div class="flex flex-col gap-4">
+                        <div class="flex items-center gap-3">
+                            <div class="relative">
+                                <div class="w-12 h-12 rounded-full border-2 border-indigo-500/30 p-1">
+                                    <div class="w-full h-full rounded-full bg-slate-800 flex items-center justify-center text-indigo-400 border border-indigo-500/20 shadow-[0_0_10px_rgba(99,102,241,0.2)]">
+                                        <iconify-icon icon="solar:user-bold" class="text-2xl"></iconify-icon>
+                                    </div>
+                                </div>
+                                <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-indigo-600 rounded-full border-2 border-slate-900 flex items-center justify-center text-[10px] font-black text-white shadow-lg" id="hud-level-sm">1</div>
+                            </div>
+                            <div class="flex-1">
+                                <span class="text-[10px] font-black text-slate-500 uppercase tracking-tighter block mb-1" data-key="SB_AGENT_LBL">Authenticated Agent</span>
+                                <span class="text-sm font-black text-white tracking-wider truncate block" id="hud-player-name">Agent</span>
+                            </div>
                         </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-end mb-1">
-                                <span class="text-xs font-bold text-white tracking-wide truncate max-w-[80px]" id="hud-player-name">Agent</span>
-                                <span class="text-[10px] text-indigo-400 font-mono font-bold px-1.5 py-0.5 bg-indigo-500/10 rounded" id="hud-level-sm">LVL 1</span>
+
+                        <div class="space-y-1">
+                            <div class="flex justify-between items-center text-[10px] font-black text-slate-500 tracking-widest uppercase">
+                                <span data-key="SB_XP_LBL">Core XP</span>
+                                <span class="text-indigo-400" id="hud-xp-val">0</span>
                             </div>
                             <div class="h-1.5 w-full bg-slate-800/50 rounded-full overflow-hidden border border-slate-700/50">
-                                <div class="h-full bg-gradient-to-r from-indigo-500 to-blue-400 w-[5%] shadow-[0_0_10px_rgba(79,70,229,0.5)]" id="hud-xp-bar" style="transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
+                                <div class="h-full bg-indigo-500 shadow-[0_0_10px_rgba(79,70,229,0.5)]" id="hud-xp-bar" style="width: 5%; transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/50 flex flex-col items-center">
-                            <span class="text-[9px] text-slate-500 uppercase font-black tracking-tighter" data-key="SB_XP">XP</span>
-                            <span class="text-xs font-mono font-bold text-white" id="hud-xp-val">0</span>
-                        </div>
-                        <div class="bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/50 flex flex-col items-center">
-                            <span class="text-[9px] text-slate-500 uppercase font-black tracking-tighter" data-key="SB_SCORE">Score</span>
-                            <span class="text-xs font-mono font-bold text-white" id="hud-score-val">0</span>
+                        
+                        <div class="bg-indigo-500/5 p-3 rounded-xl border border-indigo-500/10 flex justify-between items-center group/score">
+                            <span class="text-[10px] text-slate-500 uppercase font-black tracking-widest group-hover/score:text-indigo-400 transition-colors" data-key="SB_SCORE">Total Score</span>
+                            <span class="text-sm font-mono font-black text-white" id="hud-score-val">0</span>
                         </div>
                     </div>
                 </div>
@@ -75,12 +86,14 @@ export default class Sidebar {
             
             <style>
                 .nav-item.active {
-                    background: rgba(79, 70, 229, 0.1);
-                    border-right: 2px solid #6366f1;
+                    background: rgba(99, 102, 241, 0.1);
+                    border-right: 3px solid #6366f1;
                     color: white;
+                    box-shadow: inset -10px 0 20px -10px rgba(99, 102, 241, 0.2);
                 }
                 .nav-item.active iconify-icon {
                     color: #818cf8;
+                    filter: drop-shadow(0 0 5px rgba(129, 140, 248, 0.5));
                 }
                 .lang-btn.active {
                     border-color: #6366f1;

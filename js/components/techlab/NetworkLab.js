@@ -1,4 +1,5 @@
 import LabSimulation from './LabSimulation.js';
+import ThreeDComponents from '../ThreeDComponents.js';
 
 export default class NetworkLab extends LabSimulation {
     constructor(container, stats, device) {
@@ -71,24 +72,48 @@ export default class NetworkLab extends LabSimulation {
 
     renderFunctional(root) {
         root.innerHTML = `
-            <svg viewBox="0 0 400 200" class="w-full">
-                <!-- Switch Chassis -->
-                <rect x="50" y="70" width="300" height="60" rx="10" fill="#1e293b" stroke="#334155" stroke-width="2" />
-                <!-- Ports -->
-                ${Array.from({ length: 8 }, (_, i) => {
-            const x = 75 + i * 35;
+            <div class="flex flex-col items-center gap-10 w-full">
+                <div class="relative w-72 h-48">
+                    <div class="absolute inset-0 bg-indigo-500/5 blur-3xl rounded-full"></div>
+                    ${ThreeDComponents.getSwitchSVG('#6366f1')}
+                    
+                    <!-- Port Activity Visualization -->
+                    <svg viewBox="0 0 200 200" class="absolute inset-0 z-20 pointer-events-none">
+                        ${Array.from({ length: 8 }, (_, i) => {
+            const x = 50 + i * 12 + 4;
             const active = (i + 1) === this.currentPort;
+            if (!active) return '';
             return `
-                        <rect x="${x}" y="85" width="25" height="25" rx="4" fill="${active ? '#6366f1' : '#0f172a'}" stroke="${active ? '#818cf8' : '#334155'}" />
-                        <circle cx="${x + 12.5}" cy="${85 - 8}" r="3" fill="${active ? '#fbbf24' : '#1e293b'}" />
-                    `;
+                                <circle cx="${x}" cy="114" r="2" fill="#fbbf24" class="animate-ping" />
+                            `;
         }).join('')}
-                <!-- Data Flow -->
-                <circle r="5" fill="#fbbf24" class="animate-bounce">
-                    <animateMotion path="M 200 130 L 200 100 L ${75 + (this.currentPort - 1) * 35 + 12.5} 100" dur="1s" repeatCount="indefinite" />
-                </circle>
-                <text x="200" y="160" text-anchor="middle" fill="#64748b" font-size="10" font-family="monospace">INGRESS: PORT 1 -> EGRESS: PORT ${this.currentPort}</text>
-            </svg>
+                    </svg>
+                </div>
+                
+                <div class="glass-panel p-6 rounded-3xl border border-slate-800 bg-slate-900/20 w-full max-w-md">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                                <iconify-icon icon="solar:globus-bold"></iconify-icon>
+                            </div>
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Route Analysis</span>
+                        </div>
+                        <span class="text-[10px] font-mono text-indigo-400 uppercase tracking-widest">L2 Forwarding</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-4 text-xs font-mono">
+                        <div class="flex-1 p-3 bg-slate-950 rounded-xl border border-slate-800 flex flex-col items-center gap-1">
+                            <span class="text-[8px] text-slate-600 uppercase">Ingress</span>
+                            <span class="text-white">PORT 1</span>
+                        </div>
+                        <iconify-icon icon="solar:alt-arrow-right-bold" class="text-slate-700"></iconify-icon>
+                        <div class="flex-1 p-3 bg-slate-950 rounded-xl border border-slate-800 flex flex-col items-center gap-1">
+                            <span class="text-[8px] text-slate-600 uppercase">Egress</span>
+                            <span class="text-white">PORT ${this.currentPort}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         `;
     }
 

@@ -1,4 +1,5 @@
 import LabSimulation from './LabSimulation.js';
+import ThreeDComponents from '../ThreeDComponents.js';
 
 export default class WiFiLab extends LabSimulation {
     constructor(container, stats, device) {
@@ -121,39 +122,39 @@ export default class WiFiLab extends LabSimulation {
         const color = this.frequency === 2.4 ? '#fbbf24' : '#6366f1';
 
         root.innerHTML = `
-            <svg viewBox="0 0 400 200" class="w-full">
-                <!-- Router Core -->
-                <rect x="185" y="140" width="30" height="40" rx="4" fill="#1e293b" />
-                <rect x="175" y="170" width="50" height="10" rx="2" fill="#0f172a" />
-                
-                <!-- Antennas -->
-                <line x1="190" y1="140" x2="180" y2="100" stroke="#334155" stroke-width="3" />
-                <line x1="210" y1="140" x2="220" y2="100" stroke="#334155" stroke-width="3" />
-
-                <!-- Signal Waves -->
-                ${Array.from({ length: waveCount }, (_, i) => {
+            <div class="flex flex-col items-center gap-12 w-full">
+                <div class="relative w-64 h-64">
+                    <div class="absolute inset-0 bg-indigo-500/5 blur-3xl rounded-full"></div>
+                    ${ThreeDComponents.getRouterSVG(color)}
+                    
+                    <!-- Signal Propagation -->
+                    <svg viewBox="0 0 200 200" class="absolute inset-0 z-20 pointer-events-none">
+                        ${Array.from({ length: waveCount }, (_, i) => {
             const radius = 20 + i * 30;
-            if (this.beamforming) {
-                return `
-                            <path d="M 200 120 Q 250 ${120 - radius} 350 120" stroke="${color}" stroke-width="2" fill="none" opacity="${(this.txPower / 30) * (1 - i / waveCount)}">
-                                <animate attributeName="stroke-dasharray" from="0,100" to="100,0" dur="${speed}s" repeatCount="indefinite" />
-                            </path>
-                        `;
-            }
             return `
-                        <circle cx="200" cy="120" r="${radius}" stroke="${color}" stroke-width="2" fill="none" opacity="${(this.txPower / 30) * (1 - i / waveCount)}">
-                            <animate attributeName="r" from="${radius}" to="${radius + 30}" dur="${speed}s" repeatCount="indefinite" />
-                            <animate attributeName="opacity" from="${(this.txPower / 30) * (1 - i / waveCount)}" to="0" dur="${speed}s" repeatCount="indefinite" />
-                        </circle>
-                    `;
+                                <circle cx="100" cy="120" r="${radius}" stroke="${color}" stroke-width="2" fill="none" opacity="${(this.txPower / 30) * (1 - i / waveCount)}">
+                                    <animate attributeName="r" from="${radius}" to="${radius + 30}" dur="${speed}s" repeatCount="indefinite" />
+                                    <animate attributeName="opacity" from="${(this.txPower / 30) * (1 - i / waveCount)}" to="0" dur="${speed}s" repeatCount="indefinite" />
+                                </circle>
+                            `;
         }).join('')}
-
-                <!-- Devices -->
-                <iconify-icon icon="solar:smartphone-bold" x="350" y="80" class="text-slate-700 text-xl"></iconify-icon>
-                <iconify-icon icon="solar:laptop-bold" x="50" y="60" class="text-slate-700 text-xl"></iconify-icon>
+                    </svg>
+                </div>
                 
-                <text x="200" y="195" text-anchor="middle" fill="#64748b" font-size="8" font-family="monospace" class="uppercase tracking-widest">PROPAGATION: ${this.frequency}GHZ BAND</text>
-            </svg>
+                <div class="flex items-center gap-10">
+                    <div class="flex flex-col items-center gap-2">
+                        <iconify-icon icon="solar:smartphone-bold" class="text-3xl text-slate-700"></iconify-icon>
+                        <span class="text-[9px] font-black text-slate-500 uppercase">Device A</span>
+                    </div>
+                    <div class="w-24 h-px bg-gradient-to-r from-transparent via-slate-800 to-transparent"></div>
+                    <div class="flex flex-col items-center gap-2">
+                        <iconify-icon icon="solar:laptop-bold" class="text-3xl text-slate-700"></iconify-icon>
+                        <span class="text-[9px] font-black text-slate-500 uppercase">Device B</span>
+                    </div>
+                </div>
+                
+                <text class="text-[9px] font-mono text-slate-500 uppercase tracking-[0.4em]">Propagating: ${this.frequency}GHz Band</text>
+            </div>
         `;
     }
 

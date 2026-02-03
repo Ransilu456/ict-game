@@ -1,4 +1,5 @@
 import LabSimulation from './LabSimulation.js';
+import ThreeDComponents from '../ThreeDComponents.js';
 
 export default class PrinterLab extends LabSimulation {
     cacheControls() {
@@ -49,17 +50,32 @@ export default class PrinterLab extends LabSimulation {
 
     renderFunctional(root, v, t) {
         root.innerHTML = `
-            <svg viewBox="0 0 400 200" class="w-full">
-                <!-- Rotating Drum -->
-                <circle cx="200" cy="100" r="60" fill="none" stroke="#475569" stroke-width="4" stroke-dasharray="10,5">
-                    <animateTransform attributeName="transform" type="rotate" from="0 200 100" to="360 200 100" dur="5s" repeatCount="indefinite" />
-                </circle>
-                <!-- Laser beam -->
-                <line x1="50" y1="100" x2="140" y2="100" stroke="#f43f5e" stroke-width="2" opacity="0.8" />
-                <!-- Charging area -->
-                <path d="M 140 70 A 60 60 0 0 1 200 40" stroke="#fbbf24" stroke-width="4" fill="none" stroke-opacity="${v / 1000}" />
-                <text x="200" y="190" text-anchor="middle" fill="#64748b" font-size="10" font-family="monospace">ELECTROSTATIC FUSION PROCESS</text>
-            </svg>
+            <div class="flex flex-col items-center gap-10 w-full">
+                <div class="relative w-64 h-64">
+                    <div class="absolute inset-0 bg-rose-500/5 blur-3xl rounded-full"></div>
+                    ${ThreeDComponents.getPrinterSVG('#f43f5e')}
+                    
+                    <!-- Fusion Process Visualization -->
+                    <svg viewBox="0 0 200 200" class="absolute inset-0 z-20 pointer-events-none">
+                        <!-- Laser Path -->
+                        <line x1="20" y1="100" x2="80" y2="100" stroke="#f43f5e" stroke-width="2" class="animate-pulse" />
+                        
+                        <!-- Electrostatic Drum Interaction -->
+                        <circle cx="100" cy="110" r="40" fill="none" stroke="#fbbf24" stroke-width="2" stroke-dasharray="10,5" opacity="${v / 1000}">
+                            <animateTransform attributeName="transform" type="rotate" from="0 100 110" to="360 100 110" dur="3s" repeatCount="indefinite" />
+                        </circle>
+                    </svg>
+                </div>
+                
+                <div class="flex gap-4">
+                    <div class="px-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-[10px] font-mono text-slate-400">
+                        DRUM: <span class="text-white">${v}V</span>
+                    </div>
+                    <div class="px-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-[10px] font-mono text-slate-400">
+                        FUSER: <span class="${t > 200 ? 'text-amber-400' : 'text-emerald-400'}">${t}°C</span>
+                    </div>
+                </div>
+            </div>
         `;
     }
 

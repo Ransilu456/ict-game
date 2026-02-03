@@ -13,6 +13,8 @@ import ThermalLab from './techlab/ThermalLab.js';
 import HDMILab from './techlab/HDMILab.js';
 import CameraSwitcher from './techlab/CameraSwitcher.js';
 import WiFiLab from './techlab/WiFiLab.js';
+import StreamingLab from './techlab/StreamingLab.js';
+import ThreeDComponents from './ThreeDComponents.js';
 
 export default class TechLab {
     constructor(game) {
@@ -23,12 +25,12 @@ export default class TechLab {
         this.activeSim = null;
 
         this.categories = [
-            { id: 'all', label: 'All Devices', icon: 'solar:widget-bold' },
-            { id: 'optics', label: 'Optics & Vision', icon: 'solar:camera-bold' },
-            { id: 'comms', label: 'Streaming & Comms', icon: 'solar:transmission-bold' },
-            { id: 'print', label: 'Output Devices', icon: 'solar:printer-bold' },
-            { id: 'net', label: 'Networking', icon: 'solar:server-bold' },
-            { id: 'cables', label: 'Connectivity', icon: 'solar:linear-bold' }
+            { id: 'all', label: 'TL_CAT_ALL', icon: 'solar:widget-bold' },
+            { id: 'optics', label: 'TL_CAT_OPTICS', icon: 'solar:camera-bold' },
+            { id: 'comms', label: 'TL_CAT_COMMS', icon: 'solar:transmission-bold' },
+            { id: 'print', label: 'TL_CAT_PRINT', icon: 'solar:printer-bold' },
+            { id: 'net', label: 'TL_CAT_NET', icon: 'solar:server-bold' },
+            { id: 'cables', label: 'TL_CAT_CABLES', icon: 'solar:linear-bold' }
         ];
 
         this.devices = [
@@ -185,20 +187,32 @@ export default class TechLab {
                 : 'bg-slate-900 border-slate-800 text-slate-500 hover:text-slate-300 hover:border-slate-700'}"
                             data-cat="${cat.id}">
                             <iconify-icon icon="${cat.icon}"></iconify-icon>
-                            ${cat.label}
+                            ${this.game.getText(cat.label)}
                         </button>
                     `).join('')}
                 </div>
 
                 <!-- Device Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    ${filtered.map(device => `
-                        <div class="glass-panel p-6 rounded-[2rem] border border-slate-800/50 bg-slate-900/30 flex flex-col gap-5 hover:border-indigo-500/30 hover:bg-slate-900/50 transition-all group">
+                    ${filtered.map(device => {
+                    let modelSVG = `<iconify-icon icon="${device.icon}"></iconify-icon>`;
+                    if (device.id === 'dslr') modelSVG = ThreeDComponents.getCameraSVG();
+                    else if (device.id === 'ip-cam') modelSVG = ThreeDComponents.getIPCamSVG();
+                    else if (device.id === 'laser-printer') modelSVG = ThreeDComponents.getPrinterSVG();
+                    else if (device.id === 'wifi-router') modelSVG = ThreeDComponents.getRouterSVG();
+                    else if (device.id === 'switch') modelSVG = ThreeDComponents.getComputerSVG();
+                    else if (device.id === 'fiber-optic') modelSVG = ThreeDComponents.getCubeSVG('#6366f1');
+
+                    return `
+                        <div class="glass-panel p-6 rounded-[2rem] border border-slate-800/50 bg-slate-900/30 flex flex-col gap-6 hover:border-indigo-500/30 hover:bg-slate-900/40 transition-all group isometric-card">
                             <div class="flex items-start justify-between">
-                                <div class="w-14 h-14 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center text-indigo-400 text-2xl group-hover:scale-110 transition-transform shadow-inner">
-                                    <iconify-icon icon="${device.icon}"></iconify-icon>
+                                <div class="w-20 h-20 rounded-2xl bg-slate-950 border border-slate-800/50 flex items-center justify-center text-indigo-400 text-3xl group-hover:scale-110 transition-transform shadow-[inset_0_0_20px_rgba(0,0,0,0.5)] relative overflow-hidden">
+                                     <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                     <div class="w-16 h-16 relative z-10">
+                                        ${modelSVG}
+                                     </div>
                                 </div>
-                                <span class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] border border-slate-800 px-3 py-1 rounded-full">${device.category}</span>
+                                <span class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] border border-slate-800 px-3 py-1 rounded-full group-hover:border-indigo-500/50 transition-colors">${device.category}</span>
                             </div>
 
                             <div>
@@ -211,7 +225,7 @@ export default class TechLab {
                                     <div class="text-[9px] font-black text-indigo-500 uppercase tracking-widest mb-1">How it Works</div>
                                     <p class="text-xs text-slate-300 italic opacity-80 leading-relaxed">${device.how}</p>
                                 </div>
-                                <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800/50">
+                                <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800/50 text-center">
                                     <div class="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-1">Lab Note</div>
                                     <p class="text-[11px] text-emerald-400/80">${device.extra}</p>
                                 </div>
@@ -221,7 +235,8 @@ export default class TechLab {
                                 </button>
                             </div>
                         </div>
-                    `).join('')}
+                    `;
+                }).join('')}
                 </div>
             </div>
         `;
@@ -230,44 +245,62 @@ export default class TechLab {
     renderSimulation() {
         const device = this.devices.find(d => d.id === this.currentSimId);
         return `
-            <div class="animate-fade-in p-6 md:p-10 max-w-5xl mx-auto">
-                <button id="exit-sim" class="mb-8 flex items-center gap-2 text-slate-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest">
-                    <iconify-icon icon="solar:arrow-left-outline"></iconify-icon>
-                    Back to Lab
-                </button>
+            <div class="animate-fade-in p-6 md:p-10 max-w-7xl mx-auto flex flex-col h-full bg-slate-950/50 backdrop-blur-xl rounded-[3rem] border border-slate-800/50 my-10 relative overflow-y-auto scrollbar-hide">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-transparent pointer-events-none"></div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Control Panel -->
-                    <div class="lg:col-span-1 space-y-6">
-                        <div class="glass-panel p-6 rounded-3xl border border-slate-800 bg-slate-900/50">
-                            <div class="flex items-center gap-3 mb-6">
-                                <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20">
-                                    <iconify-icon icon="${device.icon}" class="text-xl"></iconify-icon>
-                                </div>
-                                <h3 class="font-bold text-white">${device.title}</h3>
-                            </div>
-                            
-                            <div id="sim-controls" class="space-y-6">
-                                <!-- Dynamically filled by Simulation class -->
-                            </div>
+                <div class="flex items-center justify-between mb-10 relative z-10">
+                    <button id="exit-sim" class="flex items-center gap-3 text-slate-400 hover:text-white transition-all text-xs font-black uppercase tracking-[0.3em] group">
+                        <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center group-hover:border-indigo-500/50">
+                            <iconify-icon icon="solar:arrow-left-bold"></iconify-icon>
                         </div>
+                        <span>${this.game.getText('TL_SIM_RETURN')}</span>
+                    </button>
+                    <div class="px-4 py-2 bg-indigo-600/10 border border-indigo-500/20 rounded-full text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] animate-pulse">
+                        SIM: ${device.title}
+                    </div>
+                </div>
 
-                        <div class="p-6 bg-slate-950/50 rounded-3xl border border-slate-800 border-dashed">
-                            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Live Analysis</h4>
-                            <div id="sim-stats" class="space-y-2 font-mono text-[10px]">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 flex-1 relative z-10">
+                    <!-- Left Aspect: Visualization -->
+                    <div class="lg:col-span-8 flex flex-col gap-6">
+                        <div class="flex-1 bg-slate-950 rounded-[3rem] border-4 border-slate-900/50 shadow-[0_0_50px_rgba(0,0,0,0.5)] relative overflow-hidden group/viewport">
+                             <div class="absolute inset-0 scanlines opacity-5 pointer-events-none z-10"></div>
+                             <div id="sim-viewport" class="w-full h-full flex items-center justify-center p-12 transition-transform duration-700 group-hover/viewport:scale-105"></div>
+                             
+                             <!-- UI Overlays for Viewport -->
+                             <div class="absolute top-6 left-6 flex flex-col gap-1">
+                                <span class="text-[9px] font-black text-slate-600 tracking-[0.2em] uppercase">Status</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                                    <span class="text-[10px] font-mono text-emerald-400 uppercase tracking-widest">${this.game.getText('TL_SIM_LIVE')}</span>
+                                </div>
+                             </div>
+                        </div>
+                        
+                        <div class="glass-panel p-6 rounded-3xl border border-slate-800/50 bg-slate-900/20">
+                            <h4 class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-4">${this.game.getText('TL_SIM_DIAG')}</h4>
+                            <div id="sim-stats" class="grid grid-cols-2 md:grid-cols-3 gap-6 font-mono text-[10px]">
                                 <!-- Dynamically filled -->
                             </div>
                         </div>
                     </div>
 
-                    <!-- Simulation Viewport -->
-                    <div class="lg:col-span-2 relative">
-                        <div class="aspect-video bg-slate-950 rounded-[2.5rem] border-4 border-slate-900 shadow-2xl relative overflow-hidden flex items-center justify-center" id="sim-viewport">
-                             <div id="canvas-root" class="w-full h-full flex items-center justify-center"></div>
-                        </div>
-                        
-                        <div class="absolute -bottom-4 right-8 bg-indigo-600 px-4 py-1 rounded-full text-[10px] font-black text-white uppercase tracking-widest shadow-lg">
-                            Active Simulation
+                    <!-- Right Aspect: Controls -->
+                    <div class="lg:col-span-4 flex flex-col gap-6">
+                        <div class="glass-panel p-8 rounded-[3rem] border border-slate-800 bg-slate-900/40 flex-1">
+                            <div class="flex items-center gap-4 mb-8">
+                                <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20 shadow-inner text-2xl">
+                                    <iconify-icon icon="${device.icon}"></iconify-icon>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-black text-white uppercase tracking-wider text-sm">${device.title}</h3>
+                                    <span class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Interface Node</span>
+                                </div>
+                            </div>
+                            
+                            <div id="sim-controls" class="space-y-8">
+                                <!-- Dynamically filled -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -328,7 +361,8 @@ export default class TechLab {
             'thermal-cam': ThermalLab,
             'hdmi': HDMILab,
             'switcher': CameraSwitcher,
-            'wifi-router': WiFiLab
+            'wifi-router': WiFiLab,
+            'streamer': StreamingLab
         };
 
         const LabClass = labMap[id];

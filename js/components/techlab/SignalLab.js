@@ -1,4 +1,5 @@
 import LabSimulation from './LabSimulation.js';
+import ThreeDComponents from '../ThreeDComponents.js';
 
 export default class SignalLab extends LabSimulation {
     cacheControls() {
@@ -49,14 +50,32 @@ export default class SignalLab extends LabSimulation {
 
     renderFunctional(root, f, b) {
         root.innerHTML = `
-            <svg viewBox="0 0 400 200" class="w-full">
-                <path d="M 0 100 ${Array.from({ length: 40 }, (_, i) => `Q ${i * 10 + 5} ${100 - (b / 20) * (i % 2 ? 1 : -1)} ${i * 10 + 10} 100`).join(' ')}" 
-                    stroke="indigo" stroke-width="2" fill="none">
-                     <animate attributeName="stroke-dasharray" from="0,1000" to="1000,0" dur="${20 / f}s" repeatCount="indefinite" />
-                </path>
-                <!-- Transmitter -->
-                <circle cx="20" cy="100" r="10" fill="indigo" />
-            </svg>
+            <div class="flex flex-col items-center gap-10 w-full">
+                <div class="relative w-64 h-64">
+                    <div class="absolute inset-0 bg-indigo-500/10 blur-3xl rounded-full"></div>
+                    ${ThreeDComponents.getAntennaSVG('#6366f1')}
+                    
+                    <!-- Signal Waves Visualization -->
+                    <svg viewBox="0 0 200 200" class="absolute inset-0 z-20 pointer-events-none">
+                        <path d="M 100 40 ${Array.from({ length: 20 }, (_, i) => `Q ${100 + i * 5 + 2.5} ${40 - (b / 40) * (i % 2 ? 1 : -1)} ${100 + i * 5 + 5} 40`).join(' ')}" 
+                            stroke="#fbbf24" stroke-width="2" fill="none" opacity="0.6">
+                             <animate attributeName="stroke-dasharray" from="0,1000" to="1000,0" dur="${20 / f}s" repeatCount="indefinite" />
+                        </path>
+                    </svg>
+                </div>
+                
+                <div class="glass-panel px-6 py-4 rounded-2xl border border-slate-800 bg-slate-900/40 flex items-center gap-6">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]"></div>
+                        <span class="text-[10px] font-black text-white uppercase tracking-widest">${f} GHz</span>
+                    </div>
+                    <div class="w-px h-4 bg-slate-800"></div>
+                    <div class="flex items-center gap-2">
+                        <iconify-icon icon="solar:transmission-bold" class="text-indigo-400"></iconify-icon>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${b} MBPS</span>
+                    </div>
+                </div>
+            </div>
         `;
     }
 

@@ -1,220 +1,145 @@
 /**
- * Level 8: SQL Query Builder
- * Mechanic: Drag and Drop keywords to form valid SQL queries.
+ * Level 8: Final Exam
+ * Mechanic: Timed Multiple Choice Quiz
+ * Refactored using Component Architecture & Silent Feedback
  */
+
+import GameButton from '../components/GameButton.js';
+import Card from '../components/Card.js';
+import QuestionCard from '../components/QuestionCard.js';
 
 export default {
     init(container, gameEngine) {
         this.container = container;
         this.game = gameEngine;
-        this.currentStage = 0;
+        this.currentQuestion = 0;
+        this.score = 0;
+        this.userAnswers = [];
 
-        // Tasks
-        this.challenges = [
-            {
-                id: 1,
-                desc: "Select all usernames from the 'users' table.",
-                answer: ["SELECT", "username", "FROM", "users"],
-                options: ["SELECT", "FROM", "users", "username", "WHERE", "id=1", "*"]
-            },
-            {
-                id: 2,
-                desc: "Find the user where id is 5.",
-                answer: ["SELECT", "*", "FROM", "users", "WHERE", "id=5"],
-                options: ["SELECT", "*", "FROM", "users", "WHERE", "id=5", "DELETE", "AND"]
-            },
-            {
-                id: 3,
-                desc: "Get emails of 'admin' users.",
-                answer: ["SELECT", "email", "FROM", "users", "WHERE", "role='admin'"],
-                options: ["SELECT", "email", "FROM", "WHERE", "role='admin'", "users", "update", "DROP"]
-            }
+        // Timer Logic
+        this.timeLeft = 15;
+        this.timerInterval = null;
+
+        this.questions = [
+            { q: "Which component is the 'Brain' of the computer?", options: ["GPU", "RAM", "CPU", "SSD"], answer: 2 },
+            { q: "Which protocol secures web traffic?", options: ["HTTP", "FTP", "HTTPS", "SMTP"], answer: 2 },
+            { q: "What does 'SSD' stand for?", options: ["Super Speed Drive", "Solid State Drive", "System Storage Disk", "Serial Standard Data"], answer: 1 },
+            { q: "In Binary, what is 1 + 1?", options: ["2", "11", "10", "01"], answer: 2 },
+            { q: "Which logic gate outputs 1 only if BOTH inputs are 1?", options: ["OR", "XOR", "NAND", "AND"], answer: 3 },
+            { q: "What layer of OSI handles Routing?", options: ["Data Link", "Network", "Transport", "Physical"], answer: 1 },
+            { q: "Which is a valid Python Variable name?", options: ["2cool", "class", "user_name", "my-var"], answer: 2 },
+            { q: "SQL command to fetch data?", options: ["GET", "SELECT", "FETCH", "PULL"], answer: 1 }
         ];
 
-        this.currentSlots = []; // To store what's in the droppable area
+        this.startLevel();
+    },
 
+    startLevel() {
         this.render();
     },
 
+    startTimer() {
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        this.timeLeft = 15;
+        this.timerInterval = setInterval(() => {
+            this.timeLeft--;
+            this.updateTimerUI();
+            if (this.timeLeft <= 0) {
+                this.recordAnswer(-1); // Timeout
+            }
+        }, 1000);
+    },
+
     render() {
-        const challenge = this.challenges[this.currentStage];
-        this.currentSlots = []; // Reset current attempt
+        this.container.innerHTML = '';
+        const qData = this.questions[this.currentQuestion];
 
-        this.container.innerHTML = `
-            <div class="flex flex-col max-w-4xl mx-auto space-y-6 animate-fade-in p-2">
-
-                
-                <div class="text-center">
-                    <h2 class="text-3xl font-bold text-white tracking-wider mb-2">${this.game.getText('L8_TITLE')}</h2>
-                    <p class="text-slate-400">Task ${this.currentStage + 1}: ${challenge.desc}</p>
-                </div>
-
-                <!-- Query Builder Area -->
-                <div class="glass-panel p-8 rounded-xl border border-slate-700 min-h-[150px] flex items-center justify-center relative bg-slate-900/50">
-                    <div class="absolute top-2 left-4 text-xs font-mono text-slate-500 uppercase">Input Terminal</div>
-                    
-                    <div id="drop-zone" class="flex flex-wrap gap-3 items-center justify-start w-full min-h-[60px] p-4 rounded-lg border-2 border-dashed border-slate-700 bg-slate-950/30">
-                        <span class="text-slate-600 text-sm italic select-none pointer-events-none w-full text-center" id="placeholder-text">Drag blocks here to build query</span>
-                    </div>
-
-                    <!-- Run Button position absolute or separate? -->
-                </div>
-
-                <!-- Block Palette -->
-                <div class="bg-slate-900 p-6 rounded-xl border border-slate-800">
-                    <div class="text-xs font-mono text-slate-500 uppercase mb-4">Command Palette</div>
-                    <div class="flex flex-wrap gap-3 justify-center" id="palette">
-                        ${challenge.options.map((opt, idx) => `
-                            <div class="draggable-item bg-indigo-600 hover:bg-indigo-500 text-white font-mono px-4 py-2 rounded shadow-lg cursor-grab active:cursor-grabbing border-b-4 border-indigo-800 transition-all select-none"
-                                draggable="true" data-val="${opt}">
-                                ${opt}
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-
-                <!-- Controls -->
-                <div class="flex justify-center gap-4 mt-auto">
-                    <button id="btn-reset-sql" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-medium transition-colors">
-                        Clear
-                    </button>
-                    <button id="btn-run-sql" class="px-8 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold shadow-lg shadow-emerald-900/20 transition-all flex items-center gap-2">
-                        <iconify-icon icon="solar:play-bold"></iconify-icon>
-                        ${this.game.getText('L8_BTN_RUN')}
-                    </button>
-                </div>
-
+        const headerContent = document.createElement('div');
+        headerContent.className = "flex justify-between items-center w-full";
+        headerContent.innerHTML = `
+            <div class="flex items-center gap-4">
+                <span class="text-sm font-bold text-slate-400 uppercase">Question ${this.currentQuestion + 1}/${this.questions.length}</span>
             </div>
+            <div class="text-xl font-mono text-indigo-300">Exam Mode</div>
         `;
 
-        this.attachEvents();
+        const header = new Card({
+            content: headerContent,
+            variant: 'flat',
+            customClass: 'mb-8 border-b border-slate-800 pb-4'
+        });
+
+        // Use QuestionCard for standardized MCQ rendering in Exam
+        const optionsForCard = qData.options.map((opt, idx) => ({
+            id: String(idx),
+            text: opt
+        }));
+
+        this.qCard = new QuestionCard({
+            question: qData.q,
+            options: optionsForCard,
+            selectedId: null,
+            onSelect: (id) => this.recordAnswer(parseInt(id))
+        });
+
+        const timerBar = document.createElement('div');
+        timerBar.className = "w-full h-2 bg-slate-800 rounded-full mb-8 overflow-hidden max-w-2xl mx-auto";
+        timerBar.innerHTML = `<div id="quiz-timer" class="h-full bg-indigo-500 w-full"></div>`;
+
+        this.container.appendChild(header.render());
+        this.container.appendChild(timerBar);
+        this.container.innerHTML += this.qCard.render();
+        this.qCard.attach(this.container);
+
+        this.startTimer();
     },
 
-    attachEvents() {
-        const palette = this.container.querySelector('#palette');
-        const dropZone = this.container.querySelector('#drop-zone');
-        const placeholder = this.container.querySelector('#placeholder-text');
-
-        // Drag Events
-        let draggedItem = null;
-
-        this.container.querySelectorAll('.draggable-item').forEach(item => {
-            item.addEventListener('dragstart', (e) => {
-                draggedItem = e.target;
-                e.dataTransfer.setData('text/plain', e.target.dataset.val);
-                e.dataTransfer.effectAllowed = 'copy';
-                setTimeout(() => item.classList.add('opacity-50'), 0);
-            });
-            item.addEventListener('dragend', () => {
-                draggedItem.classList.remove('opacity-50');
-                draggedItem = null;
-            });
-        });
-
-        // Drop Zone Events
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'copy';
-            dropZone.classList.add('border-indigo-500');
-        });
-
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('border-indigo-500');
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('border-indigo-500');
-            const data = e.dataTransfer.getData('text/plain');
-
-            if (data) {
-                this.addBlockToZone(data);
-            }
-        });
-
-        // Click to add support (for mobile mostly or ease)
-        this.container.querySelectorAll('#palette .draggable-item').forEach(item => {
-            item.addEventListener('click', () => {
-                this.addBlockToZone(item.dataset.val);
-            });
-        });
-
-        // Reset
-        this.container.querySelector('#btn-reset-sql').addEventListener('click', () => {
-            dropZone.innerHTML = '';
-            dropZone.appendChild(placeholder);
-            placeholder.style.display = 'block';
-            this.currentSlots = [];
-        });
-
-        // Run
-        this.container.querySelector('#btn-run-sql').addEventListener('click', () => {
-            this.checkSolution();
-        });
+    updateTimerUI() {
+        const bar = document.getElementById('quiz-timer');
+        if (bar) {
+            const pct = (this.timeLeft / 15) * 100;
+            bar.style.width = `${pct}%`;
+            if (pct < 30) bar.className = "h-full bg-rose-500 transition-all duration-1000 ease-linear";
+        }
     },
 
-    addBlockToZone(val) {
-        const dropZone = this.container.querySelector('#drop-zone');
-        const placeholder = this.container.querySelector('#placeholder-text');
+    recordAnswer(selectedIndex) {
+        clearInterval(this.timerInterval);
 
-        if (placeholder) placeholder.style.display = 'none';
+        const qData = this.questions[this.currentQuestion];
+        const isCorrect = selectedIndex === qData.answer;
 
-        const block = document.createElement('div');
-        block.className = "bg-slate-700 text-white font-mono px-3 py-1 rounded border border-slate-600 flex items-center gap-2 animate-fade-in";
-        block.innerHTML = `
-            <span>${val}</span>
-            <button class="text-slate-400 hover:text-rose-400 ml-1 text-xs px-1">&times;</button>
-        `;
-
-        // Remove on click x
-        block.querySelector('button').addEventListener('click', () => {
-            block.remove();
-            this.updateCurrentSlots();
-            if (dropZone.querySelectorAll('div').length === 0) {
-                placeholder.style.display = 'block';
-            }
+        // Record Answer Silently
+        this.userAnswers.push({
+            question: qData.q,
+            selected: selectedIndex === -1 ? "Timeout" : qData.options[selectedIndex],
+            correct: qData.options[qData.answer],
+            isCorrect: isCorrect,
+            explanation: "Review course material."
         });
-
-        dropZone.appendChild(block);
-        this.updateCurrentSlots();
-    },
-
-    updateCurrentSlots() {
-        const dropZone = this.container.querySelector('#drop-zone');
-        // Re-read children in order
-        this.currentSlots = Array.from(dropZone.querySelectorAll('div > span')).map(el => el.innerText);
-    },
-
-    checkSolution() {
-        const challenge = this.challenges[this.currentStage];
-        const userQuery = this.currentSlots.join(' ');
-        const expectedQuery = challenge.answer.join(' ');
-
-        // Checking array equality simpler
-        const isCorrect = JSON.stringify(this.currentSlots) === JSON.stringify(challenge.answer);
 
         if (isCorrect) {
-            this.game.showFeedback(this.game.getText('RES_SUCCESS'), `Query Executed: <span class="text-emerald-400 font-mono">${userQuery}</span><br>Result: 1 Row(s) Returned.`);
-            setTimeout(() => {
-                this.nextStage();
-            }, 1500);
+            const basePoints = 100;
+            const timeBonus = this.timeLeft * 10;
+            this.score += basePoints + timeBonus;
+        }
+
+        this.currentQuestion++;
+        if (this.currentQuestion < this.questions.length) {
+            this.render();
         } else {
-            this.game.showFeedback('SYNTAX ERROR', `Your Query: <span class="text-rose-400 font-mono">${userQuery}</span><br>Check syntax and order.`);
+            this.finishLevel();
         }
     },
 
-    nextStage() {
-        this.currentStage++;
-        if (this.currentStage < this.challenges.length) {
-            this.render();
-        } else {
-            this.game.completeLevel({
-                success: true,
-                score: 3000,
-                xp: 2500,
-                accuracy: 100,
-                timeBonus: 200
-            }); // Final
-        }
+    finishLevel() {
+        const passed = this.score > 800; // Arbitrary threshold
+        this.game.completeLevel({
+            success: passed,
+            score: this.score,
+            xp: passed ? 2000 : 500,
+            accuracy: Math.floor((this.score / (this.questions.length * 250)) * 100),
+            detailedResults: this.userAnswers
+        });
     }
 };

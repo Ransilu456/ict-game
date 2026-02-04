@@ -202,8 +202,8 @@
         </main>
     </div>
 
-    <!-- Feedback Modal -->
-    <div id="overlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden transition-opacity"></div>
+    <!-- Global Overlay (For Sidebar & Modals) -->
+    <div id="overlay" class="fixed inset-0 z-50 transition-opacity pointer-events-none opacity-0"></div>
     <div id="feedback-modal"
         class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm glass-panel p-6 rounded-2xl border border-slate-700 z-50 hidden shadow-2xl transform scale-95 transition-all">
         <div class="flex items-start gap-4 mb-4">

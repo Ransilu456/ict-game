@@ -1,297 +1,145 @@
 /**
- * Level 3: Networking (OSI Model)
- * Phase 1: Sort OSI Layers
- * Phase 2: Match Protocols
- * Refactored for Dashboard UI + Tailwind
+ * Level 3: Logic Gates
+ * Mechanic: Digital Logic Circuits
+ * Refactored using Component Architecture, Silent Feedback & Feedback Component
  */
+
+import GameButton from '../components/GameButton.js';
+import Card from '../components/Card.js';
+import Feedback from '../components/Feedback.js';
 
 export default {
     init(container, gameEngine) {
         this.container = container;
         this.game = gameEngine;
-        this.correctOrder = [7, 6, 5, 4, 3, 2, 1]; // Top to Bottom
-        this.score = 0;
-        this.startTime = Date.now();
+        this.currentStage = 0;
+        this.results = [];
 
-        // Phase 1 Setup
-        this.currentOrder = [...this.correctOrder].sort(() => Math.random() - 0.5);
-        this.phase = 1;
+        this.stages = [
+            { id: 1, type: 'AND', inputs: [0, 0], target: 1, desc: 'Output 1 when ALL inputs are 1.' },
+            { id: 2, type: 'OR', inputs: [0, 0], target: 1, desc: 'Output 1 when ANY input is 1.' },
+            { id: 3, type: 'NAND', inputs: [1, 1], target: 0, desc: 'Output 0 only when ALL inputs are 1.' },
+            { id: 4, type: 'XOR', inputs: [1, 1], target: 0, desc: 'Output 1 when inputs are DIFFERENT.' },
+            { id: 5, type: 'COMBO', inputs: [0, 1, 0], target: 1, desc: '(A AND B) OR C' }
+        ];
+
+        this.stageInputs = this.stages.map(s => [...s.inputs]);
 
         this.render();
     },
 
     render() {
-        if (this.phase === 1) {
-            this.renderPhase1();
-        } else {
-            this.renderPhase2();
-        }
-    },
+        this.container.innerHTML = '';
+        const stage = this.stages[this.currentStage];
+        const currentInputs = this.stageInputs[this.currentStage];
+        const currentOutput = this.calculateOutput(stage.type, currentInputs);
 
-    /* PHASE 1: OSI SORT */
-    renderPhase1() {
-        this.container.innerHTML = `
-            <div class="flex flex-col items-center justify-center animate-fade-in gap-6">
+        const header = new Card({
+            title: `Circuit Board ${this.currentStage + 1}`,
+            subtitle: `Logical Verification Required.`,
+            variant: 'flat',
+            customClass: 'text-center mb-6'
+        });
 
-                
-                <div class="text-center">
-                    <h2 class="text-3xl font-bold text-white mb-2">${this.game.getText('L3_TITLE')}</h2>
-                    <p class="text-slate-400 max-w-lg mx-auto">${this.game.getText('L3_DESC')}</p>
-                </div>
+        const objectiveFeedback = new Feedback({
+            title: "Logic Goal",
+            message: `${stage.desc} | Target Output Must Be: ${stage.target}`,
+            type: "neutral"
+        });
 
-                <div class="flex gap-8 items-start">
-                    <!-- Layer Stack -->
-                    <div id="osi-stack" class="flex flex-col gap-2 p-6 glass-panel rounded-xl border border-indigo-500/30 w-80 min-h-[500px] shadow-2xl">
-                        <div class="text-xs text-slate-500 font-bold uppercase text-center mb-2 tracking-widest">Application Layer (Top)</div>
-                        
-                        ${this.currentOrder.map(layerNum => `
-                            <div class="osi-layer p-4 bg-slate-800/80 border border-slate-600 rounded-lg text-center cursor-move hover:border-indigo-500 hover:bg-slate-700 transition-all font-mono font-bold text-slate-200 shadow-sm" 
-                                draggable="true" data-layer="${layerNum}">
-                                <div class="flex items-center justify-between">
-                                    <iconify-icon icon="solar:hamburger-menu-linear" class="text-slate-500"></iconify-icon>
-                                    <span>${this.game.getText(`L3_LAYER_${layerNum}`)}</span>
-                                    <span class="text-xs text-slate-500 bg-slate-900 px-2 py-0.5 rounded">L${layerNum}</span>
-                                </div>
-                            </div>
-                        `).join('')}
-                        
-                        <div class="text-xs text-slate-500 font-bold uppercase text-center mt-auto tracking-widest">Physical Layer (Bottom)</div>
-                    </div>
+        const circuitArea = document.createElement('div');
+        circuitArea.className = "relative w-full max-w-3xl mx-auto h-[400px] bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl p-8 flex items-center justify-between overflow-hidden group";
 
-                    <!-- Instructions / Status -->
-                    <div class="w-64 flex flex-col gap-4 pt-12">
-                        <div class="glass-panel p-4 rounded-lg border border-slate-700">
-                             <h4 class="text-white font-bold mb-2">Objective</h4>
-                             <p class="text-sm text-slate-400">Drag and drop layers to arrange the OSI Model in the correct descending order (7 to 1).</p>
-                        </div>
-                        
-                        <button id="btn-check-osi" class="w-full px-6 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold tracking-wide shadow-lg shadow-indigo-900/20 transition-all hover:scale-105 flex items-center justify-center gap-2">
-                             <iconify-icon icon="solar:check-circle-bold"></iconify-icon>
-                             VERIFY STACK
-                        </button>
-                    </div>
-                </div>
-
-            </div>
+        circuitArea.innerHTML = `
+            <div class="absolute inset-0 opacity-10 circuit-board pointer-events-none"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-900/10 to-transparent pointer-events-none"></div>
         `;
-        this.attachEventsPhase1();
-    },
 
-    attachEventsPhase1() {
-        const list = this.container.querySelector('#osi-stack');
-        let draggedItem = null;
+        const inputsContainer = document.createElement('div');
+        inputsContainer.className = "flex flex-col gap-8 items-center z-10";
 
-        list.addEventListener('dragstart', (e) => {
-            draggedItem = e.target.closest('.osi-layer');
-            e.dataTransfer.effectAllowed = 'move';
-            // setTimeout(() => draggedItem.classList.add('opacity-50'), 0);
-            draggedItem.style.opacity = '0.5';
-        });
-
-        list.addEventListener('dragend', (e) => {
-            e.target.style.opacity = '1';
-            draggedItem = null;
-        });
-
-        list.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            const afterElement = this.getDragAfterElement(list, e.clientY);
-            if (afterElement == null) {
-                // Insert before the bottom label div (last-child logic check)
-                // Actually our structure has divs then a label div.
-                // We typically append if no afterElement, but exclude the "text-xs" div at bottom?
-                // Let's keep it simple: insertBefore logic.
-                // If null, we might be at bottom.
-                // list.appendChild(draggedItem); // Be careful of the bottom label
-                // Let's target only .osi-layer container or keep labels outside?
-                // I put labels INSIDE #osi-stack. Better to put them inside but use logic to ignore them.
-                // Or easier: insertBefore the "Physical Layer" label which is last child.
-                const bottomLabel = list.lastElementChild;
-                list.insertBefore(draggedItem, bottomLabel);
-            } else {
-                list.insertBefore(draggedItem, afterElement);
-            }
-        });
-
-        this.container.querySelector('#btn-check-osi').addEventListener('click', () => {
-            this.verifyStack();
-        });
-    },
-
-    getDragAfterElement(container, y) {
-        const draggableElements = [...container.querySelectorAll('.osi-layer:not(.dragging)')];
-
-        return draggableElements.reduce((closest, child) => {
-            const box = child.getBoundingClientRect();
-            const offset = y - box.top - box.height / 2;
-            if (offset < 0 && offset > closest.offset) {
-                return { offset: offset, element: child };
-            } else {
-                return closest;
-            }
-        }, { offset: Number.NEGATIVE_INFINITY }).element;
-    },
-
-    verifyStack() {
-        const layers = Array.from(this.container.querySelectorAll('.osi-layer'));
-        const userOrder = layers.map(el => parseInt(el.dataset.layer));
-        const isCorrect = JSON.stringify(userOrder) === JSON.stringify(this.correctOrder);
-
-        if (isCorrect) {
-            layers.forEach(l => {
-                l.classList.remove('bg-slate-800/80', 'border-slate-600');
-                l.classList.add('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-300');
-                l.querySelector('iconify-icon').className = "text-emerald-500";
-            });
-
-            this.score += 500;
-            this.game.showFeedback(this.game.getText('RES_SUCCESS'), 'OSI Stack Verified. Initializing Protocol Handshake...');
-
-            setTimeout(() => {
-                this.phase = 2;
+        currentInputs.forEach((val, idx) => {
+            const btn = document.createElement('button');
+            btn.className = `w-16 h-16 rounded-full border-4 transition-all flex items-center justify-center text-2xl font-bold font-mono shadow-lg hover:scale-110 active:scale-95 z-20 ${val ? 'bg-emerald-500 border-emerald-400 text-white shadow-emerald-500/20' : 'bg-slate-800 border-slate-600 text-slate-500 shadow-black/20'}`;
+            btn.innerText = val;
+            btn.onclick = () => {
+                this.stageInputs[this.currentStage][idx] = val ? 0 : 1;
                 this.render();
-            }, 1500);
-        } else {
-            this.game.showFeedback(this.game.getText('RES_FAIL'), 'Layer Mismatch detected. Connection unstable.');
-            this.score = Math.max(0, this.score - 250);
-            this.game.updateHUD(); // Sync score penalty
+            };
+            inputsContainer.appendChild(btn);
+        });
+
+        const gate = document.createElement('div');
+        gate.className = "w-32 h-32 glass-panel rounded-xl border-2 border-indigo-500/50 flex flex-col items-center justify-center z-10 relative isolate";
+        gate.innerHTML = `
+            <div class="absolute -inset-4 bg-indigo-500/20 blur-xl -z-10 rounded-full"></div>
+            <iconify-icon icon="solar:chip-bold" class="text-5xl text-indigo-400 mb-2"></iconify-icon>
+            <span class="font-black text-white tracking-widest text-lg">${stage.type}</span>
+        `;
+
+        const outputNode = document.createElement('div');
+        outputNode.className = `w-20 h-20 rounded-full border-4 transition-all flex items-center justify-center text-3xl font-bold font-mono shadow-2xl z-10 ${currentOutput ? 'bg-cyan-500 border-cyan-400 text-white shadow-cyan-500/40 animate-pulse' : 'bg-slate-900 border-slate-700 text-slate-600'}`;
+        outputNode.innerText = currentOutput;
+
+        circuitArea.appendChild(inputsContainer);
+        circuitArea.appendChild(gate);
+        circuitArea.appendChild(outputNode);
+
+        const card = new Card({
+            content: circuitArea,
+            variant: 'glass',
+            footer: new GameButton({
+                text: "Confirm Configuration",
+                variant: 'primary',
+                icon: "solar:bolt-bold",
+                onClick: () => this.recordStage(stage.target, currentOutput)
+            }).render()
+        });
+
+        this.container.appendChild(header.render());
+        this.container.appendChild(objectiveFeedback.render());
+        this.container.appendChild(card.render());
+    },
+
+    calculateOutput(type, inputs) {
+        const [a, b, c] = inputs;
+        switch (type) {
+            case 'AND': return (a && b) ? 1 : 0;
+            case 'OR': return (a || b) ? 1 : 0;
+            case 'NOT': return (!a) ? 1 : 0;
+            case 'NAND': return (!(a && b)) ? 1 : 0;
+            case 'XOR': return (a !== b) ? 1 : 0;
+            case 'COMBO': return ((a && b) || c) ? 1 : 0;
+            default: return 0;
         }
     },
 
-    /* PHASE 2: PROTOCOLS */
-    renderPhase2() {
-        const protocols = [
-            { id: 'http', label: 'HTTP/HTTPS', layer: 7, icon: 'solar:globe-bold' },
-            { id: 'ip', label: 'IP Address', layer: 3, icon: 'solar:routing-2-bold' },
-            { id: 'mac', label: 'MAC Address', layer: 2, icon: 'solar:network-bold' }
-        ];
+    recordStage(target, current) {
+        const stage = this.stages[this.currentStage];
+        const isSuccess = target === current;
 
-        this.container.innerHTML = `
-             <div class="flex flex-col items-center justify-center animate-fade-in gap-8">
-
-                
-                <div class="text-center">
-                    <h2 class="text-3xl font-bold text-white mb-2">${this.game.getText('L3_PROTO_TITLE')}</h2>
-                    <p class="text-slate-400 max-w-lg mx-auto">${this.game.getText('L3_PROTO_DESC')}</p>
-                </div>
-
-                <div class="flex flex-col md:flex-row gap-12 w-full max-w-4xl justify-center">
-                    
-                    <!-- Stack Targets -->
-                    <div class="flex flex-col w-64 gap-2">
-                         <div class="text-xs text-slate-500 font-bold uppercase mb-2">Target Layers</div>
-                         ${this.correctOrder.map(layerNum => `
-                            <div class="osi-drop-target p-3 border-2 border-dashed border-slate-700 rounded-lg flex items-center justify-between transition-all bg-slate-900/50" data-layer="${layerNum}">
-                                <span class="text-sm font-mono text-slate-500">Layer ${layerNum}</span>
-                                <span class="text-xs text-slate-600 hidden md:block">${this.game.getText(`L3_LAYER_${layerNum}`)}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-
-                    <!-- Protocol Tray -->
-                    <div class="flex flex-col w-64 gap-4">
-                        <div class="text-xs text-slate-500 font-bold uppercase mb-2">Available Protocols</div>
-                        <div class="glass-panel p-4 rounded-xl border border-slate-700 flex flex-col gap-3 min-h-[300px]" id="proto-tray">
-                            ${protocols.map(p => `
-                                <div class="draggable-proto p-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg shadow-lg cursor-grab active:cursor-grabbing flex items-center gap-3 font-bold border-b-4 border-indigo-800" draggable="true" data-id="${p.id}" data-layer="${p.layer}">
-                                    <iconify-icon icon="${p.icon}" class="text-xl opacity-80"></iconify-icon>
-                                    ${p.label}
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-        `;
-
-        this.attachEventsPhase2();
-    },
-
-    attachEventsPhase2() {
-        const draggables = this.container.querySelectorAll('.draggable-proto');
-        const zones = this.container.querySelectorAll('.osi-drop-target');
-        let matchedCount = 0;
-        const totalToMatch = 3;
-
-        draggables.forEach(d => {
-            d.addEventListener('dragstart', (e) => {
-                e.dataTransfer.setData('text/plain', e.target.dataset.layer);
-                e.dataTransfer.setData('id', e.target.dataset.id);
-                setTimeout(() => d.classList.add('opacity-50'), 0);
-            });
-            d.addEventListener('dragend', (e) => e.target.classList.remove('opacity-50'));
+        this.results.push({
+            question: `Circuit ${stage.type}`,
+            selected: `Output ${current}`,
+            correct: `Output ${target}`,
+            isCorrect: isSuccess
         });
 
-        zones.forEach(z => {
-            z.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                if (!z.classList.contains('matched')) {
-                    z.classList.add('border-indigo-500', 'bg-indigo-500/10');
-                }
-            });
-
-            z.addEventListener('dragleave', () => {
-                z.classList.remove('border-indigo-500', 'bg-indigo-500/10');
-            });
-
-            z.addEventListener('drop', (e) => {
-                e.preventDefault();
-                z.classList.remove('border-indigo-500', 'bg-indigo-500/10');
-
-                if (z.classList.contains('matched')) return;
-
-                const layer = parseInt(e.dataTransfer.getData('text/plain'));
-                const draggedId = e.dataTransfer.getData('id');
-                const targetLayer = parseInt(z.dataset.layer);
-
-                if (layer === targetLayer) {
-                    // Success
-                    z.classList.add('matched', 'border-emerald-500', 'bg-emerald-500/20');
-                    z.classList.remove('border-dashed', 'border-slate-700', 'text-slate-500', 'bg-slate-900/50');
-
-                    // Find actual dragged element and remove or move it
-                    // Simple approach: Set content of Drop Zone
-                    const protoLabel = document.querySelector(`.draggable-proto[data-id="${draggedId}"]`).innerText; // Get text
-                    z.innerHTML = `
-                        <div class="flex items-center gap-2 text-emerald-300 font-bold w-full justify-center">
-                            <iconify-icon icon="solar:check-circle-bold"></iconify-icon>
-                            <span>${protoLabel}</span>
-                        </div>
-                    `;
-
-                    // Remove from tray
-                    const originalDraggable = document.querySelector(`.draggable-proto[data-id="${draggedId}"]`);
-                    if (originalDraggable) originalDraggable.remove();
-
-                    matchedCount++;
-                    this.game.showFeedback(this.game.getText('RES_SUCCESS'), `Protocol Assigned to Layer ${layer}.`);
-
-                    if (matchedCount >= totalToMatch) {
-                        this.finishLevel();
-                    }
-                } else {
-                    this.game.showFeedback(this.game.getText('RES_FAIL'), 'Protocol Incompatible with this Layer.');
-                    this.game.gameState.score = Math.max(0, this.game.gameState.score - 250);
-                    this.game.updateHUD(); // Sync penalty
-                }
-            });
-        });
+        this.currentStage++;
+        if (this.currentStage < this.stages.length) {
+            this.render();
+        } else {
+            this.finishLevel();
+        }
     },
 
     finishLevel() {
-        const elapsedSec = Math.floor((Date.now() - this.startTime) / 1000);
-        const timeBonus = Math.max(0, (120 - elapsedSec) * 5); // 2 mins generous
-
-        setTimeout(() => {
-            this.game.completeLevel({
-                success: true,
-                score: this.score + 1000 + timeBonus,
-                xp: 1500,
-                accuracy: 100,
-                timeBonus: timeBonus
-            });
-        }, 1000);
+        const correctCount = this.results.filter(r => r.isCorrect).length;
+        this.game.completeLevel({
+            success: correctCount >= 3,
+            score: correctCount * 300,
+            xp: 1250,
+            detailedResults: this.results
+        });
     }
 };

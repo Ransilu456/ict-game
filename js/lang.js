@@ -62,47 +62,46 @@ export const LANG = {
     L1_MSG_ERR_TITLE: { en: "COMPATIBILITY ERROR", si: " නොගැලපෙන උපාංගයකි" },
     L1_MSG_ERR_BODY: { en: "Hardware mismatch! Item cannot fit into this slot.", si: "මෙම උපාංගය මෙම ස්ලොට් එකට ගැලපෙන්නේ නැත." },
 
-    // Level 2: Python
-    L2_TITLE: { en: "MISSION: CODE REPAIR", si: "මෙහෙයුම: කේත දෝෂ නිවැරදි කිරීම" },
-    L2_DESC: { en: "WARNING: Security breach detected! Identify and patch Python syntax errors before the mainframe is compromised.", si: "අවවාදයයි: ආරක්ෂක දෝෂ සහිතයි! දත්ත සොරකම් කිරීමට පෙර Python කේත දෝෂ නිවැරදි කරන්න." },
-    L2_TASK_PREFIX: { en: "TASK: ", si: "කාර්යය: " },
-    L2_BTN_RUN: { en: "EXECUTE FIX", si: "ධාවනය කරන්න" },
+    // Level 2: Binary (Old L5)
+    L2_TITLE: { en: "MISSION: BINARY TRANSLATION", si: "මෙහෙයුම: ද්වීමය පරිවර්තනය" },
+    L2_DESC: { en: "INTENSE: Decrypt high-capacity 12-bit sequences to maintain neural synchronization.", si: "දැඩි පීඩනය: 12-බිටු දත්ත පේළි කේතනය කර පද්ධතිය සමතුලිත කරන්න." },
+    L2_TARGET_LBL: { en: "TARGET DECIMAL:", si: "ඉලක්කගත දශම අංකය:" },
+    L2_CURRENT_LBL: { en: "CURRENT VALUE:", si: "වත්මන් අගය:" },
+    L2_BTN_CHECK: { en: "VERIFY SYSTEM", si: "පද්ධතිය පරීක්ෂා කරන්න" },
 
-    // Level 3: Networking
-    L3_TITLE: { en: "MISSION: OSI STACK", si: "මෙහෙයුම: OSI ආකෘතිය" },
-    L3_DESC: { en: "Arrange the 7 Layers of the OSI Model in the correct order (Physical to Application).", si: "OSI ආකෘතියේ ස්ථර 7 නිවැරදි අනුපිළිවෙලට සකසන්න." },
-    L3_LAYER_7: { en: "7. Application", si: "7. යෙදුම් (Application)" },
-    L3_LAYER_6: { en: "6. Presentation", si: "6. ඉදිරිපත් කිරීමේ (Presentation)" },
-    L3_LAYER_5: { en: "5. Session", si: "5. සැසි (Session)" },
-    L3_LAYER_4: { en: "4. Transport", si: "4. ප්‍රවාහන (Transport)" },
-    L3_LAYER_3: { en: "3. Network", si: "3. ජාල (Network)" },
-    L3_LAYER_2: { en: "2. Data Link", si: "2. දත්ත සබැඳි (Data Link)" },
-    L3_LAYER_1: { en: "1. Physical", si: "1. භෞතික (Physical)" },
-    L3_PROTO_TITLE: { en: "PHASE 2: PROTOCOLS", si: "අදියර 2: ප්‍රොටෝකෝල" },
-    L3_PROTO_DESC: { en: "Match the protocols to their correct OSI Layer.", si: "ප්‍රොටෝකෝල ඒවාට අදාළ OSI ස්ථරයට ගැලපෙන්න." },
+    // Level 3: Logic Gates (Old L4)
+    L3_TITLE: { en: "MISSION: CIRCUIT LOGIC", si: "මෙහෙයුම: තර්ක ද්වාර (Logic Gates)" },
+    L3_DESC: { en: "Configure the inputs to activate the final output.", si: "ප්‍රතිදානය සක්‍රීය කිරීම සඳහා ආදාන නිවැරදිව සකසන්න." },
+    L3_GATE_AND: { en: "AND GATE", si: "AND ද්වාරය" },
+    L3_GATE_OR: { en: "OR GATE", si: "OR ද්වාරය" },
+    L3_GATE_NOT: { en: "NOT GATE", si: "NOT ද්වාරය" },
+    L3_GATE_XOR: { en: "XOR GATE", si: "XOR ද්වාරය" },
+    L3_GATE_COMBO: { en: "COMBO LOGIC", si: "මිශ්‍ර තර්ක" },
+    L3_BTN_CHECK: { en: "VERIFY CIRCUIT", si: "පරීක්ෂා කරන්න" },
 
-    // Level 4: Logic Gates
-    L4_TITLE: { en: "MISSION: CIRCUIT LOGIC", si: "මෙහෙයුම: තර්ක ද්වාර (Logic Gates)" },
-    L4_DESC: { en: "Configure the inputs to activate the final output.", si: "ප්‍රතිදානය සක්‍රීය කිරීම සඳහා ආදාන නිවැරදිව සකසන්න." },
-    L4_GATE_AND: { en: "AND GATE", si: "AND ද්වාරය" },
-    L4_GATE_OR: { en: "OR GATE", si: "OR ද්වාරය" },
-    L4_GATE_NOT: { en: "NOT GATE", si: "NOT ද්වාරය" },
-    L4_GATE_XOR: { en: "XOR GATE", si: "XOR ද්වාරය" },
-    L4_GATE_COMBO: { en: "COMBO LOGIC", si: "මිශ්‍ර තර්ක" },
-    L4_BTN_CHECK: { en: "VERIFY CIRCUIT", si: "පරීක්ෂා කරන්න" },
+    // Level 4: Python (Old L2)
+    L4_TITLE: { en: "MISSION: CODE REPAIR", si: "මෙහෙයුම: කේත දෝෂ නිවැරදි කිරීම" },
+    L4_DESC: { en: "WARNING: Security breach detected! Identify and patch Python syntax errors before the mainframe is compromised.", si: "අවවාදයයි: ආරක්ෂක දෝෂ සහිතයි! දත්ත සොරකම් කිරීමට පෙර Python කේත දෝෂ නිවැරදි කරන්න." },
+    L4_TASK_PREFIX: { en: "TASK: ", si: "කාර්යය: " },
+    L4_BTN_RUN: { en: "EXECUTE FIX", si: "ධාවනය කරන්න" },
 
-    // Level 5: Binary
-    L5_TITLE: { en: "MISSION: BINARY TRANSLATION", si: "මෙහෙයුම: ද්වීමය පරිවර්තනය" },
-    L5_DESC: { en: "INTENSE: Decrypt high-capacity 12-bit sequences to maintain neural synchronization.", si: "දැඩි පීඩනය: 12-බිටු දත්ත පේළි කේතනය කර පද්ධතිය සමතුලිත කරන්න." },
-    L5_TARGET_LBL: { en: "TARGET DECIMAL:", si: "ඉලක්කගත දශම අංකය:" },
-    L5_CURRENT_LBL: { en: "CURRENT VALUE:", si: "වත්මන් අගය:" },
-    L5_BTN_CHECK: { en: "VERIFY SYSTEM", si: "පද්ධතිය පරීක්ෂා කරන්න" },
+    // Level 5: Networking (Old L3)
+    L5_TITLE: { en: "MISSION: OSI STACK", si: "මෙහෙයුම: OSI ආකෘතිය" },
+    L5_DESC: { en: "Arrange the 7 Layers of the OSI Model in the correct order (Physical to Application).", si: "OSI ආකෘතියේ ස්ථර 7 නිවැරදි අනුපිළිවෙලට සකසන්න." },
+    L5_LAYER_7: { en: "7. Application", si: "7. යෙදුම් (Application)" },
+    L5_LAYER_6: { en: "6. Presentation", si: "6. ඉදිරිපත් කිරීමේ (Presentation)" },
+    L5_LAYER_5: { en: "5. Session", si: "5. සැසි (Session)" },
+    L5_LAYER_4: { en: "4. Transport", si: "4. ප්‍රවාහන (Transport)" },
+    L5_LAYER_3: { en: "3. Network", si: "3. ජාල (Network)" },
+    L5_LAYER_2: { en: "2. Data Link", si: "2. දත්ත සබැඳි (Data Link)" },
+    L5_LAYER_1: { en: "1. Physical", si: "1. භෞතික (Physical)" },
+    L5_PROTO_TITLE: { en: "PHASE 2: PROTOCOLS", si: "අදියර 2: ප්‍රොටෝකෝල" },
+    L5_PROTO_DESC: { en: "Match the protocols to their correct OSI Layer.", si: "ප්‍රොටෝකෝල ඒවාට අදාළ OSI ස්ථරයට ගැලපෙන්න." },
 
-    // Level 6: MCQ
-    L6_TITLE: { en: "MISSION: FINAL EXAM", si: "මෙහෙයුම: අවසාන පරීක්ෂණය" },
-    L6_DESC: { en: "Prove your mastery. Answer all questions correctly to secure the network.", si: "ඔබේ දැනුම තහවුරු කරන්න. ජාලය ආරක්ෂා කිරීමට සියලු ප්‍රශ්නවලට නිවැරදිව පිළිතුරු දෙන්න." },
-    L6_Q_PREFIX: { en: "QUESTION", si: "ප්‍රශ්නය" },
-    L6_BTN_NEXT: { en: "CONFIRM ANSWER", si: "පිළිතුර තහවුරු කරන්න" },
+    // Level 6: SQL (Old L8)
+    L6_TITLE: { en: "MISSION: DATABASE QUERY", si: "මෙහෙයුම: දත්ත සමුදාය" },
+    L6_DESC: { en: "Construct the correct SQL query to retrieve data.", si: "දත්ත ලබා ගැනීම සඳහා නිවැරදි SQL විධානය සකසන්න." },
+    L6_BTN_RUN: { en: "RUN QUERY", si: "විධානය ක්‍රියාත්මක කරන්න" },
 
     // Level 7: Cryptography
     L7_TITLE: { en: "MISSION: DECRYPTION", si: "මෙහෙයුම: රහස් කේත අගුළු හැරීම" },
@@ -111,10 +110,12 @@ export const LANG = {
     L7_HINT_TITLE: { en: "HOW TO PLAY", si: "ක්‍රීඩා කරන ආකාරය" },
     L7_HINT_BODY: { en: "1. The 'Intercepted Data' is scrambled.\n2. Use the slider to shift letters back (e.g. A->B is Shift 1).\n3. Find the key where the text makes sense.\n4. Click Decrypt.", si: "1. දත්ත වෙනස් කර ඇත.\n2. ස්ලයිඩරය භාවිතයෙන් අකුරු මාරු කරන්න.\n3. අර්ථවත් වචනයක් ලැබෙන පරිදි සකසන්න.\n4. විශේධනය ක්ලික් කරන්න." },
 
-    // Level 8: SQL
-    L8_TITLE: { en: "MISSION: DATABASE QUERY", si: "මෙහෙයුම: දත්ත සමුදාය" },
-    L8_DESC: { en: "Construct the correct SQL query to retrieve data.", si: "දත්ත ලබා ගැනීම සඳහා නිවැරදි SQL විධානය සකසන්න." },
-    L8_BTN_RUN: { en: "RUN QUERY", si: "විධානය ක්‍රියාත්මක කරන්න" },
+    // Level 8: MCQ (Old L6)
+    L8_TITLE: { en: "MISSION: FINAL EXAM", si: "මෙහෙයුම: අවසාන පරීක්ෂණය" },
+    L8_DESC: { en: "Prove your mastery. Answer all questions correctly to secure the network.", si: "ඔබේ දැනුම තහවුරු කරන්න. ජාලය ආරක්ෂා කිරීමට සියලු ප්‍රශ්නවලට නිවැරදිව පිළිතුරු දෙන්න." },
+    L8_Q_PREFIX: { en: "QUESTION", si: "ප්‍රශ්නය" },
+    L8_BTN_NEXT: { en: "CONFIRM ANSWER", si: "පිළිතුර තහවුරු කරන්න" },
+
 
     // Level 9: Cloud
     L9_TITLE: { en: "MISSION: CLOUD INFRASTRUCTURE", si: "මෙහෙයුම: ක්ලවුඩ් යටිතල පහසුකම්" },
@@ -235,5 +236,65 @@ export const LANG = {
     LP_BTN_BOOT: { en: "INITIATE BOOT", si: "පද්ධතිය අරඹන්න" },
     LP_BTN_CONFIG: { en: "CORE CONFIG", si: "මූලික සැකසුම්" },
     LP_STAT_SATELLITE: { en: "Satellite: Active", si: "සැටලයිට්: සක්‍රීයයි" },
-    LP_STAT_UPLINK: { en: "Uplink: Secure", si: "සම්බන්ධතාවය: විවෘතයි" }
+    LP_STAT_UPLINK: { en: "Uplink: Secure", si: "සම්බන්ධතාවය: විවෘතයි" },
+
+    // Level 9 Specific Nodes/Envs
+    L9_NODE_WEB1: { en: "Web Server Alpha", si: "වෙබ් සේවාදායකය ඇල්ෆා" },
+    L9_NODE_WEB2: { en: "Web Server Beta", si: "වෙබ් සේවාදායකය බීටා" },
+    L9_NODE_DB_SECURE: { en: "Secure DB Cluster", si: "ආරක්ෂිත දත්ත සමුදාය" },
+    L9_NODE_CACHE_GLOBAL: { en: "Global Cache", si: "ගෝලීය පූර්වාපේක්ෂකය" },
+    L9_NODE_PROXY: { en: "Traffic Proxy", si: "ප්‍රොක්සි සේවාදායකය" },
+    L9_NODE_CDN: { en: "CDN Node", si: "CDN නෝඩය" },
+    L9_ENV_PUBLIC_NAME: { en: "Public Cloud", si: "පොදු ක්ලවුඩ්" },
+    L9_ENV_PRIVATE_NAME: { en: "Private VNET", si: "පෞද්ගලික ජාලය" },
+    L9_ENV_ONPREM_NAME: { en: "Local Datacenter", si: "ප්‍රාදේශීය දත්ත මධ්‍යස්ථානය" },
+    L9_ENV_EDGE_NAME: { en: "Edge Gateway", si: "එජ් ද්වාරය" },
+
+    // Level 10 Packet Details
+    L10_PKT_HTTP: { en: "Web Request", si: "වෙබ් ඉල්ලීම" },
+    L10_PKT_SSH: { en: "Remote Login", si: "දුරස්ථ පිවිසුම" },
+    L10_PKT_HTTPS: { en: "Secure Sub", si: "ආරක්ෂිත වෙබ් සම්බන්ධතාවය" },
+    L10_PKT_MYSQL: { en: "DB Query", si: "දත්ත විමසුම" },
+    L10_PKT_DNS: { en: "Name Lookup", si: "නාම සෙවීම" },
+    L10_PKT_TROJAN: { en: "Backdoor", si: "අනිෂ්ට මෘදුකාංග" },
+    L10_PKT_PROXY: { en: "Traffic Forward", si: "ගමනාගමන යොමු කිරීම" },
+    L10_PKT_TELNET: { en: "Insecure Shell", si: "අනාරක්ෂිත ශෙල්" },
+    L10_PKT_SMB: { en: "File Share", si: "ගොනු හුවමාරුව" },
+    L10_PKT_NTP: { en: "Time Sync", si: "වේලාව සමමුහුර්ත කිරීම" },
+
+    // Level 12 AI Signals
+    L12_DATA_PATTERN: { en: "Pattern Detected: 0xAF32", si: "රටාව හඳුනා ගන්නා ලදී: 0xAF32" },
+    L12_DATA_STATIC: { en: "Static Interruption: RRRR", si: "ස්ථිතික බාධාව: RRRR" },
+    L12_DATA_SYNC: { en: "Neural Sync: Stable", si: "සනායුක සමමුහුර්තකරණය: ස්ථාවරයි" },
+    L12_DATA_BINARY: { en: "Binary Cluster: Alpha", si: "ද්වීමය පොකුර: ඇල්ෆා" },
+    L12_DATA_RADIATION: { en: "Background Radiation", si: "පසුබිම් විකිරණය" },
+    L12_DATA_CORRUPT: { en: "Corrupted Packet: NULL", si: "පළුදු වූ පැකට්ටුව: NULL" },
+    L12_DATA_CONSISTENT: { en: "Data Stream: Consistent", si: "දත්ත ප්‍රවාහය: අනුකූලයි" },
+    L12_DATA_FRAGMENT: { en: "Unidentified Fragment", si: "හඳුනා නොගත් කොටස" },
+
+    // Level 14 History
+    L14_HIST_1969: { en: "ARPANET Protocol (1969)", si: "ARPANET ප්‍රොටෝකෝලය (1969)" },
+    L14_HIST_1989: { en: "Creation of WWW (1989)", si: "WWW නිර්මාණය (1989)" },
+    L14_HIST_2012: { en: "IPv6 Launch (2012)", si: "IPv6 දියත් කිරීම (2012)" },
+
+    // Level 16 HUD
+    L16_HUD_INTEGRITY: { en: "Neural Link Integrity", si: "සනායුක සම්බන්ධතා අඛණ්ඩතාව" },
+    L16_HUD_OVERRIDE: { en: "Master Protocol Active // Terminal Security Override Engagement.", si: "ප්‍රධාන ප්‍රොටෝකෝලය ක්‍රියාත්මකයි // ටර්මිනල් ආරක්ෂක පාලනය." },
+
+    // Level 16 Questions (Sampling - I will use a few to demonstrate and then generalize)
+    L16_Q1: { en: "Which layer of OSI handles IP routing?", si: "IP රවුටින් භාරව කටයුතු කරන්නේ OSI හි කුමන ස්ථරයද?" },
+    L16_Q2: { en: "In Python, what keyword defines a function?", si: "පයිතන් හි ශ්‍රිතයක් (Function) අර්ථ දැක්වීමට භාවිතා කරන වචනය කුමක්ද?" },
+    L16_Q3: { en: "Binary 1010 is equal to decimal:", si: "ද්වීමය 1010 දශමය අගයකට හැරවූ විට:" },
+    L16_Q4: { en: "Default Port for HTTPS:", si: "HTTPS සඳහා පෙරනිමි තොට (Default Port):" },
+    L16_Q5: { en: "What does VPN stand for?", si: "VPN යන්නෙහි සම්පූර්ණ නම:" },
+    L16_Q6: { en: "Which CIDR mask represents 255.255.255.192?", si: "255.255.255.192 නියෝජනය කරන CIDR අගය:" },
+    L16_Q7: { en: "Standard for secure data transmission in Cloud:", si: "ක්ලවුඩ් හි දත්ත හුවමාරුව සඳහා වන ආරක්ෂක ප්‍රමිතිය:" },
+    L16_Q8: { en: "First point of contact for external traffic:", si: "බාහිර ජාල සම්බන්ධතාවයක පළමු සම්බන්ධතා ලක්ෂ්‍යය:" },
+    L16_Q9: { en: "What is the Caesar Cipher shift of A to D?", si: "Caesar Cipher මගින් A සිට D දක්වා මාරුව (Shift):" },
+    L16_Q10: { en: "Main advantage of Redis Cache:", si: "Redis Cache හි ප්‍රධාන වාසිය:" },
+    L16_Q11: { en: "Binary 1111 in Decimal:", si: "ද්වීමය 1111 දශමය අගයකට හැරවූ විට:" },
+    L16_Q12: { en: "The most secure Wireless encryption:", si: "වඩාත්ම ආරක්ෂිත රැහැන් රහිත (Wireless) සංකේතන ක්‍රමය:" },
+    L16_Q13: { en: "Port used for SSH:", si: "SSH සඳහා භාවිතා කරන තොට (Port):" },
+    L16_Q14: { en: "A 4-bit nibble can represent how many values?", si: "බිටු 4කින් සමන්විත nibble එකකින් නියෝජනය කළ හැකි අගයන් ගණන:" },
+    L16_Q15: { en: "Protocols used to map IP to MAC:", si: "IP ලිපින MAC ලිපින වලට ගැලපීමට භාවිතා කරන ප්‍රොටෝකෝලය:" }
 };

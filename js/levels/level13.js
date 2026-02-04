@@ -1,7 +1,12 @@
 /**
  * Level 13: Advanced Subnetting
- * Mechanic: Identity Network/Broadcast from CIDR.
+ * Mechanic: Identify Network/Broadcast from CIDR.
+ * Refactored using Component Architecture & Silent Feedback
  */
+
+import GameButton from '../components/GameButton.js';
+import Card from '../components/Card.js';
+import Feedback from '../components/Feedback.js';
 
 export default {
     init(container, gameEngine) {
@@ -9,7 +14,7 @@ export default {
         this.game = gameEngine;
         this.score = 0;
         this.currentIndex = 0;
-        this.totalTasks = 5;
+        this.results = [];
 
         this.scenarios = [
             { ip: '192.168.1.10/24', mask: '255.255.255.0', netId: '192.168.1.0', broadcast: '192.168.1.255' },
@@ -19,100 +24,111 @@ export default {
             { ip: '172.30.0.1/16', mask: '255.255.0.0', netId: '172.30.0.0', broadcast: '172.30.255.255' }
         ];
 
-
         this.render();
     },
 
     render() {
+        this.container.innerHTML = '';
         const scenario = this.scenarios[this.currentIndex];
 
-        this.container.innerHTML = `
-            <div class="max-w-2xl mx-auto">
-                <div class="text-center mb-10">
-                    <h2 class="text-2xl font-bold text-white mb-2">${this.game.getText('L13_TITLE')}</h2>
-                    <p class="text-slate-400">${this.game.getText('L13_DESC')}</p>
+        const header = new Card({
+            title: this.game.getText('L13_TITLE'),
+            subtitle: this.game.getText('L13_DESC'),
+            variant: 'flat',
+            customClass: 'text-center mb-8'
+        });
+
+        const infoFeedback = new Feedback({
+            title: "Analysis Target",
+            message: `Extract the subnet parameters for the host address: <span class="font-mono font-bold text-indigo-400">${scenario.ip}</span>`,
+            type: "neutral"
+        });
+
+        const inputGroup = document.createElement('div');
+        inputGroup.className = "space-y-6";
+        inputGroup.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">${this.game.getText('L13_MASK_LBL')}</label>
+                    <input type="text" id="ans-mask" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-xl text-white font-mono focus:border-indigo-500 transition-colors placeholder:text-slate-800" placeholder="0.0.0.0">
                 </div>
-
-                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
-                    <div class="flex items-center justify-between mb-8 border-b border-indigo-500/20 pb-6">
-                        <div>
-                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">${this.game.getText('L13_IP_LBL')}</span>
-                            <div class="text-4xl font-mono font-black text-indigo-400 tracking-tighter">${scenario.ip}</div>
-                        </div>
-                        <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
-                            <iconify-icon icon="solar:calculator-minimalistic-bold" class="text-3xl"></iconify-icon>
-                        </div>
-                    </div>
-
-                    <div class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[10px] font-bold text-slate-600 uppercase mb-2 block">${this.game.getText('L13_MASK_LBL')}</label>
-                                <input type="text" id="ans-mask" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white font-mono placeholder:text-slate-700 focus:border-indigo-500 transition-colors" placeholder="0.0.0.0">
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-slate-600 uppercase mb-2 block">${this.game.getText('L13_NETID_LBL')}</label>
-                                <input type="text" id="ans-netid" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white font-mono placeholder:text-slate-700 focus:border-indigo-500 transition-colors" placeholder="0.0.0.0">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-600 uppercase mb-2 block">${this.game.getText('L13_BC_LBL')}</label>
-                            <input type="text" id="ans-bc" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white font-mono placeholder:text-slate-700 focus:border-indigo-500 transition-colors" placeholder="0.0.0.0">
-                        </div>
-                    </div>
-
-                    <button id="btn-verify-subnet" class="w-full mt-10 bg-indigo-600 hover:bg-indigo-500 text-white font-black py-4 rounded-2xl shadow-lg shadow-indigo-900/20 transition-all flex items-center justify-center gap-2 group relative overflow-hidden">
-                        <span class="absolute inset-y-0 left-0 w-1 bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform"></span>
-                        <iconify-icon icon="solar:shield-check-bold" class="text-2xl"></iconify-icon>
-                        <span>PROCESS CALCULATION</span>
-                    </button>
-                    
-                    <div class="mt-6 flex justify-center gap-1">
-                        ${Array(this.totalTasks).fill(0).map((_, i) => `
-                            <div class="h-1 w-8 rounded-full ${i <= this.currentIndex ? 'bg-indigo-500' : 'bg-slate-800'}"></div>
-                        `).join('')}
-                    </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">${this.game.getText('L13_NETID_LBL')}</label>
+                    <input type="text" id="ans-netid" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-xl text-white font-mono focus:border-indigo-500 transition-colors placeholder:text-slate-800" placeholder="0.0.0.0">
                 </div>
+            </div>
+            <div>
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">${this.game.getText('L13_BC_LBL')}</label>
+                <input type="text" id="ans-bc" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-xl text-white font-mono focus:border-indigo-500 transition-colors placeholder:text-slate-800" placeholder="0.0.0.0">
             </div>
         `;
 
-        this.attachEvents();
+        const actionBtn = new GameButton({
+            text: "Process Calculation",
+            variant: 'primary',
+            size: 'lg',
+            icon: 'solar:calculator-minimalistic-bold',
+            onClick: () => this.handleVerify()
+        });
+
+        const workspace = new Card({
+            title: "CIDR Decoder Terminal",
+            content: inputGroup,
+            variant: 'glass',
+            footer: actionBtn.render(),
+            customClass: "max-w-2xl mx-auto"
+        });
+
+        const progress = document.createElement('div');
+        progress.className = "flex justify-center gap-1 mt-8";
+        this.scenarios.forEach((_, i) => {
+            progress.innerHTML += `<div class="h-1 w-12 rounded-full ${i <= this.currentIndex ? 'bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]' : 'bg-slate-800'}"></div>`;
+        });
+
+        this.container.appendChild(header.render());
+        this.container.appendChild(infoFeedback.render());
+        this.container.appendChild(workspace.render());
+        this.container.appendChild(progress);
     },
 
-    attachEvents() {
-        const btn = document.getElementById('btn-verify-subnet');
-        btn.onclick = () => {
-            const m = document.getElementById('ans-mask').value.trim();
-            const n = document.getElementById('ans-netid').value.trim();
-            const b = document.getElementById('ans-bc').value.trim();
+    handleVerify() {
+        const m = document.getElementById('ans-mask').value.trim();
+        const n = document.getElementById('ans-netid').value.trim();
+        const b = document.getElementById('ans-bc').value.trim();
+        const s = this.scenarios[this.currentIndex];
 
-            const s = this.scenarios[this.currentIndex];
+        const isCorrect = (m === s.mask && n === s.netId && b === s.broadcast);
 
-            if (m === s.mask && n === s.netid && b === s.broadcast) {
-                this.score += 1000;
-                this.nextScenario();
+        this.results.push({
+            question: `Subnet Analysis: ${s.ip}`,
+            selected: `M:${m} N:${n} B:${b}`,
+            correct: `M:${s.mask} N:${s.netId} B:${s.broadcast}`,
+            isCorrect: isCorrect,
+            explanation: isCorrect ? "Parameters validated." : "Mathematical inconsistency detected."
+        });
+
+        if (isCorrect) {
+            this.currentIndex++;
+            if (this.currentIndex < this.scenarios.length) {
+                this.render();
             } else {
-                this.game.showFeedback('CALCULATION ERROR', 'Mathematical inconsistency detected in the subnet parameters.');
-                this.score = Math.max(0, this.score - 200);
+                this.finishLevel();
             }
-        };
-    },
-
-    nextScenario() {
-        this.currentIndex++;
-        if (this.currentIndex < this.totalTasks) {
-            this.render();
         } else {
-            this.finishLevel();
+            const el = document.querySelector('.glass-panel');
+            el.classList.add('animate-shake', 'border-rose-500');
+            setTimeout(() => el.classList.remove('animate-shake', 'border-rose-500'), 500);
         }
     },
 
     finishLevel() {
+        const correctCount = this.results.filter(r => r.isCorrect).length;
         this.game.completeLevel({
             success: true,
-            score: this.score,
+            score: correctCount * 1000,
             xp: 2000,
-            accuracy: 100
+            accuracy: 100,
+            detailedResults: this.results
         });
     }
 };

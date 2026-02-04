@@ -1,4 +1,4 @@
-import ThreeDComponents from './ThreeDComponents.js';
+import GameButton from './GameButton.js';
 
 export default class LandingPage {
     constructor(game) {
@@ -8,95 +8,156 @@ export default class LandingPage {
     render() {
         const hasSession = !!this.game.gameState.playerName;
 
-        return `
-            <div class="flex flex-col items-center justify-center h-screen w-full relative overflow-hidden animate-fade-in bg-slate-950 noise-overlay">
+        // Return container structure
+        const container = document.createElement('div');
+        container.className = "flex flex-col items-center justify-center h-screen w-full relative overflow-hidden bg-slate-950 bg-noise";
+
+        container.innerHTML = `
+            <!-- Ambient Background -->
+            <div class="absolute inset-0 z-0">
+                <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px] animate-pulse"></div>
+                <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-600/5 rounded-full blur-[100px]"></div>
+            </div>
+
+            <div class="z-10 flex flex-col items-center gap-12 max-w-lg w-full p-6 animate-fade-in text-center">
                 
-                <!-- Background Grid with Subtle Effect -->
-                <div class="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
-                    style="background-image: radial-gradient(circle, #fff 1px, transparent 1px); background-size: 40px 40px;">
+                <div class="flex flex-col items-center gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="h-px w-8 bg-slate-700"></div>
+                        <span class="text-[10px] font-bold text-indigo-400 tracking-[0.5em] uppercase">System Access</span>
+                        <div class="h-px w-8 bg-slate-700"></div>
+                    </div>
+                    
+                    <h1 class="text-6xl font-black text-white tracking-tighter m-0 drop-shadow-2xl">
+                        ICT QUEST
+                    </h1>
+                    
+                    <p class="text-slate-400 text-sm leading-relaxed max-w-md">
+                        Master the fundamentals of computing, networking, and logic in this interactive simulation.
+                    </p>
                 </div>
 
-                <!-- Soft Glow Orbs -->
-                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-[120px] animate-pulse-glow pointer-events-none"></div>
+                <div class="flex flex-col gap-4 w-full" id="lp-actions">
+                    <!-- Buttons Injected via JS -->
+                </div>
 
-                <div class="z-10 text-center flex flex-col items-center gap-12 p-6 relative max-w-4xl w-full">
-                    
-                    <div class="flex flex-col items-center gap-4">
-                        <div class="flex items-center gap-3 mb-2">
-                             <div class="h-px w-12 bg-indigo-500/30"></div>
-                             <span class="text-[10px] font-black text-indigo-400 tracking-[0.6em] uppercase">${this.game.getText('LP_SYS_STATUS')}</span>
-                             <div class="h-px w-12 bg-indigo-500/30"></div>
-                        </div>
-                        <h1 class="text-6xl md:text-8xl font-black text-white tracking-tighter m-0 bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-slate-500">
-                            ICT QUEST
-                        </h1>
-                        <p class="text-slate-500 max-w-md mt-2 font-mono text-xs tracking-widest uppercase opacity-70">
-                            ${this.game.getText('LP_DESC')}
-                        </p>
-                    </div>
-
-                    <div class="flex flex-col gap-4 w-full max-w-lg mt-4">
-                        ${hasSession ? `
-                            <button id="btn-resume-session" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-5 px-8 rounded-2xl transition-all shadow-[0_0_30px_rgba(99,102,241,0.4)] flex items-center justify-center gap-3 text-xl group overflow-hidden relative active:scale-95">
-                                <span class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
-                                <iconify-icon icon="solar:user-bold" class="text-2xl"></iconify-icon>
-                                <span class="relative z-10 uppercase">RESUME AS ${this.game.gameState.playerName}</span>
-                            </button>
-                            <button id="btn-start-fresh" class="w-full text-slate-500 hover:text-white transition-colors text-[10px] font-black uppercase tracking-[0.3em]">
-                                (NOT YOU? START NEW SESSION)
-                            </button>
-                        ` : `
-                            <button id="btn-start-game" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-5 px-8 rounded-2xl transition-all shadow-[0_0_30px_rgba(99,102,241,0.4)] flex items-center justify-center gap-3 text-xl group overflow-hidden relative active:scale-95">
-                                <span class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
-                                <iconify-icon icon="solar:bolt-bold" class="text-2xl"></iconify-icon>
-                                <span class="relative z-10">${this.game.getText('LP_BTN_BOOT')}</span>
-                            </button>
-                        `}
-                    </div>
-
-                    <!-- System Status Ticker -->
-                    <div class="mt-8 pt-8 border-t border-slate-800/50 w-full flex flex-wrap justify-center gap-8 text-[10px] font-mono text-slate-500 uppercase tracking-widest">
-                        <div class="flex items-center gap-2">
-                            <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                            <span>${this.game.getText('LP_STAT_SATELLITE')}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
-                            <span>${this.game.getText('LP_STAT_UPLINK')}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-2 h-2 rounded-full bg-indigo-500"></div>
-                            <span>v3.0.0_STABLE</span>
-                        </div>
-                    </div>
-
+                <div class="mt-8 flex gap-6 text-[10px] font-mono text-slate-600 uppercase tracking-widest">
+                    <span>v3.0.0 Stable</span>
+                    <span>Server: Online</span>
                 </div>
             </div>
-            
-            <style>
-                .animate-float-delayed {
-                    animation: float-delayed 5s ease-in-out infinite;
-                }
-            </style>
         `;
+
+        // Inject Buttons using Component
+        const actionContainer = container.querySelector('#lp-actions');
+
+        if (hasSession) {
+            const resumeBtn = new GameButton({
+                text: `Resume as ${this.game.gameState.playerName}`,
+                variant: 'primary',
+                size: 'lg',
+                icon: 'solar:user-circle-bold',
+                customClass: 'w-full shadow-xl shadow-indigo-500/10',
+                onClick: () => this.game.startGame(true)
+            });
+
+            const newBtn = new GameButton({
+                text: "Start New Session",
+                variant: 'ghost',
+                size: 'sm',
+                onClick: () => {
+                    this.game.gameState.playerName = '';
+                    this.game.gameState.xp = 0;
+                    this.game.gameState.score = 0;
+                    this.game.gameState.maxLevel = 1;
+                    this.game.saveData();
+                    this.game.showScreen('intro');
+                }
+            });
+
+            actionContainer.appendChild(resumeBtn.render());
+            actionContainer.appendChild(newBtn.render());
+        } else {
+            const startBtn = new GameButton({
+                text: "Initialize System",
+                variant: 'primary',
+                size: 'lg',
+                icon: 'solar:power-bold',
+                customClass: 'w-full shadow-xl shadow-indigo-500/10',
+                onClick: () => this.game.showScreen('intro')
+            });
+            actionContainer.appendChild(startBtn.render());
+        }
+
+        // Since app.js expects a STRING return from render normally for innerHTML injection (legacy),
+        // we might break things if app.js does `container.innerHTML = landingPage.render()`.
+        // Let's check app.js usage.
+        // app.js: this.landingPage = new LandingPage(this); ... this.showLanding() { ... this.landingContainer.innerHTML = this.landingPage.render(); attachEvents... }
+        // So yes, it expects a string.
+        // But my GameButton returns a DOM Element.
+        // I can return container.outerHTML but events will be lost.
+        // Refactoring: I should change app.js to handle DOM nodes or make LandingPage handle its own rendering into a container.
+
+        // Workaround compliant with current app.js structure:
+        // Return string, but I can't easily Serialize the GameButton events.
+        // I must change `app.js` or `LandingPage` structure.
+
+        // CHANGE STRATEGY: 
+        // I will return a placeholder string, and use `attachEvents` to render the buttons into the placeholder.
+        // app.js calls `attachEvents` AFTER rendering HTML.
+
+        // But `LandingPage.render` creates the buttons.
+
+        // Let's modify the `render` to just return the HTML structure, and move button creation to `attachEvents` or a new `setup` method.
+        // app.js calls `this.landingPage.attachEvents(this.landingContainer)`.
+
+        return container.outerHTML;
     }
 
     attachEvents(container) {
-        container.querySelector('#btn-start-game')?.addEventListener('click', () => {
-            this.game.showScreen('intro');
-        });
+        // Clear buttons placeholder if any (re-render logic)
+        const actionContainer = container.querySelector('#lp-actions');
+        if (!actionContainer) return;
+        actionContainer.innerHTML = '';
 
-        container.querySelector('#btn-resume-session')?.addEventListener('click', () => {
-            this.game.startGame(true);
-        });
+        const hasSession = !!this.game.gameState.playerName;
 
-        container.querySelector('#btn-start-fresh')?.addEventListener('click', () => {
-            this.game.gameState.playerName = '';
-            this.game.gameState.xp = 0;
-            this.game.gameState.score = 0;
-            this.game.gameState.maxLevel = 1;
-            this.game.saveData();
-            this.game.showScreen('intro');
-        });
+        if (hasSession) {
+            const resumeBtn = new GameButton({
+                text: `Resume as ${this.game.gameState.playerName}`,
+                variant: 'primary',
+                size: 'lg',
+                icon: 'solar:user-circle-bold',
+                customClass: 'w-full shadow-xl shadow-indigo-500/10',
+                onClick: () => this.game.startGame(true)
+            });
+
+            const newBtn = new GameButton({
+                text: "Start New Session",
+                variant: 'ghost',
+                size: 'sm',
+                onClick: () => {
+                    this.game.gameState.playerName = '';
+                    this.game.gameState.xp = 0;
+                    this.game.gameState.score = 0;
+                    this.game.gameState.maxLevel = 1;
+                    this.game.saveData();
+                    this.game.showScreen('intro');
+                }
+            });
+
+            actionContainer.appendChild(resumeBtn.render());
+            actionContainer.appendChild(newBtn.render());
+        } else {
+            const startBtn = new GameButton({
+                text: "Initialize System",
+                variant: 'primary',
+                size: 'lg',
+                icon: 'solar:power-bold',
+                customClass: 'w-full shadow-xl shadow-indigo-500/10',
+                onClick: () => this.game.showScreen('intro')
+            });
+            actionContainer.appendChild(startBtn.render());
+        }
     }
 }

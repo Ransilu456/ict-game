@@ -1,207 +1,191 @@
 /**
- * Level 7: Cryptography (Caesar Cipher)
- * Mechanic: Decrypt messages using a shift cipher tool.
- * Refined for smoother interaction, consistent UI, and Added Tutorial.
+ * Level 7: Cryptography
+ * Mechanic: Caesar Cipher & Frequency Analysis
+ * Refactored using Component Architecture, Silent Feedback & Feedback Component
  */
+
+import GameButton from '../components/GameButton.js';
+import Card from '../components/Card.js';
+import Feedback from '../components/Feedback.js';
 
 export default {
     init(container, gameEngine) {
         this.container = container;
         this.game = gameEngine;
         this.currentStage = 0;
-        this.startTime = Date.now();
+        this.results = [];
 
-        // Define Challenges
-        this.challenges = [
+        this.stages = [
             {
-                id: 1,
-                text: "SYSTEM",
+                method: "Caesar Cipher",
+                msg: "THE SECRET PASSWORD IS BLUEPRINT",
                 shift: 3,
-                hint: "Standard Offset +3"
+                hint: "Frequency Analysis: 'E' is the most common letter."
             },
             {
-                id: 2,
-                text: "FIREWALL",
-                shift: 5,
-                hint: "Level 5 Encryption"
+                method: "Caesar Cipher",
+                msg: "ALWAYS ENCRYPT YOUR BACKUPS",
+                shift: 7,
+                hint: "Look for short words like 'THE' or 'AND'."
             },
             {
-                id: 3,
-                text: "ENCRYPTION",
-                shift: 1,
-                hint: "Minimal Shift"
-            },
-            {
-                id: 4,
-                text: "PASSWORD",
-                shift: 13,
-                hint: "Half Rotation"
+                method: "Vigenère (Simplified)",
+                msg: "SECURITY IS NOT A PRODUCT BUT A PROCESS",
+                shift: 13, // ROT13
+                hint: "Classic Rotation 13."
             }
         ];
 
-        this.currentShift = 0;
+        this.userShift = 0;
         this.render();
     },
 
-    getEncrypted(text, shift) {
+    render() {
+        this.container.innerHTML = '';
+        const stage = this.stages[this.currentStage];
+        const encrypted = this.encrypt(stage.msg, stage.shift);
+        const decryptedView = this.decrypt(encrypted, this.userShift);
+
+        const header = new Card({
+            title: `Decryption Console ${this.currentStage + 1}`,
+            subtitle: `Method: ${stage.method} | Crack the ciphertext.`,
+            variant: 'flat',
+            customClass: 'text-center mb-6'
+        });
+
+        const hintFeedback = new Feedback({
+            title: "Intelligence Hint",
+            message: stage.hint,
+            type: "neutral"
+        });
+
+        const layout = document.createElement('div');
+        layout.className = "flex flex-col lg:flex-row gap-6 h-full";
+
+        // Analysis Tool
+        const analysisContent = document.createElement('div');
+        analysisContent.className = "flex flex-col gap-4";
+
+        analysisContent.innerHTML = `
+            <div class="p-4 bg-slate-900 rounded-lg border border-slate-700">
+                <h4 class="text-xs font-bold text-slate-400 uppercase mb-2">Signal Intercept</h4>
+                <p class="font-mono text-xl text-rose-400 break-all tracking-wider leading-relaxed">${encrypted}</p>
+            </div>
+        `;
+
+        const toolCard = new Card({
+            title: "Cryptanalysis Tools",
+            content: analysisContent,
+            variant: 'glass',
+            customClass: 'w-full lg:w-1/3'
+        });
+
+        // Decryption Controls
+        const controlContent = document.createElement('div');
+        controlContent.className = "flex flex-col items-center justify-center gap-8 py-8";
+
+        const dial = document.createElement('div');
+        dial.className = "flex items-center gap-4";
+        dial.innerHTML = `
+            <button id="shift-down" class="p-4 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-600 transition-all active:scale-95">
+                <iconify-icon icon="solar:minus-circle-bold" class="text-2xl text-slate-300"></iconify-icon>
+            </button>
+            <div class="w-24 h-24 rounded-full border-4 border-indigo-500/30 flex items-center justify-center bg-slate-900 shadow-inner relative">
+                <div class="text-4xl font-mono font-bold text-indigo-400">${this.userShift}</div>
+                <div class="absolute text-[8px] text-slate-500 bottom-4 uppercase tracking-widest">Shift</div>
+            </div>
+            <button id="shift-up" class="p-4 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-600 transition-all active:scale-95">
+                <iconify-icon icon="solar:add-circle-bold" class="text-2xl text-slate-300"></iconify-icon>
+            </button>
+        `;
+
+        const outputPrev = document.createElement('div');
+        outputPrev.className = `w-full p-6 rounded-xl border-2 transition-all text-center bg-slate-950 border-indigo-500/30 text-slate-400`;
+        outputPrev.innerHTML = `
+            <div class="text-xs font-bold opacity-50 uppercase mb-2">Decrypted Message Output</div>
+            <div class="text-xl md:text-2xl font-mono tracking-widest font-bold break-words">${decryptedView}</div>
+        `;
+
+        controlContent.appendChild(dial);
+        controlContent.appendChild(outputPrev);
+
+        const controlCard = new Card({
+            title: "Decipher Output",
+            content: controlContent,
+            variant: 'glass',
+            customClass: 'w-full lg:w-2/3',
+            footer: new GameButton({
+                text: "Confirm Decryption",
+                variant: "primary",
+                icon: "solar:lock-unlocked-bold",
+                onClick: () => this.checkStage(decryptedView, stage.msg, outputPrev)
+            }).render()
+        });
+
+        this.container.appendChild(header.render());
+        this.container.appendChild(hintFeedback.render());
+        layout.appendChild(toolCard.render());
+        layout.appendChild(controlCard.render());
+        this.container.appendChild(layout);
+
+        document.getElementById('shift-down').onclick = () => {
+            this.userShift = (this.userShift - 1 + 26) % 26;
+            this.render();
+        };
+        document.getElementById('shift-up').onclick = () => {
+            this.userShift = (this.userShift + 1) % 26;
+            this.render();
+        };
+    },
+
+    encrypt(text, shift) {
         return text.split('').map(char => {
             if (char.match(/[A-Z]/)) {
                 const code = char.charCodeAt(0);
-                const shifted = ((code - 65 + shift) % 26) + 65;
-                return String.fromCharCode(shifted);
+                return String.fromCharCode(((code - 65 + shift) % 26) + 65);
             }
             return char;
         }).join('');
     },
 
-    getDecrypted(text, shift) {
+    decrypt(text, shift) {
         const offset = (26 - (shift % 26)) % 26;
-        return this.getEncrypted(text, offset);
+        return this.encrypt(text, offset);
     },
 
-    render() {
-        const challenge = this.challenges[this.currentStage];
-        const encryptedText = this.getEncrypted(challenge.text, challenge.shift);
+    checkStage(current, target, visualContainer) {
+        const isCorrect = current === target;
 
-        // Fix: Use flex-col and overflow-y-auto to allow scrolling on small screens if needed.
-        // Add Tutorial Section visible on first stage or via toggle? 
-        // Let's just put it plainly visible for the first level or always visible in a compact way.
-
-        this.container.innerHTML = `
-            <div class="flex flex-col items-center w-full max-w-5xl mx-auto space-y-6 animate-fade-in py-4 md:py-8 px-4">
-
-                
-                <div class="space-y-2 text-center shrink-0">
-                    <h2 class="text-2xl md:text-3xl font-bold text-white tracking-wider">${this.game.getText('L7_TITLE')}</h2>
-                    <p class="text-sm md:text-base text-slate-400 max-w-lg mx-auto">${this.game.getText('L7_DESC')}</p>
-                </div>
-
-                <!-- Tutorial / Hint Box (Visible predominantly on Stage 1) -->
-                ${this.currentStage === 0 ? `
-                <div class="w-full max-w-3xl glass-panel bg-indigo-900/20 border border-indigo-500/40 p-4 rounded-xl flex items-start gap-4">
-                    <iconify-icon icon="solar:info-circle-bold" class="text-2xl text-indigo-400 shrink-0 mt-0.5"></iconify-icon>
-                    <div>
-                        <h4 class="font-bold text-indigo-300 text-sm mb-1">${this.game.getText('L7_HINT_TITLE') || 'Instructions'}</h4>
-                        <p class="text-xs md:text-sm text-slate-300 whitespace-pre-line leading-relaxed">${this.game.getText('L7_HINT_BODY') || 'Shift the letters.'}</p>
-                    </div>
-                </div>` : ''}
-
-                <!-- Decryption Tool -->
-                <div class="w-full glass-panel p-6 md:p-10 rounded-2xl border border-indigo-500/30 shadow-2xl relative bg-slate-900/40 shrink-0">
-
-                    <div class="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-rose-500 to-transparent left-0 opacity-50"></div>
-                    
-                    <div class="flex flex-col md:flex-row gap-8 items-center justify-center">
-                        
-                        <!-- Screen: Encrypted -->
-                        <div class="flex-1 space-y-2 w-full text-center md:text-left">
-                            <div class="text-xs text-rose-400 font-bold uppercase tracking-widest">Intercepted</div>
-                            <div class="glass-panel bg-slate-950 border-rose-500/30 p-4 md:p-6 rounded-xl relative flex justify-center md:justify-start">
-                                <iconify-icon icon="solar:lock-keyhole-bold-duotone" class="text-rose-500 absolute top-2 right-2 text-xl opacity-50"></iconify-icon>
-                                <div class="font-mono text-2xl md:text-4xl font-bold text-rose-500 tracking-[0.2em] break-all drop-shadow-[0_0_10px_rgba(244,63,94,0.5)]">
-                                    ${encryptedText}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Arrow -->
-                        <div class="text-slate-600 shrink-0">
-                             <iconify-icon icon="solar:arrow-right-broken" class="text-3xl md:text-4xl md:rotate-0 rotate-90"></iconify-icon>
-                        </div>
-
-                        <!-- Screen: Decrypted -->
-                        <div class="flex-1 space-y-2 w-full text-center md:text-left">
-                            <div class="text-xs text-emerald-400 font-bold uppercase tracking-widest">Result</div>
-                            <div class="glass-panel bg-slate-950 border-emerald-500/30 p-4 md:p-6 rounded-xl relative flex justify-center md:justify-start">
-                                <iconify-icon icon="solar:shield-check-bold-duotone" class="text-emerald-500 absolute top-2 right-2 text-xl opacity-50"></iconify-icon>
-                                <div class="font-mono text-2xl md:text-4xl font-bold text-emerald-400 tracking-[0.2em] break-all transition-all" id="preview-text">
-                                    ${this.getDecrypted(encryptedText, this.currentShift)}
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- Controls -->
-                    <div class="mt-8 bg-slate-800/50 p-4 md:p-6 rounded-xl border border-slate-700 space-y-4 max-w-lg mx-auto">
-                        <div class="flex justify-between items-center text-sm text-slate-300 font-bold">
-                            <span>Shift Key</span>
-                            <span class="font-mono text-xl text-indigo-400 bg-slate-900 px-3 py-1 rounded border border-slate-700 w-12 text-center" id="shift-val-display">${this.currentShift}</span>
-                        </div>
-                        
-                        <input type="range" min="0" max="25" value="${this.currentShift}" id="shift-slider" 
-                            class="w-full h-3 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500 hover:accent-indigo-400 transition-all">
-                        
-                        <div class="flex justify-between text-[10px] text-slate-500 font-mono uppercase tracking-widest">
-                            <span>0</span>
-                            <span class="hidden md:inline">ROT13</span>
-                            <span>25</span>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Action Button -->
-                <button id="btn-decrypt" class="shrink-0 px-10 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold tracking-wide shadow-lg shadow-indigo-900/30 transition-all transform hover:scale-105 flex items-center gap-3 text-lg">
-                    <iconify-icon icon="solar:unlock-keyhole-bold"></iconify-icon>
-                    ${this.game.getText('L7_BTN_DECRYPT')}
-                </button>
-
-                <div class="text-xs text-slate-500 font-mono pb-4">
-                    Progress: ${this.currentStage + 1} / ${this.challenges.length}
-                </div>
-
-            </div>
-        `;
-
-        this.attachEvents();
-    },
-
-    attachEvents() {
-        const slider = this.container.querySelector('#shift-slider');
-        const display = this.container.querySelector('#shift-val-display');
-        const preview = this.container.querySelector('#preview-text');
-        const btn = this.container.querySelector('#btn-decrypt');
-
-        const challenge = this.challenges[this.currentStage];
-        const encrypted = this.getEncrypted(challenge.text, challenge.shift);
-
-        slider.addEventListener('input', (e) => {
-            this.currentShift = parseInt(e.target.value);
-            display.innerText = this.currentShift;
-            preview.innerText = this.getDecrypted(encrypted, this.currentShift);
-        });
-
-        btn.addEventListener('click', () => {
-            if (this.currentShift === challenge.shift) {
-                this.game.showFeedback(this.game.getText('RES_SUCCESS'), "Message Decrypted. Access Granted.");
-                setTimeout(() => {
-                    this.nextStage();
-                }, 1000);
-            } else {
-                this.game.showFeedback(this.game.getText('RES_FAIL'), "Encryption Mismatch. Key invalid.");
-                this.game.gameState.score -= 25; // Penalty
-                this.game.updateHUD();
-            }
-        });
-    },
-
-    nextStage() {
-        this.currentStage++;
-        this.currentShift = 0; // Reset
-        if (this.currentStage < this.challenges.length) {
-            this.render();
-        } else {
-            const elapsedSec = Math.floor((Date.now() - this.startTime) / 1000);
-            const timeBonus = Math.max(0, (120 - elapsedSec) * 5);
-
-            this.game.completeLevel({
-                success: true,
-                score: 2500 + timeBonus,
-                xp: 2000,
-                accuracy: 100,
-                timeBonus: timeBonus
+        if (isCorrect) {
+            this.results.push({
+                question: `Decrypt: Stage ${this.currentStage + 1}`,
+                selected: "Decoded Successfully",
+                correct: "Decoded Successfully",
+                isCorrect: true
             });
+
+            this.currentStage++;
+            this.userShift = 0;
+            if (this.currentStage < this.stages.length) {
+                this.render();
+            } else {
+                this.finishLevel();
+            }
+        } else {
+            visualContainer.classList.add('animate-shake', 'border-rose-500', 'text-rose-400');
+            setTimeout(() => {
+                visualContainer.classList.remove('animate-shake', 'border-rose-500', 'text-rose-400');
+            }, 500);
         }
+    },
+
+    finishLevel() {
+        this.game.completeLevel({
+            success: true,
+            score: 2200,
+            xp: 2000,
+            accuracy: 100,
+            detailedResults: this.results
+        });
     }
 };

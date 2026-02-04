@@ -1,7 +1,12 @@
 /**
  * Level 9: Cloud Infrastructure
  * Mechanic: Drag nodes (Web, DB, Cache) to correct Cloud Environments.
+ * Refactored using Component Architecture & Silent Feedback
  */
+
+import GameButton from '../components/GameButton.js';
+import Card from '../components/Card.js';
+import Feedback from '../components/Feedback.js';
 
 export default {
     init(container, gameEngine) {
@@ -9,8 +14,7 @@ export default {
         this.game = gameEngine;
         this.score = 0;
         this.installedCount = 0;
-        this.installedCount = 0;
-        this.totalComponents = 6;
+        this.results = [];
 
         this.nodes = [
             { id: 'web1', name: 'Web Server Alpha', env: 'public', icon: 'solar:globus-linear' },
@@ -22,48 +26,75 @@ export default {
         ];
 
         this.environments = [
-            { id: 'public', name: 'Public Cloud', color: 'border-blue-500/30 bg-blue-500/5' },
-            { id: 'private', name: 'Private VNET', color: 'border-indigo-500/30 bg-indigo-500/5' },
-            { id: 'onprem', name: 'Local Datacenter', color: 'border-slate-500/30 bg-slate-500/5' },
-            { id: 'edge', name: 'Edge Gateway', color: 'border-emerald-500/30 bg-emerald-500/5' }
+            { id: 'public', name: 'Public Cloud', color: 'indigo' },
+            { id: 'private', name: 'Private VNET', color: 'blue' },
+            { id: 'onprem', name: 'Local Datacenter', color: 'slate' },
+            { id: 'edge', name: 'Edge Gateway', color: 'emerald' }
         ];
 
         this.render();
     },
 
     render() {
-        this.container.innerHTML = `
-            <div class="max-w-4xl mx-auto">
-                <div class="text-center mb-12">
-                    <h2 class="text-2xl font-bold text-white mb-2">${this.game.getText('L9_TITLE')}</h2>
-                    <p class="text-slate-400">${this.game.getText('L9_DESC')}</p>
-                </div>
+        this.container.innerHTML = '';
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                    ${this.environments.map(env => `
-                        <div class="env-zone h-48 rounded-3xl border-2 border-dashed ${env.color} flex flex-col items-center justify-center gap-4 transition-all" data-env="${env.id}">
-                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-500 bg-slate-900 px-3 py-1 rounded-full border border-slate-800">${env.name}</span>
-                            <div class="slot w-24 h-24 rounded-2xl border border-slate-800/50 bg-slate-950/50 flex items-center justify-center text-slate-800">
-                                <iconify-icon icon="solar:cloud-upload-linear" class="text-3xl"></iconify-icon>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
+        const header = new Card({
+            title: this.game.getText('L9_TITLE'),
+            subtitle: this.game.getText('L9_DESC'),
+            variant: 'flat',
+            customClass: 'text-center mb-8'
+        });
 
-                <div class="bg-slate-900/50 p-8 rounded-3xl border border-slate-800">
-                    <h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-6 text-center">Unassigned Nodes</h3>
-                    <div class="flex justify-center gap-6" id="nodes-tray">
-                        ${this.nodes.map(node => `
-                            <div class="node-item w-28 h-28 bg-slate-800 rounded-2xl border border-slate-700 flex flex-col items-center justify-center gap-2 cursor-grab active:cursor-grabbing hover:border-indigo-500/50 transition-all shadow-lg shadow-black/20" 
-                                draggable="true" data-id="${node.id}" data-env="${node.env}">
-                                <iconify-icon icon="${node.icon}" class="text-3xl text-indigo-400"></iconify-icon>
-                                <span class="text-[10px] font-bold text-white uppercase">${node.name}</span>
-                            </div>
-                        `).join('')}
-                    </div>
+        const statusFeedback = new Feedback({
+            title: "Provisioning Status",
+            message: "Awaiting node deployment to respective security zones.",
+            type: "neutral"
+        });
+
+        const zonesContainer = document.createElement('div');
+        zonesContainer.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12";
+
+        this.environments.forEach(env => {
+            const zone = document.createElement('div');
+            zone.className = `env-zone h-48 rounded-3xl border-2 border-dashed border-${env.color}-500/30 bg-${env.color}-500/5 flex flex-col items-center justify-center gap-4 transition-all relative overflow-hidden`;
+            zone.dataset.env = env.id;
+            zone.innerHTML = `
+                <span class="text-[10px] font-black uppercase tracking-widest text-slate-500 bg-slate-900 px-3 py-1 rounded-full border border-slate-800 z-10">${env.name}</span>
+                <div class="slot w-24 h-24 rounded-2xl border border-slate-800/50 bg-slate-950/50 flex items-center justify-center text-slate-800 z-10 transition-all">
+                    <iconify-icon icon="solar:cloud-upload-linear" class="text-3xl"></iconify-icon>
                 </div>
-            </div>
-        `;
+                <div class="absolute inset-0 bg-${env.color}-500/10 opacity-0 transition-opacity drop-indicator"></div>
+            `;
+            zonesContainer.appendChild(zone);
+        });
+
+        const tray = document.createElement('div');
+        tray.className = "flex flex-wrap justify-center gap-6";
+        this.nodes.forEach(node => {
+            if (this.results.find(r => r.id === node.id && r.isCorrect)) return;
+
+            const nodeEl = document.createElement('div');
+            nodeEl.className = "node-item w-28 h-28 bg-slate-900 rounded-2xl border border-slate-800 flex flex-col items-center justify-center gap-2 cursor-grab active:cursor-grabbing hover:border-indigo-500 transition-all shadow-xl group";
+            nodeEl.draggable = true;
+            nodeEl.dataset.id = node.id;
+            nodeEl.dataset.env = node.env;
+            nodeEl.innerHTML = `
+                <iconify-icon icon="${node.icon}" class="text-3xl text-indigo-400 group-hover:scale-110 transition-transform"></iconify-icon>
+                <span class="text-[10px] font-bold text-white uppercase text-center px-2">${node.name}</span>
+            `;
+            tray.appendChild(nodeEl);
+        });
+
+        const trayCard = new Card({
+            title: "Unassigned Nodes",
+            content: tray,
+            variant: 'glass'
+        });
+
+        this.container.appendChild(header.render());
+        this.container.appendChild(statusFeedback.render());
+        this.container.appendChild(zonesContainer);
+        this.container.appendChild(trayCard.render());
 
         this.attachEvents();
     },
@@ -78,58 +109,54 @@ export default {
                 e.dataTransfer.setData('targetEnv', node.dataset.env);
                 node.classList.add('opacity-50');
             });
-
-            node.addEventListener('dragend', () => {
-                node.classList.remove('opacity-50');
-            });
+            node.addEventListener('dragend', () => node.classList.remove('opacity-50'));
         });
 
         zones.forEach(zone => {
             zone.addEventListener('dragover', (e) => {
                 e.preventDefault();
-                zone.classList.add('border-indigo-500', 'bg-indigo-500/10');
+                zone.querySelector('.drop-indicator').classList.add('opacity-100');
             });
-
             zone.addEventListener('dragleave', () => {
-                zone.classList.remove('border-indigo-500', 'bg-indigo-500/10');
+                zone.querySelector('.drop-indicator').classList.remove('opacity-100');
             });
-
             zone.addEventListener('drop', (e) => {
                 e.preventDefault();
-                zone.classList.remove('border-indigo-500', 'bg-indigo-500/10');
+                zone.querySelector('.drop-indicator').classList.remove('opacity-100');
 
                 const nodeId = e.dataTransfer.getData('nodeId');
                 const targetEnv = e.dataTransfer.getData('targetEnv');
                 const currentEnv = zone.dataset.env;
 
-                if (targetEnv === currentEnv) {
-                    this.handleCorrectDrop(nodeId, zone);
-                } else {
-                    this.game.showFeedback('DEPLOYMENT FAILURE', 'Node incompatible with selected environment latency/security policy.');
-                    this.score = Math.max(0, this.score - 250);
-                }
+                this.handleDrop(nodeId, targetEnv, currentEnv, zone);
             });
         });
     },
 
-    handleCorrectDrop(nodeId, zone) {
+    handleDrop(nodeId, targetEnv, currentEnv, zone) {
+        const isMatch = targetEnv === currentEnv;
         const nodeData = this.nodes.find(n => n.id === nodeId);
-        const slot = zone.querySelector('.slot');
-        const originalNode = this.container.querySelector(`.node-item[data-id="${nodeId}"]`);
 
-        slot.innerHTML = `
-            <div class="flex flex-col items-center animate-bounce-in">
-                <iconify-icon icon="${nodeData.icon}" class="text-4xl text-emerald-400"></iconify-icon>
-            </div>
-        `;
-        slot.classList.remove('text-slate-800');
-        slot.classList.add('border-emerald-500/50', 'bg-emerald-500/10');
+        this.results.push({
+            id: nodeId,
+            question: nodeData.name,
+            selected: currentEnv,
+            correct: targetEnv,
+            isCorrect: isMatch
+        });
 
-        originalNode.style.display = 'none';
-        this.installedCount++;
-        this.score += 500;
+        if (isMatch) {
+            this.installedCount++;
+            const slot = zone.querySelector('.slot');
+            slot.innerHTML = `<iconify-icon icon="${nodeData.icon}" class="text-4xl text-emerald-400 animate-bounce-in"></iconify-icon>`;
+            slot.classList.add('border-emerald-500/50', 'bg-emerald-500/10');
+            this.render(); // Re-render tray to remove node
+        } else {
+            zone.classList.add('animate-shake');
+            setTimeout(() => zone.classList.remove('animate-shake'), 500);
+        }
 
-        if (this.installedCount === this.totalComponents) {
+        if (this.results.filter(r => r.isCorrect).length === this.nodes.length) {
             setTimeout(() => this.finishLevel(), 1000);
         }
     },
@@ -137,9 +164,10 @@ export default {
     finishLevel() {
         this.game.completeLevel({
             success: true,
-            score: this.score,
+            score: this.results.filter(r => r.isCorrect).length * 500,
             xp: 1200,
-            accuracy: 100
+            accuracy: Math.round((this.results.filter(r => r.isCorrect).length / this.results.length) * 100),
+            detailedResults: this.results
         });
     }
 };

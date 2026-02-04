@@ -1,7 +1,12 @@
 /**
  * Level 15: Multimedia Architecture
  * Mechanic: Camera Hardware Assembly + Codec Classification.
+ * Refactored using Component Architecture & Silent Feedback
  */
+
+import GameButton from '../components/GameButton.js';
+import Card from '../components/Card.js';
+import Feedback from '../components/Feedback.js';
 
 export default {
     init(container, gameEngine) {
@@ -9,12 +14,12 @@ export default {
         this.game = gameEngine;
         this.score = 0;
         this.itemsResolved = 0;
-        this.totalItems = 6; // 3 hardware, 3 codecs
+        this.results = [];
 
         this.hardware = [
-            { id: 'h1', name: this.game.getText('L15_ITEM_SENSOR'), type: 'Capture', target: 't1' },
-            { id: 'h2', name: this.game.getText('L15_ITEM_DSP'), type: 'Processing', target: 't2' },
-            { id: 'h3', name: this.game.getText('L15_ITEM_STORAGE'), type: 'Archival', target: 't3' }
+            { id: 'h1', name: this.game.getText('L15_ITEM_SENSOR'), type: 'Capture', target: 't1', icon: 'solar:camera-bold' },
+            { id: 'h2', name: this.game.getText('L15_ITEM_DSP'), type: 'Processing', target: 't2', icon: 'solar:chip-bold' },
+            { id: 'h3', name: this.game.getText('L15_ITEM_STORAGE'), type: 'Archival', target: 't3', icon: 'solar:disk-bold' }
         ];
 
         this.codecs = [
@@ -27,85 +32,112 @@ export default {
     },
 
     render() {
-        this.container.innerHTML = `
-            <div class="max-w-4xl mx-auto flex flex-col gap-12">
-                <div class="text-center">
-                    <h2 class="text-2xl font-bold text-white mb-2">${this.game.getText('L15_TITLE')}</h2>
-                    <p class="text-slate-400">${this.game.getText('L15_DESC')}</p>
-                </div>
+        this.container.innerHTML = '';
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                    
-                    <!-- Hardware Assembly -->
-                    <div class="bg-slate-900/50 p-8 rounded-3xl border border-slate-800">
-                        <h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-8">${this.game.getText('L15_TITLE')} // PHASE 1</h3>
-                        
-                        <div class="space-y-6">
-                            ${this.hardware.map(item => `
-                                <div class="flex items-center gap-4">
-                                    <div class="w-20 h-20 rounded-2xl border-2 border-dashed border-slate-800 bg-slate-950/50 drop-target flex items-center justify-center" data-target="${item.target}">
-                                        <iconify-icon icon="solar:camera-bold" class="text-2xl text-slate-800"></iconify-icon>
-                                    </div>
-                                    <div class="flex-1">
-                                        <div class="text-[10px] font-black text-slate-600 uppercase mb-1">${item.type} MODULE</div>
-                                        <div class="text-sm font-bold text-slate-400">Awaiting installation...</div>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
+        const header = new Card({
+            title: this.game.getText('L15_TITLE'),
+            subtitle: this.game.getText('L15_DESC'),
+            variant: 'flat',
+            customClass: 'text-center mb-8'
+        });
 
-                        <div class="mt-10 flex gap-4 overflow-x-auto pb-4" id="hw-bank">
-                             ${this.hardware.map(item => `
-                                <div class="hw-item px-5 py-3 bg-slate-800 border border-slate-700 rounded-xl cursor-grab active:cursor-grabbing text-xs font-bold text-white shrink-0 hover:border-indigo-500" 
-                                    draggable="true" data-id="${item.id}" data-target="${item.target}">
-                                    ${item.name}
-                                </div>
-                            `).join('')}
-                        </div>
+        const statusFeedback = new Feedback({
+            title: "Multimedia Assembly Guide",
+            message: "1. Drag hardware modules to their matching slots (Sensor -> Capture, DSP -> Processing, etc.)\n2. Select the correct category for each media codec.",
+            type: "neutral"
+        });
+
+        const grid = document.createElement('div');
+        grid.className = "grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-6xl mx-auto";
+
+        const hwContent = document.createElement('div');
+        hwContent.className = "space-y-6";
+        this.hardware.forEach(item => {
+            const isDone = this.results.find(r => r.id === item.id && r.isCorrect);
+            hwContent.innerHTML += `
+                <div class="flex items-center gap-4 group">
+                    <div class="drop-target w-20 h-20 rounded-2xl border-2 border-dashed ${isDone ? 'bg-emerald-500/10 border-emerald-500' : 'bg-slate-950 border-slate-800'} flex items-center justify-center transition-all relative" data-target="${item.target}" data-item-id="${item.id}">
+                        ${isDone ? `<iconify-icon icon="${item.icon}" class="text-3xl text-emerald-400"></iconify-icon>` : `<iconify-icon icon="solar:box-minimalistic-bold" class="text-2xl text-slate-800"></iconify-icon>`}
                     </div>
-
-                    <!-- Codec Classification -->
-                    <div class="bg-slate-900/50 p-8 rounded-3xl border border-slate-800">
-                        <h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-8">${this.game.getText('L15_CODEC_LBL')} // PHASE 2</h3>
-                        
-                        <div class="space-y-4">
-                            ${this.codecs.map(item => `
-                                <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl hover:border-emerald-500/50 transition-all group">
-                                    <div class="flex justify-between items-start mb-2">
-                                        <span class="text-xs font-black text-emerald-400 font-mono">${item.name}</span>
-                                        <iconify-icon icon="solar:playback-speed-bold" class="text-slate-800 group-hover:text-emerald-500"></iconify-icon>
-                                    </div>
-                                    <p class="text-[10px] text-slate-500 mb-4 font-medium uppercase tracking-tighter">${item.desc}</p>
-                                    <div class="flex gap-2">
-                                        ${['VIDEO', 'IMAGE', 'AUDIO'].map(cat => `
-                                            <button class="codec-btn flex-1 py-1.5 rounded-lg border border-slate-800 text-[9px] font-black text-slate-600 hover:text-white hover:bg-slate-800 transition-all" 
-                                                data-id="${item.id}" data-type="${cat}" data-correct="${item.category}">
-                                                ${cat}
-                                            </button>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
+                    <div class="flex-1">
+                        <div class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">${item.type} MODULE</div>
+                        <div class="text-sm font-bold ${isDone ? 'text-emerald-400' : 'text-slate-500'}">${isDone ? 'MODULE_CONNECTED' : 'PLACE_UNIT_HERE'}</div>
                     </div>
-
                 </div>
-            </div>
-        `;
+            `;
+        });
+
+        const tray = document.createElement('div');
+        tray.className = "mt-10 flex gap-4 overflow-x-auto pb-4";
+        this.hardware.forEach(item => {
+            if (this.results.find(r => r.id === item.id && r.isCorrect)) return;
+            const el = document.createElement('div');
+            el.className = "hw-item px-5 py-3 bg-slate-900 border border-slate-700 rounded-xl cursor-grab active:cursor-grabbing text-[10px] font-black text-white hover:border-indigo-500 shrink-0 uppercase tracking-widest";
+            el.draggable = true;
+            el.dataset.id = item.id;
+            el.dataset.target = item.target;
+            el.innerText = item.name;
+            tray.appendChild(el);
+        });
+
+        const phase1Card = new Card({
+            title: "Hardware Integration (Phase I)",
+            content: hwContent,
+            footer: tray,
+            variant: 'glass'
+        });
+
+        const codecContent = document.createElement('div');
+        codecContent.className = "space-y-4";
+        this.codecs.forEach(codec => {
+            const isDone = this.results.find(r => r.id === codec.id && r.isCorrect);
+            const container = document.createElement('div');
+            container.className = `p-5 rounded-2xl border-2 transition-all ${isDone ? 'bg-emerald-500/5 border-emerald-500/30' : 'bg-slate-950 border-slate-800'}`;
+            container.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-black font-mono ${isDone ? 'text-emerald-400' : 'text-indigo-300'}">${codec.name}</span>
+                    <iconify-icon icon="solar:playback-speed-bold" class="${isDone ? 'text-emerald-500' : 'text-slate-700'}"></iconify-icon>
+                </div>
+                <p class="text-[9px] text-slate-500 mb-4 font-bold uppercase tracking-tighter">${codec.desc}</p>
+                <div class="flex gap-2">
+                    ${['VIDEO', 'IMAGE', 'AUDIO'].map(cat => `
+                        <button class="codec-btn flex-1 py-2 rounded-xl border border-slate-800 text-[10px] font-black text-slate-500 hover:text-white transition-all ${isDone && codec.category === cat ? 'bg-emerald-500 border-emerald-400 text-white' : ''}" 
+                            data-id="${codec.id}" data-category="${cat}" ${isDone ? 'disabled' : ''}>
+                            ${cat}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+            codecContent.appendChild(container);
+        });
+
+        const phase2Card = new Card({
+            title: "Codec Classification (Phase II)",
+            content: codecContent,
+            variant: 'glass'
+        });
+
+        grid.appendChild(phase1Card.render());
+        grid.appendChild(phase2Card.render());
+
+        this.container.appendChild(header.render());
+        this.container.appendChild(statusFeedback.render());
+        this.container.appendChild(grid);
 
         this.attachEvents();
     },
 
     attachEvents() {
-        // Drag hardware
-        const hwBars = this.container.querySelectorAll('.hw-item');
+        const hwItems = this.container.querySelectorAll('.hw-item');
         const hwdTargets = this.container.querySelectorAll('.drop-target');
 
-        hwBars.forEach(item => {
+        hwItems.forEach(item => {
             item.ondragstart = (e) => {
                 e.dataTransfer.setData('id', item.dataset.id);
                 e.dataTransfer.setData('target', item.dataset.target);
+                item.classList.add('opacity-50');
             };
+            item.ondragend = () => item.classList.remove('opacity-50');
         });
 
         hwdTargets.forEach(target => {
@@ -113,60 +145,67 @@ export default {
             target.ondrop = (e) => {
                 const id = e.dataTransfer.getData('id');
                 const tCode = e.dataTransfer.getData('target');
-                if (tCode === target.dataset.target) {
-                    this.resolveHW(id, target);
-                } else {
-                    this.game.showFeedback('HARDWARE MISMATCH', 'Mechanical interface incompatibility detected.');
-                }
+                this.handleHWDrop(id, tCode, target);
             };
         });
 
-        // Codec buttons
         this.container.querySelectorAll('.codec-btn').forEach(btn => {
             btn.onclick = () => {
-                if (btn.dataset.locked) return;
-                const type = btn.dataset.type;
-                const correct = btn.dataset.correct;
-
-                if (type === correct) {
-                    btn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-400');
-                    this.resolveCodec(btn.dataset.id);
-                } else {
-                    btn.classList.add('bg-rose-500', 'text-white', 'border-rose-400');
-                    this.game.showFeedback('CODEC ERROR', 'Classification error. Media compression format mismatch.');
-                }
+                const id = btn.dataset.id;
+                const cat = btn.dataset.category;
+                this.handleCodecClick(id, cat, btn);
             };
         });
     },
 
-    resolveHW(id, target) {
+    handleHWDrop(id, tCode, target) {
         const item = this.hardware.find(h => h.id === id);
-        const source = this.container.querySelector(`.hw-item[data-id="${id}"]`);
+        const isMatch = tCode === target.dataset.target;
 
-        target.innerHTML = `
-            <iconify-icon icon="solar:check-circle-bold" class="text-3xl text-emerald-400 animate-pulse"></iconify-icon>
-        `;
-        target.classList.add('bg-emerald-500/10', 'border-emerald-500/50');
-        target.nextElementSibling.querySelector('div:last-child').innerText = 'MODULE ONLINE';
-        target.nextElementSibling.querySelector('div:last-child').className = 'text-sm font-bold text-emerald-400';
+        this.results.push({
+            id: id,
+            question: `Hardware: ${item.name}`,
+            selected: target.dataset.target,
+            correct: item.target,
+            isCorrect: isMatch
+        });
 
-        source.remove();
-        this.itemsResolved++;
-        this.score += 500;
+        if (isMatch) {
+            this.itemsResolved++;
+            this.render();
+        } else {
+            target.classList.add('animate-shake', 'border-rose-500');
+            setTimeout(() => target.classList.remove('animate-shake', 'border-rose-500'), 500);
+        }
+
         this.checkFinish();
     },
 
-    resolveCodec(id) {
-        const btns = this.container.querySelectorAll(`.codec-btn[data-id="${id}"]`);
-        btns.forEach(b => b.dataset.locked = "true");
+    handleCodecClick(id, category, btn) {
+        const codec = this.codecs.find(c => c.id === id);
+        const isMatch = category === codec.category;
 
-        this.itemsResolved++;
-        this.score += 500;
+        this.results.push({
+            id: id,
+            question: `Codec: ${codec.name}`,
+            selected: category,
+            correct: codec.category,
+            isCorrect: isMatch
+        });
+
+        if (isMatch) {
+            this.itemsResolved++;
+            this.render();
+        } else {
+            btn.classList.add('bg-rose-500', 'text-white', 'border-rose-400');
+            setTimeout(() => btn.classList.remove('bg-rose-500', 'text-white', 'border-rose-400'), 500);
+        }
+
         this.checkFinish();
     },
 
     checkFinish() {
-        if (this.itemsResolved === this.totalItems) {
+        if (this.itemsResolved === 6) {
             setTimeout(() => this.finishLevel(), 1000);
         }
     },
@@ -174,9 +213,10 @@ export default {
     finishLevel() {
         this.game.completeLevel({
             success: true,
-            score: this.score,
+            score: this.itemsResolved * 500,
             xp: 3000,
-            accuracy: 100
+            accuracy: Math.round((this.itemsResolved / this.results.length) * 100),
+            detailedResults: this.results
         });
     }
 };

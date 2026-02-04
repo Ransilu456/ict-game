@@ -121,6 +121,24 @@ class GameEngine {
         // Global Helpers
         window.closeModal = () => this.toggleModal(false);
         window.setLang = (lang) => this.setLanguage(lang);
+
+        // Mobile Sidebar Backdrop Click
+        this.overlay?.addEventListener('click', () => this.toggleSidebar(false));
+    }
+
+    toggleSidebar(forceState) {
+        const sidebar = document.getElementById('main-sidebar');
+        const overlay = document.getElementById('overlay');
+        const isCurrentlyActive = sidebar?.classList.contains('active');
+        const nextState = forceState !== undefined ? forceState : !isCurrentlyActive;
+
+        if (nextState) {
+            sidebar?.classList.add('active');
+            overlay?.classList.add('active');
+        } else {
+            sidebar?.classList.remove('active');
+            overlay?.classList.remove('active');
+        }
     }
 
     /* Screen Management */
@@ -313,10 +331,10 @@ class GameEngine {
         list.innerHTML = '';
 
         const categories = [
-            { name: 'Core Architecture', levels: [1, 5, 4, 15], icon: 'solar:cpu-bold', color: 'indigo' },
-            { name: 'Network & Code', levels: [3, 2, 8, 9, 11, 13, 14], icon: 'solar:globus-bold', color: 'blue' },
-            { name: 'Logic & Security', levels: [6, 7, 10, 12], icon: 'solar:shield-keyhole-bold', color: 'emerald' },
-            { name: 'Final Frontier', levels: [16], icon: 'solar:fire-bold', color: 'rose' }
+            { name: 'Core Foundations', levels: [1, 2, 3, 4], icon: 'solar:cpu-bold', color: 'indigo' },
+            { name: 'Systems & Data', levels: [5, 6, 7, 8], icon: 'solar:database-bold', color: 'blue' },
+            { name: 'Cloud & Cyber', levels: [9, 10, 11, 12], icon: 'solar:shield-keyhole-bold', color: 'emerald' },
+            { name: 'Advanced Mastery', levels: [13, 14, 15, 16], icon: 'solar:fire-bold', color: 'rose' }
         ];
 
         categories.forEach(cat => {
@@ -368,6 +386,7 @@ class GameEngine {
                             <h4 class="text-lg font-black text-white group-hover/card:text-${cat.color}-300 transition-colors truncate tracking-tight uppercase">${isLocked ? 'CLASSIFIED' : this.getText('L' + i + '_TITLE').replace('MISSION:', '').trim()}</h4>
                         </div>
                     </div>
+
 
                     <!-- Decorative elements -->
                     <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-${cat.color}-500/5 rounded-full blur-2xl group-hover/card:bg-${cat.color}-500/10 transition-colors"></div>
@@ -493,8 +512,19 @@ class GameEngine {
     toggleModal(show) {
         const el = document.getElementById('feedback-modal');
         const ov = document.getElementById('overlay');
-        if (show) { el.classList.remove('hidden'); ov.classList.remove('hidden'); }
-        else { el.classList.add('hidden'); ov.classList.add('hidden'); }
+        if (show) {
+            el.classList.remove('hidden');
+            ov.classList.add('active');
+            setTimeout(() => {
+                el.classList.remove('scale-95');
+                el.classList.add('scale-100');
+            }, 10);
+        } else {
+            el.classList.add('scale-95');
+            el.classList.remove('scale-100');
+            ov.classList.remove('active');
+            setTimeout(() => el.classList.add('hidden'), 300);
+        }
     }
 }
 

@@ -2,14 +2,16 @@ export default class GameButton {
     /**
      * @param {Object} props
      * @param {string} props.text - Button label
-     * @param {string} props.variant - 'primary', 'secondary', 'disabled'
+     * @param {string} props.variant - 'primary', 'secondary', 'danger', 'ghost', 'disabled'
+     * @param {string} props.size - 'sm', 'md', 'lg'
      * @param {Function} props.onClick - Click handler
      * @param {string} [props.icon] - Optional Iconify icon name
      * @param {string} [props.customClass] - Extra Tailwind classes
      */
-    constructor({ text, variant = 'primary', onClick, icon, customClass = '' }) {
+    constructor({ text, variant = 'primary', size = 'md', onClick, icon, customClass = '' }) {
         this.text = text;
         this.variant = variant;
+        this.size = size;
         this.onClick = onClick;
         this.icon = icon;
         this.customClass = customClass;
@@ -17,42 +19,65 @@ export default class GameButton {
     }
 
     render() {
-        let baseClasses = "relative px-6 py-3 rounded-xl font-bold uppercase tracking-wider text-sm transition-all duration-300 flex items-center justify-center gap-2 active:scale-95 shadow-lg group overflow-hidden ";
+        const btn = document.createElement('button');
 
+        // Base styles
+        let classes = [
+            "relative", "rounded-xl", "font-bold", "uppercase", "tracking-wider",
+            "transition-all", "duration-300", "flex", "items-center", "justify-center",
+            "gap-2", "active:scale-95", "group", "overflow-hidden", "select-none"
+        ];
+
+        // Size styles
+        const sizes = {
+            sm: "px-4 py-2 text-xs",
+            md: "px-6 py-3 text-sm",
+            lg: "px-8 py-4 text-base"
+        };
+        classes.push(sizes[this.size] || sizes.md);
+
+        // Variant styles
         const variants = {
-            primary: "bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-500/20 hover:shadow-indigo-500/40 border border-indigo-500/50",
-            secondary: "bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 hover:border-slate-600 shadow-black/20",
+            primary: "bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 border border-indigo-500/50",
+            secondary: "bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 hover:border-slate-600 shadow-lg shadow-black/20",
+            danger: "bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-500/20 hover:shadow-rose-500/40 border border-rose-500/50",
+            ghost: "bg-transparent hover:bg-slate-800/50 text-slate-400 hover:text-white border border-transparent hover:border-slate-700",
             disabled: "bg-slate-900 text-slate-600 border border-slate-800 cursor-not-allowed grayscale pointer-events-none"
         };
+        classes.push(variants[this.variant] || variants.primary);
 
-        const className = `${baseClasses} ${variants[this.variant] || variants.primary} ${this.customClass}`;
-
-        const iconHtml = this.icon ? `<iconify-icon icon="${this.icon}" class="text-lg transition-transform group-hover:scale-110"></iconify-icon>` : '';
-
-        // Generate a unique ID for binding events later if using string return
-        // Ideally we return a DOM node, but the current system uses innerHTML string injection.
-        // So we'll return a string with a randomly generated ID and bind later? 
-        // Or we can rely on the parent to bind.
-        // Given the current architecture uses `container.innerHTML = x.render()`, we return string.
-        // We will need a way to bind the onClick. 
-        // Modification: We'll add a data-id to find it.
-
-        this.id = `btn-${Math.random().toString(36).substr(2, 9)}`;
-
-        return `
-            <button id="${this.id}" class="${className}">
-                ${iconHtml}
-                <span class="relative z-10">${this.text}</span>
-                ${this.variant === 'primary' ? '<div class="absolute inset-0 bg-indigo-400/0 hover:bg-indigo-400/10 transition-colors"></div>' : ''}
-            </button>
-        `;
-    }
-
-    attach(parentContainer) {
-        const btn = parentContainer.querySelector(`#${this.id}`);
-        if (btn && this.onClick && this.variant !== 'disabled') {
-            btn.addEventListener('click', this.onClick);
+        if (this.customClass) {
+            classes.push(this.customClass);
         }
+
+        btn.className = classes.join(' ');
+
+        // Content
+        let iconHtml = '';
+        if (this.icon) {
+            iconHtml = `<iconify-icon icon="${this.icon}" class="text-lg transition-transform group-hover:scale-110"></iconify-icon>`;
+        }
+
+        const span = document.createElement('span');
+        span.className = "relative z-10";
+        span.innerText = this.text;
+
+        btn.innerHTML = `${iconHtml}`;
+        btn.appendChild(span);
+
+        // Hover Effect Overlay (for primary/danger)
+        if (['primary', 'danger'].includes(this.variant)) {
+            const overlay = document.createElement('div');
+            overlay.className = "absolute inset-0 bg-white/0 hover:bg-white/10 transition-colors pointer-events-none";
+            btn.appendChild(overlay);
+        }
+
+        // Event Listener
+        if (this.onClick && this.variant !== 'disabled') {
+            btn.addEventListener('click', (e) => this.onClick(e));
+        }
+
         this.element = btn;
+        return btn;
     }
 }

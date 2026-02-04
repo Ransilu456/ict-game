@@ -1,7 +1,12 @@
 /**
  * Level 14: Transmission History & Ports
  * Mechanic: Timeline Sorting + Port Matching.
+ * Refactored using Component Architecture & Silent Feedback
  */
+
+import GameButton from '../components/GameButton.js';
+import Card from '../components/Card.js';
+import Feedback from '../components/Feedback.js';
 
 export default {
     init(container, gameEngine) {
@@ -9,7 +14,7 @@ export default {
         this.game = gameEngine;
         this.score = 0;
         this.itemsMatched = 0;
-        this.totalItems = 6; // 3 history, 3 ports
+        this.results = [];
 
         this.timeline = [
             { id: 'h1', text: 'ARPANET Protocol', year: '1969', target: 'pos1' },
@@ -27,81 +32,101 @@ export default {
     },
 
     render() {
-        this.container.innerHTML = `
-            <div class="max-w-4xl mx-auto flex flex-col gap-12">
-                <div class="text-center">
-                    <h2 class="text-2xl font-bold text-white mb-2">${this.game.getText('L14_TITLE')}</h2>
-                    <p class="text-slate-400">${this.game.getText('L14_DESC')}</p>
-                </div>
+        this.container.innerHTML = '';
 
-                <!-- History Timeline -->
-                <div class="bg-slate-900/50 p-8 rounded-3xl border border-slate-800">
-                    <h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-8 border-l-2 border-indigo-500 pl-3">${this.game.getText('L14_HIST_LBL')}</h3>
-                    
-                    <div class="flex flex-col md:flex-row gap-6 justify-between relative">
-                        <!-- Connecting Line -->
-                        <div class="hidden md:block absolute top-[28px] left-0 w-full h-0.5 bg-slate-800 z-0"></div>
+        const header = new Card({
+            title: this.game.getText('L14_TITLE'),
+            subtitle: this.game.getText('L14_DESC'),
+            variant: 'flat',
+            customClass: 'text-center mb-8'
+        });
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-                            ${[1, 2, 3].map(i => `
-                                <div class="timeline-slot h-20 rounded-2xl border-2 border-dashed border-slate-800 bg-slate-950/50 flex items-center justify-center relative z-10" data-target="pos${i}">
-                                    <span class="text-[10px] font-black text-slate-700">ERA ${i}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
+        const statusFeedback = new Feedback({
+            title: "Network Evolution Audit",
+            message: "Restore the chronological sequence of networking milestones and map their port assignments.",
+            type: "neutral"
+        });
 
-                    <div class="flex justify-center gap-4 mt-12" id="history-items">
-                         ${this.timeline.map(item => `
-                            <div class="history-item px-6 py-4 bg-slate-800 border border-slate-700 rounded-xl cursor-grab active:cursor-grabbing text-xs font-bold text-white hover:border-indigo-500 transition-all shadow-xl" 
-                                draggable="true" data-id="${item.id}" data-target="${item.target}">
-                                ${item.text} (${item.year})
-                            </div>
-                        `).join('')}
+        const timelineContainer = document.createElement('div');
+        timelineContainer.className = "grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 relative isolate";
+        timelineContainer.innerHTML = `
+            <div class="absolute top-1/2 left-0 w-full h-px bg-slate-800 -z-10 hidden md:block"></div>
+            ${[1, 2, 3].map(i => `
+                <div class="env-zone h-32 rounded-3xl border-2 border-dashed border-slate-800 bg-slate-950/50 flex flex-col items-center justify-center gap-2 transition-all relative" data-target="pos${i}">
+                    <span class="text-[9px] font-black text-slate-700 uppercase tracking-widest">Epoch 0${i}</span>
+                    <div class="slot w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-800 transition-all">
+                        <iconify-icon icon="solar:history-bold" class="text-xl"></iconify-icon>
                     </div>
                 </div>
-
-                <!-- Port Matching -->
-                <div class="bg-slate-900/50 p-8 rounded-3xl border border-slate-800">
-                    <h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-8 border-l-2 border-emerald-500 pl-3">${this.game.getText('L14_PORT_LBL')}</h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        ${this.ports.map(p => `
-                            <div class="flex flex-col items-center gap-4">
-                                <div class="port-target w-full h-24 rounded-2xl border-2 border-dashed border-slate-800 bg-slate-950/50 flex flex-col items-center justify-center gap-1" data-target="${p.target}">
-                                    <span class="text-2xl font-black text-slate-800 font-mono">${p.port}</span>
-                                    <span class="text-[10px] font-bold text-slate-700 uppercase">Awaiting Link</span>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-
-                    <div class="flex justify-center gap-4 mt-8" id="port-items">
-                         ${this.ports.map(p => `
-                            <div class="port-item px-6 py-4 bg-slate-800 border border-slate-700 rounded-xl cursor-grab active:cursor-grabbing text-xs font-bold text-white hover:border-emerald-500 transition-all shadow-xl" 
-                                draggable="true" data-id="${p.id}" data-target="${p.target}">
-                                ${p.service}
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            </div>
+            `).join('')}
         `;
+
+        const portGrid = document.createElement('div');
+        portGrid.className = "grid grid-cols-1 md:grid-cols-3 gap-6 mb-12";
+        this.ports.forEach(p => {
+            const zone = document.createElement('div');
+            zone.className = "env-zone h-32 rounded-3xl border-2 border-dashed border-emerald-500/10 bg-emerald-500/5 flex flex-col items-center justify-center gap-2 transition-all relative"
+            zone.dataset.target = p.target;
+            zone.innerHTML = `
+                <span class="text-2xl font-black text-slate-800 font-mono tracking-tighter">${p.port}</span>
+                <div class="slot w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-800 transition-all">
+                    <iconify-icon icon="solar:plug-circle-bold" class="text-xl"></iconify-icon>
+                </div>
+            `;
+            portGrid.appendChild(zone);
+        });
+
+        const tray = document.createElement('div');
+        tray.className = "flex flex-wrap justify-center gap-4";
+
+        this.timeline.forEach(item => {
+            if (this.results.find(r => r.id === item.id && r.isCorrect)) return;
+            const el = this.createTrayItem(item.id, `${item.text} (${item.year})`, item.target, 'indigo');
+            tray.appendChild(el);
+        });
+
+        this.ports.forEach(item => {
+            if (this.results.find(r => r.id === item.id && r.isCorrect)) return;
+            const el = this.createTrayItem(item.id, item.service, item.target, 'emerald');
+            tray.appendChild(el);
+        });
+
+        const trayCard = new Card({
+            title: "Transmission Buffer",
+            content: tray,
+            variant: 'glass'
+        });
+
+        this.container.appendChild(header.render());
+        this.container.appendChild(statusFeedback.render());
+        this.container.appendChild(new Card({ title: this.game.getText('L14_HIST_LBL'), content: timelineContainer, variant: 'flat', customClass: "mb-8 bg-slate-950/20 border-slate-800" }).render());
+        this.container.appendChild(new Card({ title: this.game.getText('L14_PORT_LBL'), content: portGrid, variant: 'flat', customClass: "mb-8 bg-slate-950/20 border-slate-800" }).render());
+        this.container.appendChild(trayCard.render());
 
         this.attachEvents();
     },
 
-    attachEvents() {
-        const items = this.container.querySelectorAll('[draggable="true"]');
-        const zones = this.container.querySelectorAll('.timeline-slot, .port-target');
+    createTrayItem(id, text, target, color) {
+        const el = document.createElement('div');
+        el.className = `node-item px-6 py-4 bg-slate-900 border border-slate-800 text-white rounded-2xl cursor-grab active:cursor-grabbing text-[10px] font-black uppercase tracking-widest hover:border-${color}-500 transition-all shadow-xl`;
+        el.draggable = true;
+        el.dataset.id = id;
+        el.dataset.target = target;
+        el.innerText = text;
+        return el;
+    },
 
-        items.forEach(item => {
-            item.addEventListener('dragstart', (e) => {
-                e.dataTransfer.setData('id', item.dataset.id);
-                e.dataTransfer.setData('target', item.dataset.target);
-                item.classList.add('opacity-50');
+    attachEvents() {
+        const nodes = this.container.querySelectorAll('.node-item');
+        const zones = this.container.querySelectorAll('.env-zone');
+
+        nodes.forEach(node => {
+            node.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('nodeId', node.dataset.id);
+                e.dataTransfer.setData('targetId', node.dataset.target);
+                node.classList.add('opacity-50');
             });
-            item.addEventListener('dragend', () => item.classList.remove('opacity-50'));
+            node.addEventListener('dragend', () => node.classList.remove('opacity-50'));
         });
 
         zones.forEach(zone => {
@@ -109,41 +134,46 @@ export default {
                 e.preventDefault();
                 zone.classList.add('border-indigo-500', 'bg-indigo-500/10');
             });
-            zone.addEventListener('dragleave', () => zone.classList.remove('border-indigo-500', 'bg-indigo-500/10'));
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('border-indigo-500', 'bg-indigo-500/10');
+            });
             zone.addEventListener('drop', (e) => {
                 e.preventDefault();
                 zone.classList.remove('border-indigo-500', 'bg-indigo-500/10');
 
-                const id = e.dataTransfer.getData('id');
-                const target = e.dataTransfer.getData('target');
+                const nodeId = e.dataTransfer.getData('nodeId');
+                const targetId = e.dataTransfer.getData('targetId');
                 const zoneTarget = zone.dataset.target;
 
-                if (target === zoneTarget) {
-                    this.handleCorrectMatch(id, zone);
-                } else {
-                    this.game.showFeedback('SEQUENCE FAILURE', 'Evolutionary logic or port allocation error detected.');
-                }
+                this.handleDrop(nodeId, targetId, zoneTarget, zone);
             });
         });
     },
 
-    handleCorrectMatch(id, zone) {
-        const itemEl = this.container.querySelector(`[data-id="${id}"]`);
-        const itemText = itemEl.innerText;
+    handleDrop(nodeId, targetId, zoneTarget, zone) {
+        const isMatch = targetId === zoneTarget;
+        const itemText = this.container.querySelector(`[data-id="${nodeId}"]`).innerText;
 
-        zone.innerHTML = `
-            <div class="flex flex-col items-center animate-bounce-in text-emerald-400">
-                <iconify-icon icon="solar:check-circle-bold" class="text-2xl mb-1"></iconify-icon>
-                <span class="text-[10px] font-bold uppercase text-center">${itemText}</span>
-            </div>
-        `;
-        zone.classList.add('border-emerald-500/50', 'bg-emerald-500/5');
-        itemEl.remove();
+        this.results.push({
+            id: nodeId,
+            question: "Fragment Identification",
+            selected: itemText,
+            correct: itemText,
+            isCorrect: isMatch
+        });
 
-        this.itemsMatched++;
-        this.score += 200;
+        if (isMatch) {
+            this.itemsMatched++;
+            const slot = zone.querySelector('.slot');
+            slot.innerHTML = `<iconify-icon icon="solar:check-circle-bold" class="text-3xl text-emerald-400 animate-bounce-in"></iconify-icon>`;
+            slot.classList.add('border-emerald-500/50', 'bg-emerald-500/10');
+            this.render();
+        } else {
+            zone.classList.add('animate-shake');
+            setTimeout(() => zone.classList.remove('animate-shake'), 500);
+        }
 
-        if (this.itemsMatched === this.totalItems) {
+        if (this.itemsMatched === 6) {
             setTimeout(() => this.finishLevel(), 1000);
         }
     },
@@ -151,9 +181,10 @@ export default {
     finishLevel() {
         this.game.completeLevel({
             success: true,
-            score: this.score,
+            score: this.itemsMatched * 300,
             xp: 1500,
-            accuracy: 100
+            accuracy: Math.round((this.itemsMatched / this.results.length) * 100),
+            detailedResults: this.results
         });
     }
 };

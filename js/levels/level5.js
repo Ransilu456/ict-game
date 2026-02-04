@@ -1,162 +1,377 @@
 /**
- * Level 5: Binary Conversion
- * Mechanic: Toggle bits to match target decimal value.
+ * Level 5: Networking (OSI Model)
+ * Mechanic: Sort Layers -> Protocol Match -> Packet Tracer
+ * Refactored for Silent Feedback, Result Summary & Feedback Component
  */
+
+import GameButton from '../components/GameButton.js';
+import Card from '../components/Card.js';
+import Feedback from '../components/Feedback.js';
 
 export default {
     init(container, gameEngine) {
         this.container = container;
         this.game = gameEngine;
-        this.currentStage = 0;
+        this.currentPhase = 1;
+        this.score = 0;
+        this.results = [];
 
-        // Bit values for 12-bit integer
-        this.bitValues = [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
-
-        // Initial state for bits (all 0)
-        this.currentBits = Array(12).fill(0);
-
-        // Challenge Stages (Hard Mode)
-        this.stages = [
-            { id: 1, target: 1050 },
-            { id: 2, target: 2049 },
-            { id: 3, target: 512 },
-            { id: 4, target: 4095 },
-            { id: 5, target: 1701 },
-            { id: 6, target: 3333 }
+        this.osiLayers = [
+            { num: 7, name: 'Application', desc: 'End User Services' },
+            { num: 6, name: 'Presentation', desc: 'Encryption & Formatting' },
+            { num: 5, name: 'Session', desc: 'Communication Mgmt' },
+            { num: 4, name: 'Transport', desc: 'Reliability & Flow' },
+            { num: 3, name: 'Network', desc: 'Routing & Addressing' },
+            { num: 2, name: 'Data Link', desc: 'Physical Addressing' },
+            { num: 1, name: 'Physical', desc: 'Binary Transmission' }
         ];
 
         this.render();
     },
 
     render() {
-        const stage = this.stages[this.currentStage];
-        const currentVal = this.calculateCurrentValue();
-
-        this.container.innerHTML = `
-            <div class="flex flex-col h-full gap-8 animate-fade-in max-w-7xl mx-auto p-4 md:p-8 relative noise-overlay">
-                
-                <!-- Background Ambient -->
-                <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
-
-                <!-- Header -->
-                <div class="flex items-center justify-between mb-2">
-                    
-                    <!-- Left: Target Visualization -->
-                    <div class="w-full lg:w-80 flex flex-col gap-6">
-                        <div class="glass-panel p-8 rounded-[2.5rem] border border-white/5 flex flex-col items-center justify-center text-center flex-1 bg-slate-950/40">
-                            <span class="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em] mb-4">${this.game.getText('L5_TARGET_LBL')}</span>
-                            <div class="text-7xl font-mono font-black text-white tracking-tighter mb-2">
-                                ${stage.target}
-                            </div>
-                            <div class="h-px w-24 bg-slate-800 my-6"></div>
-                            <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Wait for Sync...</span>
-                        </div>
-
-                        <div class="glass-panel p-8 rounded-[2.5rem] border border-white/5 flex flex-col items-center justify-center text-center bg-slate-950/40">
-                            <span class="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em] mb-4">${this.game.getText('L5_CURRENT_LBL')}</span>
-                            <div id="current-val-display" class="text-6xl font-mono font-black tracking-tighter transition-all duration-300
-                                ${currentVal === stage.target ? 'text-emerald-400' : 'text-slate-300'}">
-                                ${currentVal}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right: Matrix Core -->
-                    <div class="flex-1 glass-panel rounded-[3rem] border border-white/5 p-8 flex flex-col bg-slate-950/20 overflow-hidden relative group">
-                        <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-[100px] pointer-events-none"></div>
-                        
-                        <div class="grid grid-cols-3 sm:grid-cols-4 gap-4 flex-1">
-                            ${this.bitValues.map((val, idx) => `
-                                <button class="btn-bit group/bit h-full min-h-[120px] rounded-3xl border-2 transition-all flex flex-col items-center justify-center gap-3 relative overflow-hidden
-                                    ${this.currentBits[idx]
-                ? 'bg-indigo-600 border-indigo-400 text-white shadow-lg'
-                : 'bg-slate-900 border-white/5 text-slate-500 hover:border-slate-700 hover:bg-slate-800'}" 
-                                    data-idx="${idx}">
-                                    
-                                    <span class="text-[10px] font-black uppercase tracking-widest opacity-40 group-hover/bit:opacity-100 transition-opacity">${val}</span>
-                                    <div class="text-4xl font-black font-mono transition-transform duration-300 group-active/bit:scale-90">
-                                        ${this.currentBits[idx]}
-                                    </div>
-                                    
-                                    ${this.currentBits[idx] ? `
-                                        <div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent"></div>
-                                    ` : ''}
-                                </button>
-                            `).join('')}
-                        </div>
-
-                        <div class="mt-8 pt-8 border-t border-white/5 flex justify-end">
-                            <button id="btn-check-binary" class="px-12 py-6 bg-emerald-600 hover:bg-emerald-500 text-white rounded-[2rem] font-black shadow-lg transition-all flex items-center justify-center gap-3 active:scale-95">
-                                <iconify-icon icon="solar:check-read-bold" class="text-2xl"></iconify-icon>
-                                <span class="text-xl uppercase tracking-tighter">${this.game.getText('L5_BTN_CHECK')}</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        this.attachEvents();
+        this.container.innerHTML = '';
+        if (this.currentPhase === 1) this.renderPhase1();
+        else if (this.currentPhase === 2) this.renderPhase2();
+        else if (this.currentPhase === 3) this.renderPhase3();
     },
 
-    attachEvents() {
-        this.container.querySelectorAll('.btn-bit').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                // Find button element (in case clicked on inner text)
-                const target = e.target.closest('.btn-bit');
-                const idx = parseInt(target.dataset.idx);
+    /* PHASE 1: SORT LAYERS */
+    renderPhase1() {
+        if (!this.scrambledLayers) {
+            this.scrambledLayers = [...this.osiLayers].sort(() => Math.random() - 0.5);
+        }
 
-                // Toggle Bit
-                this.currentBits[idx] = this.currentBits[idx] === 0 ? 1 : 0;
+        const header = new Card({
+            title: "Phase 1: OSI Architecture",
+            subtitle: "Reconstruct the 7-Layer OSI Model from Top (7) to Bottom (1).",
+            variant: 'flat',
+            customClass: 'text-center mb-6'
+        });
 
-                // Re-render to update UI state
-                this.render();
+        const statusFeedback = new Feedback({
+            title: "Transmission Check",
+            message: "Drag and drop the layers into the correct hierarchical order.",
+            type: "neutral"
+        });
+
+        const stackContainer = document.createElement('div');
+        stackContainer.className = "flex flex-col gap-2 max-w-md mx-auto";
+
+        this.scrambledLayers.forEach(layer => {
+            const el = document.createElement('div');
+            el.className = "glass-panel p-4 rounded-lg flex items-center justify-between cursor-grab active:cursor-grabbing hover:border-indigo-500 transition-all draggable-layer select-none bg-slate-900/60";
+            el.draggable = true;
+            el.dataset.num = layer.num;
+            el.innerHTML = `
+                <div class="flex items-center gap-4">
+                    <iconify-icon icon="solar:hamburger-menu-linear" class="text-slate-500"></iconify-icon>
+                    <span class="font-bold text-white">${layer.name} <span class="text-slate-500 text-xs font-normal">(${layer.desc})</span></span>
+                </div>
+            `;
+
+            el.addEventListener('dragstart', e => { this.draggedEl = el; el.classList.add('opacity-50'); });
+            el.addEventListener('dragend', () => el.classList.remove('opacity-50'));
+            el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('border-indigo-500'); });
+            el.addEventListener('dragleave', () => el.classList.remove('border-indigo-500'));
+            el.addEventListener('drop', e => {
+                e.preventDefault();
+                el.classList.remove('border-indigo-500');
+                if (this.draggedEl && this.draggedEl !== el) {
+                    const parent = el.parentNode;
+                    const next = el.nextSibling === this.draggedEl ? el : el.nextSibling;
+                    parent.insertBefore(this.draggedEl, next);
+                }
+            });
+            stackContainer.appendChild(el);
+        });
+
+        const mainCard = new Card({
+            content: stackContainer,
+            variant: 'glass',
+            footer: new GameButton({
+                text: "Initialize Stack",
+                icon: "solar:check-read-bold",
+                onClick: () => this.checkPhase1(stackContainer),
+                customClass: "w-full"
+            }).render(),
+            customClass: "max-w-xl mx-auto"
+        });
+
+        this.container.appendChild(header.render());
+        this.container.appendChild(statusFeedback.render());
+        this.container.appendChild(mainCard.render());
+    },
+
+    checkPhase1(container) {
+        const domLayers = Array.from(container.querySelectorAll('.draggable-layer'));
+        const currentOrder = domLayers.map(el => parseInt(el.dataset.num));
+        const correctOrder = [7, 6, 5, 4, 3, 2, 1];
+        const isCorrect = JSON.stringify(currentOrder) === JSON.stringify(correctOrder);
+
+        this.results.push({
+            question: "OSI Layer Ordering",
+            selected: isCorrect ? "Correct Sequence" : "Incorrect Sequence",
+            correct: "7-Layer Descending",
+            isCorrect: isCorrect,
+            explanation: "Logical top-to-bottom order from Application to Physical."
+        });
+
+        this.currentPhase = 2;
+        this.render();
+    },
+
+    /* PHASE 2: PROTOCOLS */
+    renderPhase2() {
+        this.protocols = [
+            { id: 'http', label: 'HTTP / HTTPS', layer: 7, icon: 'solar:globe-bold' },
+            { id: 'tcp', label: 'TCP / UDP', layer: 4, icon: 'solar:transfer-vertical-bold' },
+            { id: 'ip', label: 'IP Address', layer: 3, icon: 'solar:routing-2-bold' }
+        ];
+
+        const header = new Card({
+            title: "Phase 2: Protocol Mapping",
+            subtitle: "Assign protocols. Drag to target layers.",
+            variant: 'flat',
+            customClass: 'text-center mb-6'
+        });
+
+        const statusFeedback = new Feedback({
+            title: "Network Synchronization",
+            message: "Identify and match the network protocols to their respective operational layers.",
+            type: "neutral"
+        });
+
+        const layout = document.createElement('div');
+        layout.className = "grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto";
+
+        const targetsGrid = document.createElement('div');
+        targetsGrid.className = "space-y-4";
+
+        [7, 4, 3].forEach(lNum => {
+            const layer = this.osiLayers.find(l => l.num === lNum);
+            const dropZone = document.createElement('div');
+            dropZone.className = "drop-target p-6 bg-slate-950 border-2 border-dashed border-slate-800 rounded-3xl flex flex-col items-center justify-center min-h-[140px] transition-all relative group";
+            dropZone.dataset.layer = lNum;
+            dropZone.innerHTML = `
+                <div class="absolute top-4 left-6 text-[9px] font-black text-slate-600 uppercase tracking-widest">Layer ${lNum}</div>
+                <div class="text-sm font-bold text-slate-400 mb-4">${layer.name}</div>
+                <div class="slot pointer-events-none flex flex-col items-center gap-2">
+                    <iconify-icon icon="solar:download-square-bold" class="text-2xl text-slate-800 group-hover:text-indigo-500 transition-colors"></iconify-icon>
+                    <span class="text-[10px] uppercase font-black text-slate-700">Awaiting Assignment</span>
+                </div>
+            `;
+
+            dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('border-indigo-500', 'bg-indigo-500/5'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-indigo-500', 'bg-indigo-500/5'));
+            dropZone.addEventListener('drop', e => {
+                e.preventDefault();
+                dropZone.classList.remove('border-indigo-500', 'bg-indigo-500/5');
+                const id = e.dataTransfer.getData('protoId');
+                const label = e.dataTransfer.getData('protoLabel');
+                const icon = e.dataTransfer.getData('protoIcon');
+
+                dropZone.dataset.droppedId = id;
+                dropZone.innerHTML = `
+                    <div class="absolute top-4 left-6 text-[9px] font-black text-indigo-500 opacity-40 uppercase tracking-widest">Layer ${lNum} Resolved</div>
+                    <div class="flex flex-col items-center gap-2 animate-bounce-in">
+                        <iconify-icon icon="${icon}" class="text-4xl text-indigo-400"></iconify-icon>
+                        <span class="text-sm font-black text-white uppercase">${label}</span>
+                    </div>
+                `;
+
+                const trayItem = document.querySelector(`.proto-item[data-id="${id}"]`);
+                if (trayItem) trayItem.classList.add('opacity-20', 'pointer-events-none');
+
+                this.updatePhase2Button();
+            });
+            targetsGrid.appendChild(dropZone);
+        });
+
+        const tray = document.createElement('div');
+        tray.className = "flex flex-col gap-4";
+        this.protocols.forEach(p => {
+            const el = document.createElement('div');
+            el.className = "proto-item p-5 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-between cursor-grab active:cursor-grabbing hover:border-indigo-500 transition-all group";
+            el.draggable = true;
+            el.dataset.id = p.id;
+            el.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <iconify-icon icon="${p.icon}" class="text-2xl text-indigo-400"></iconify-icon>
+                    <span class="text-xs font-bold text-white uppercase tracking-widest">${p.label}</span>
+                </div>
+                <iconify-icon icon="solar:menu-dots-bold" class="text-slate-700"></iconify-icon>
+            `;
+            el.onactive = () => el.classList.add('scale-95');
+            el.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('protoId', p.id);
+                e.dataTransfer.setData('protoLabel', p.label);
+                e.dataTransfer.setData('protoIcon', p.icon);
+                el.classList.add('opacity-50');
+            });
+            el.addEventListener('dragend', () => el.classList.remove('opacity-50'));
+            tray.appendChild(el);
+        });
+
+        const targetsCard = new Card({ title: "Working Model", content: targetsGrid, variant: 'glass' });
+        const trayCard = new Card({ title: "Protocol Suite", content: tray, variant: 'glass' });
+
+        layout.appendChild(targetsCard.render());
+        layout.appendChild(trayCard.render());
+
+        this.phase2Footer = document.createElement('div');
+        this.phase2Footer.className = "flex justify-center mt-12";
+
+        // Use a standard button initially or a GameButton we manually manage
+        this.renderPhase2Button();
+
+        this.container.appendChild(header.render());
+        this.container.appendChild(statusFeedback.render());
+        this.container.appendChild(layout);
+        this.container.appendChild(this.phase2Footer);
+    },
+
+    renderPhase2Button() {
+        this.phase2Footer.innerHTML = '';
+        const filled = this.container.querySelectorAll('.drop-target[data-dropped-id]').length;
+        const isComplete = filled >= 3;
+
+        const btn = new GameButton({
+            text: isComplete ? "Confirm Network Topology" : "Assignment Incomplete",
+            variant: isComplete ? 'primary' : 'secondary',
+            icon: isComplete ? 'solar:check-circle-bold' : 'solar:lock-bold',
+            onClick: isComplete ? () => this.finishPhase2() : null,
+            customClass: `w-64 ${isComplete ? 'animate-pulse' : 'opacity-40 cursor-not-allowed'}`
+        });
+        this.phase2Footer.appendChild(btn.render());
+    },
+
+    updatePhase2Button() {
+        this.renderPhase2Button();
+    },
+
+    finishPhase2() {
+        const slots = Array.from(this.container.querySelectorAll('.drop-target'));
+        slots.forEach(slot => {
+            const layerNum = parseInt(slot.dataset.layer);
+            const droppedId = slot.dataset.droppedId;
+            const protocol = this.protocols.find(p => p.layer === layerNum);
+            const isMatch = protocol.id === droppedId;
+
+            this.results.push({
+                question: `Layer ${layerNum} Protocol Match`,
+                selected: droppedId || "None",
+                correct: protocol.id,
+                isCorrect: isMatch,
+                explanation: `Layer ${layerNum} properly handles ${protocol.label}.`
             });
         });
 
-        this.container.querySelector('#btn-check-binary').addEventListener('click', () => {
-            this.checkStage();
+        this.currentPhase = 3;
+        this.render();
+    },
+
+    /* PHASE 3: TRACER */
+    renderPhase3() {
+        const header = new Card({
+            title: "Phase 3: Packet Tracer",
+            subtitle: "Define the packet flow through the OSI stacks.",
+            variant: 'flat',
+            customClass: 'text-center mb-6'
         });
+
+        const statusFeedback = new Feedback({
+            title: "Hardware Tracing",
+            message: "Click layers to define the routing path from Sender (7 Down to 1) to Receiver (1 Up to 7).",
+            type: "neutral"
+        });
+
+        const stacksLayout = document.createElement('div');
+        stacksLayout.className = "grid grid-cols-1 md:grid-cols-2 gap-12 max-w-3xl mx-auto";
+
+        this.pathSelection = [];
+        const senderStack = this.createSelectableStack('Sender Source', [7, 6, 5, 4, 3, 2, 1]);
+        const receiverStack = this.createSelectableStack('Receiver Destination', [1, 2, 3, 4, 5, 6, 7]);
+
+        stacksLayout.appendChild(senderStack);
+        stacksLayout.appendChild(receiverStack);
+
+        const workspace = new Card({
+            title: "Tactical Routing Interface",
+            content: stacksLayout,
+            variant: 'glass',
+            footer: new GameButton({
+                text: "Execute Network Trace",
+                variant: 'primary',
+                icon: 'solar:playback-speed-bold',
+                onClick: () => this.finishPhase3(),
+                customClass: "w-full"
+            }).render()
+        });
+
+        this.container.appendChild(header.render());
+        this.container.appendChild(statusFeedback.render());
+        this.container.appendChild(workspace.render());
     },
 
-    calculateCurrentValue() {
-        return this.currentBits.reduce((acc, bit, idx) => {
-            return acc + (bit * this.bitValues[idx]);
-        }, 0);
-    },
+    createSelectableStack(title, order) {
+        const container = document.createElement('div');
+        container.className = "flex flex-col gap-2";
+        container.innerHTML = `<h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest text-center mb-2">${title}</h4>`;
 
-    checkStage() {
-        const stage = this.stages[this.currentStage];
-        const currentVal = this.calculateCurrentValue();
-
-        if (currentVal === stage.target) {
-            this.game.showFeedback('SYSTEM SYNCED', 'Binary sequence matches target value.');
-
-            setTimeout(() => {
-                this.currentStage++;
-                // Reset bits for next stage
-                this.currentBits = [0, 0, 0, 0, 0, 0, 0, 0];
-
-                if (this.currentStage < this.stages.length) {
-                    this.render();
+        order.forEach(num => {
+            const layer = this.osiLayers.find(l => l.num === num);
+            const btn = document.createElement('button');
+            btn.className = "w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs font-bold text-slate-500 hover:border-indigo-500 hover:text-white transition-all text-left uppercase tracking-tighter flex items-center justify-between group";
+            btn.innerHTML = `
+                <span>Layer ${num}: ${layer.name}</span>
+                <iconify-icon icon="solar:check-circle-linear" class="opacity-0 group-hover:opacity-40"></iconify-icon>
+            `;
+            btn.onclick = () => {
+                const id = `${title.split(' ')[0]}-${num}`;
+                if (btn.classList.contains('border-indigo-500')) {
+                    btn.classList.remove('border-indigo-500', 'bg-indigo-500/10', 'text-indigo-400');
+                    btn.querySelector('iconify-icon').setAttribute('icon', 'solar:check-circle-linear');
+                    this.pathSelection = this.pathSelection.filter(x => x !== id);
                 } else {
-                    this.finishLevel();
+                    btn.classList.add('border-indigo-500', 'bg-indigo-500/10', 'text-indigo-400');
+                    btn.querySelector('iconify-icon').setAttribute('icon', 'solar:check-circle-bold');
+                    btn.querySelector('iconify-icon').classList.replace('opacity-40', 'opacity-100');
+                    this.pathSelection.push(id);
                 }
-            }, 1000);
-        } else {
-            this.game.showFeedback('SEQUENCE ERROR',
-                `Target: ${stage.target} | Current: ${currentVal}<br>Check your bit calculations.`
-            );
-        }
+            };
+            container.appendChild(btn);
+        });
+        return container;
+    },
+
+    finishPhase3() {
+        const correctPath = [
+            'Sender-7', 'Sender-6', 'Sender-5', 'Sender-4', 'Sender-3', 'Sender-2', 'Sender-1',
+            'Receiver-1', 'Receiver-2', 'Receiver-3', 'Receiver-4', 'Receiver-5', 'Receiver-6', 'Receiver-7'
+        ];
+
+        const isCorrect = JSON.stringify(this.pathSelection) === JSON.stringify(correctPath);
+
+        this.results.push({
+            question: "Packet Routing Path",
+            selected: isCorrect ? "Encapsulation & Decapsulation Route" : "Broken/Incomplete Route",
+            correct: "Sender 7-1, Receiver 1-7",
+            isCorrect: isCorrect,
+            explanation: "Packets must descend the source stack and ascend the destination stack."
+        });
+
+        this.finishLevel();
     },
 
     finishLevel() {
+        const correctCount = this.results.filter(r => r.isCorrect).length;
         this.game.completeLevel({
             success: true,
-            score: 2000,
+            score: correctCount * 500,
             xp: 1500,
-            accuracy: 100, // Simplification
-            timeBonus: 50
+            accuracy: Math.round((correctCount / this.results.length) * 100),
+            detailedResults: this.results
         });
     }
 };

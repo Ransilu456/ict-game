@@ -7,6 +7,7 @@ import { LANG } from './lang.js';
 import Sidebar from './components/Sidebar.js';
 import Header from './components/Header.js';
 import LandingPage from './components/LandingPage.js';
+import ResultSummary from './components/ResultSummary.js';
 
 
 class GameEngine {
@@ -394,18 +395,42 @@ class GameEngine {
         }
         this.saveData();
 
-        const outcomeEl = document.getElementById('mission-outcome');
-        outcomeEl.innerText = this.getText(results.success ? 'RES_SUCCESS' : 'RES_FAIL');
+        // Check if we have detailed results for the new summary view
+        if (results.detailedResults) {
+            this.showResultSummary(results);
+        } else {
+            // Legacy Result View
+            const outcomeEl = document.getElementById('mission-outcome');
+            outcomeEl.innerText = this.getText(results.success ? 'RES_SUCCESS' : 'RES_FAIL');
 
-        outcomeEl.className = results.success
-            ? "text-3xl font-extrabold text-emerald-400 mb-6 neon-text-emerald"
-            : "text-3xl font-extrabold text-rose-500 mb-6 neon-text-rose";
+            outcomeEl.className = results.success
+                ? "text-3xl font-extrabold text-emerald-400 mb-6 neon-text-emerald"
+                : "text-3xl font-extrabold text-rose-500 mb-6 neon-text-rose";
 
-        document.getElementById('res-accuracy').innerText = (results.accuracy || 0) + '%';
-        document.getElementById('res-time').innerText = '+' + (results.timeBonus || 0);
-        document.getElementById('res-xp').innerText = this.gameState.xp;
+            document.getElementById('res-accuracy').innerText = (results.accuracy || 0) + '%';
+            document.getElementById('res-time').innerText = '+' + (results.timeBonus || 0);
+            document.getElementById('res-xp').innerText = this.gameState.xp;
 
+            this.showScreen('results');
+        }
+    }
+
+    showResultSummary(results) {
         this.showScreen('results');
+        // Clear legacy content overrides or use a container
+        // Since we want to replace the hardcoded HTML with our component:
+        this.screens.results.innerHTML = ''; // Wipe clean
+
+        const summary = new ResultSummary({
+            results: results.detailedResults,
+            onNext: () => this.nextLevel(),
+            onRestart: () => {
+                this.loadLevel(this.gameState.currentLevel);
+            }
+        });
+
+        this.screens.results.innerHTML = summary.render();
+        summary.attach(this.screens.results);
     }
 
     nextLevel() {

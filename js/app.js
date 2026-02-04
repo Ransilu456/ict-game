@@ -128,16 +128,13 @@ class GameEngine {
 
     toggleSidebar(forceState) {
         const sidebar = document.getElementById('main-sidebar');
-        const overlay = document.getElementById('overlay');
         const isCurrentlyActive = sidebar?.classList.contains('active');
         const nextState = forceState !== undefined ? forceState : !isCurrentlyActive;
 
         if (nextState) {
             sidebar?.classList.add('active');
-            overlay?.classList.add('active');
         } else {
             sidebar?.classList.remove('active');
-            overlay?.classList.remove('active');
         }
     }
 

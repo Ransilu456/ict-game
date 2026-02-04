@@ -87,7 +87,6 @@ export default class Modal {
                     size: 'sm',
                     onClick: (e) => {
                         if (act.onClick) act.onClick(e);
-                        // Unless specify explicit persist, close
                         if (!act.persist) this.destroy();
                     }
                 });
@@ -100,8 +99,6 @@ export default class Modal {
 
         this.element = overlay;
 
-        // Append to body immediately when rendered? Or return?
-        // Usually return, let parent append.
         return overlay;
     }
 

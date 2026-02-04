@@ -31,7 +31,7 @@ export default {
             {
                 method: "Vigenère (Simplified)",
                 msg: "SECURITY IS NOT A PRODUCT BUT A PROCESS",
-                shift: 13, // ROT13
+                shift: 13, 
                 hint: "Classic Rotation 13."
             }
         ];

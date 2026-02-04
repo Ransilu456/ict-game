@@ -222,7 +222,6 @@ export default {
         this.phase2Footer = document.createElement('div');
         this.phase2Footer.className = "flex justify-center mt-12";
 
-        // Use a standard button initially or a GameButton we manually manage
         this.renderPhase2Button();
 
         this.container.appendChild(header.render());

@@ -1,8 +1,3 @@
-/**
- * Localization Dictionary
- * Keys used in the game for English (en) and Sinhala (si).
- */
-
 export const LANG = {
     // UI General
     BTN_START: { en: "Connect to Server", si: "සම්බන්ධ වන්න" },

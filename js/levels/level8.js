@@ -133,7 +133,7 @@ export default {
     },
 
     finishLevel() {
-        const passed = this.score > 800; // Arbitrary threshold
+        const passed = this.score > 800; 
         this.game.completeLevel({
             success: passed,
             score: this.score,

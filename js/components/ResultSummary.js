@@ -16,7 +16,7 @@ export default class ResultSummary {
         const correctCount = this.results.filter(r => r.isCorrect).length;
         const total = this.results.length;
         const percentage = Math.round((correctCount / total) * 100);
-        const passed = percentage >= 60; // Arbitrary pass mark, can be passed in props
+        const passed = percentage >= 60;
 
         const itemsHtml = this.results.map((r, idx) => {
             const statusColor = r.isCorrect ? 'emerald' : 'rose';

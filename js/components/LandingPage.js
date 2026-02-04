@@ -8,7 +8,7 @@ export default class LandingPage {
     render() {
         const hasSession = !!this.game.gameState.playerName;
 
-        // Return container structure
+        // container structure
         const container = document.createElement('div');
         container.className = "flex flex-col items-center justify-center h-screen w-full relative overflow-hidden bg-slate-950 bg-noise";
 
@@ -48,7 +48,6 @@ export default class LandingPage {
             </div>
         `;
 
-        // Inject Buttons using Component
         const actionContainer = container.querySelector('#lp-actions');
 
         if (hasSession) {
@@ -89,33 +88,10 @@ export default class LandingPage {
             actionContainer.appendChild(startBtn.render());
         }
 
-        // Since app.js expects a STRING return from render normally for innerHTML injection (legacy),
-        // we might break things if app.js does `container.innerHTML = landingPage.render()`.
-        // Let's check app.js usage.
-        // app.js: this.landingPage = new LandingPage(this); ... this.showLanding() { ... this.landingContainer.innerHTML = this.landingPage.render(); attachEvents... }
-        // So yes, it expects a string.
-        // But my GameButton returns a DOM Element.
-        // I can return container.outerHTML but events will be lost.
-        // Refactoring: I should change app.js to handle DOM nodes or make LandingPage handle its own rendering into a container.
-
-        // Workaround compliant with current app.js structure:
-        // Return string, but I can't easily Serialize the GameButton events.
-        // I must change `app.js` or `LandingPage` structure.
-
-        // CHANGE STRATEGY: 
-        // I will return a placeholder string, and use `attachEvents` to render the buttons into the placeholder.
-        // app.js calls `attachEvents` AFTER rendering HTML.
-
-        // But `LandingPage.render` creates the buttons.
-
-        // Let's modify the `render` to just return the HTML structure, and move button creation to `attachEvents` or a new `setup` method.
-        // app.js calls `this.landingPage.attachEvents(this.landingContainer)`.
-
         return container.outerHTML;
     }
 
     attachEvents(container) {
-        // Clear buttons placeholder if any (re-render logic)
         const actionContainer = container.querySelector('#lp-actions');
         if (!actionContainer) return;
         actionContainer.innerHTML = '';

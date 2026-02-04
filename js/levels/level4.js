@@ -76,8 +76,6 @@ export default {
         this.container.innerHTML = '';
         const challenge = this.challenges[this.currentChallengeIndex];
 
-        // Header using Feedback component for 'Status' context?
-        // Or just standard header.
         const header = new Card({
             title: `Python Module: ${challenge.title}`,
             subtitle: "Select the best implementation.",
@@ -85,8 +83,6 @@ export default {
             customClass: 'mb-6 text-center'
         });
 
-        // Use QuestionCard for the main interaction
-        // We need to format the options text to be HTML with syntax highlighting
         const optionsForCard = challenge.snippets.map(s => ({
             id: s.id,
             text: `
@@ -105,12 +101,12 @@ export default {
         });
 
         this.qCard = new QuestionCard({
-            question: challenge.title, // or use desc
+            question: challenge.title, 
             options: optionsForCard,
             selectedId: this.selectedSnippetId,
             onSelect: (id) => {
                 this.selectedSnippetId = id;
-                this.render(); // Re-render to show selection state (managed by qCard props? qCard expects us to re-render or update props if we want controlled component behavior)
+                this.render(); 
             }
         });
 

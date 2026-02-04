@@ -26,7 +26,7 @@ export default class Card {
         const variants = {
             default: "bg-slate-900 border border-slate-800 shadow-xl",
             glass: "glass-panel bg-slate-900/40 backdrop-blur-xl border border-white/5 shadow-2xl",
-            flat: "bg-transparent border border-transparent" // Useful for grid layouts just grouping things
+            flat: "bg-transparent border border-transparent" 
         };
 
         div.className = `${baseClasses.join(' ')} ${variants[this.variant]} ${this.customClass}`;
@@ -53,7 +53,7 @@ export default class Card {
 
         // Body
         const body = document.createElement('div');
-        body.className = "p-6 flex-1 min-h-0 overflow-auto custom-scrollbar"; // Allow scrolling if needed
+        body.className = "p-6 flex-1 min-h-0 overflow-auto custom-scrollbar"; 
 
         if (typeof this.content === 'string') {
             body.innerHTML = this.content;

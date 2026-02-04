@@ -164,7 +164,7 @@ export default {
         layout.appendChild(schemaCard.render());
 
         this.container.appendChild(header.render());
-        this.container.appendChild(statusFeedback.render()); // Insert Feedback
+        this.container.appendChild(statusFeedback.render()); 
         this.container.appendChild(layout);
     },
 

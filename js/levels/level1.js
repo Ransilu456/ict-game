@@ -64,8 +64,6 @@ export default {
         trayContent.className = "grid grid-cols-2 gap-3";
 
         // Render Draggables
-        // Filter parts that are already placed? 
-        // We'll hide them via CSS or remove them when placed.
         this.parts.forEach(part => {
             const el = document.createElement('div');
             el.className = "draggable-item p-4 bg-slate-800 rounded-xl border border-slate-700 hover:border-indigo-500 cursor-grab active:cursor-grabbing transition-all flex flex-col items-center justify-center gap-2 group select-none";
@@ -125,9 +123,6 @@ export default {
             { accept: 'audio', label: 'Audio Header', area: 'h-10', inner: true },
             { accept: 'storage', label: 'M.2 Slot', area: 'h-10', inner: true },
         ];
-
-        // We need to render the outer grid, and the inner mobo grid differently
-        // Simplified: Let's manually build the HTML structure for the grid to keep it clean like before, but using cleaner classes
 
         board.innerHTML = `
             <!-- Top Fans -->
@@ -199,7 +194,6 @@ export default {
 
     attachEvents() {
         // Drag Events managed in render() for sources.
-        // Drop Zones:
         const zones = this.container.querySelectorAll('.drop-zone');
 
         zones.forEach(zone => {
@@ -230,7 +224,6 @@ export default {
         // 1. Check compatibility (Silent Reject)
         const accepted = zone.dataset.accept;
         if (accepted !== type) {
-            // Invalid slot: just return (item stays in tray / bounces back)
             this.shakeElement(zone);
             return;
         }
@@ -281,23 +274,17 @@ export default {
         if (allPhasePartsPlaced) {
             if (this.currentPhase < this.installOrder.length - 1) {
                 this.currentPhase++;
-                // Silent advance. Maybe a small visual indicator on the header?
-                // But no modal.
             } else {
-                // Done
                 setTimeout(() => this.finishLevel(), 1000);
             }
         }
     },
-
-    // showFeedback removed entirely as per prompt rules.
 
     finishLevel() {
         const elapsedSec = Math.floor((Date.now() - this.startTime) / 1000);
         const timeBonus = Math.max(0, (90 - elapsedSec) * 10);
 
         // Generate Detailed Results for Summary Screen
-        // Since this is assembly, we just show 1 big "Verified" item if successful
         const detailedResults = [
             { question: "Component Assembly Sequence", selected: "Correct Order", correct: "Correct Order", isCorrect: true },
             { question: "Thermal Paste Application", selected: "Applied", correct: "Applied", isCorrect: true }, // Flavor

@@ -1,8 +1,3 @@
-/**
- * ICT Quest - Main Game Engine
- * Refactored for Component Architecture
- */
-
 import { LANG } from './lang.js';
 import Sidebar from './components/Sidebar.js';
 import Header from './components/Header.js';
@@ -47,9 +42,9 @@ class GameEngine {
         // Initial State
         this.updateUIText();
 
-        // Session Auto-Redirect or Show Landing
+        // Show Landing
         if (this.gameState.playerName) {
-            this.startGame(true); // Jump to last level / map
+            this.startGame(true);
             this.checkResume();
         } else {
             this.showLanding();
@@ -62,7 +57,6 @@ class GameEngine {
     }
 
     renderComponents() {
-        // Render Static Components
         if (this.sidebarContainer) {
             this.sidebarContainer.innerHTML = this.sidebar.render();
             this.sidebar.attachEvents();
@@ -75,7 +69,6 @@ class GameEngine {
     }
 
     cacheDOMElements() {
-        // Screens
         this.screens = {
             intro: document.getElementById('intro-screen'),
             game: document.getElementById('game-screen'),
@@ -85,7 +78,7 @@ class GameEngine {
 
         };
 
-        // HUD (Common game elements, not component internals)
+        // HUD 
         this.hud = {
             level: document.getElementById('hud-level'),
             score: document.getElementById('hud-score'),
@@ -99,13 +92,11 @@ class GameEngine {
     }
 
     attachGlobalEvents() {
-        // Intro Screen Events
         document.getElementById('btn-start')?.addEventListener('click', () => this.startGame());
 
-        // Navigation
         document.getElementById('btn-next-level')?.addEventListener('click', () => this.nextLevel());
 
-        // Pause / Modals
+        //  Modals
         document.getElementById('btn-resume')?.addEventListener('click', () => this.togglePause());
         document.getElementById('btn-restart')?.addEventListener('click', () => {
             this.togglePause();
@@ -228,14 +219,12 @@ class GameEngine {
         }
     }
 
-    /* Logic (Same as before) */
     setLanguage(langCode) {
         if (this.gameState.lang === langCode) return;
         this.gameState.lang = langCode;
-        this.saveData(); // Persist language choice
+        this.saveData();
         this.updateUIText();
 
-        // Refresh Current Screen if needed
         if (this.currentScreen === 'landing') {
             this.showLanding();
         } else if (this.currentScreen === 'game' && this.currentLevelModule) {
@@ -313,7 +302,6 @@ class GameEngine {
             module.default.init(wrapper, this);
             this.startLevelTimer();
 
-            // Update Header Mission Context
             const levelTitle = this.getText(`L${levelNum}_TITLE`);
             this.header.updateMission(levelTitle);
 
@@ -411,11 +399,9 @@ class GameEngine {
         }
         this.saveData();
 
-        // Check if we have detailed results for the new summary view
         if (results.detailedResults) {
             this.showResultSummary(results);
         } else {
-            // Legacy Result View
             const outcomeEl = document.getElementById('mission-outcome');
             outcomeEl.innerText = this.getText(results.success ? 'RES_SUCCESS' : 'RES_FAIL');
 
@@ -433,9 +419,7 @@ class GameEngine {
 
     showResultSummary(results) {
         this.showScreen('results');
-        // Clear legacy content overrides or use a container
-        // Since we want to replace the hardcoded HTML with our component:
-        this.screens.results.innerHTML = ''; // Wipe clean
+        this.screens.results.innerHTML = '';
 
         const summary = new ResultSummary({
             results: results.detailedResults,

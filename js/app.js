@@ -46,8 +46,13 @@ class GameEngine {
         // Initial State
         this.updateUIText();
 
-        // Show Landing Page by default.
-        this.showLanding();
+        // Session Auto-Redirect or Show Landing
+        if (this.gameState.playerName) {
+            this.startGame(true); // Jump to last level / map
+            this.checkResume();
+        } else {
+            this.showLanding();
+        }
     }
 
     cacheContainers() {
@@ -165,7 +170,6 @@ class GameEngine {
         this.updateHUD();
     }
 
-    /* Data Persistence */
     saveData() {
         const data = {
             playerName: this.gameState.playerName,
@@ -192,9 +196,10 @@ class GameEngine {
                 if (this.gameState.playerName) {
                     const el = document.getElementById('player-name');
                     if (el) el.value = this.gameState.playerName;
-                    this.checkResume();
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                console.error("Failed to load game data:", e);
+            }
         }
     }
 
@@ -211,10 +216,17 @@ class GameEngine {
     setLanguage(langCode) {
         if (this.gameState.lang === langCode) return;
         this.gameState.lang = langCode;
+        this.saveData(); // Persist language choice
         this.updateUIText();
-        if (!this.screens.game.classList.contains('hidden') && this.currentLevelModule) {
+
+        // Refresh Current Screen if needed
+        if (this.currentScreen === 'landing') {
+            this.showLanding();
+        } else if (this.currentScreen === 'game' && this.currentLevelModule) {
             this.currentLevelModule.render();
             if (this.currentLevelModule.attachEvents) this.currentLevelModule.attachEvents();
+        } else if (this.currentScreen === 'select') {
+            this.renderLevelSelect();
         }
     }
 
@@ -298,60 +310,66 @@ class GameEngine {
     renderLevelSelect() {
         const list = document.getElementById('mission-list');
         list.innerHTML = '';
-        const totalLevels = 16;
 
         const categories = [
-            { name: 'Core Architecture', levels: [1, 5, 4, 15], icon: 'solar:cpu-bold', color: 'text-indigo-400' },
-            { name: 'Network & Code', levels: [3, 2, 8, 9, 11, 13, 14], icon: 'solar:globus-bold', color: 'text-blue-400' },
-            { name: 'Logic & Security', levels: [6, 7, 10, 12], icon: 'solar:shield-keyhole-bold', color: 'text-emerald-400' },
-            { name: 'Final Frontier', levels: [16], icon: 'solar:fire-bold', color: 'text-rose-500' }
+            { name: 'Core Architecture', levels: [1, 5, 4, 15], icon: 'solar:cpu-bold', color: 'indigo' },
+            { name: 'Network & Code', levels: [3, 2, 8, 9, 11, 13, 14], icon: 'solar:globus-bold', color: 'blue' },
+            { name: 'Logic & Security', levels: [6, 7, 10, 12], icon: 'solar:shield-keyhole-bold', color: 'emerald' },
+            { name: 'Final Frontier', levels: [16], icon: 'solar:fire-bold', color: 'rose' }
         ];
-
-
-
 
         categories.forEach(cat => {
             const catHeader = document.createElement('div');
-            catHeader.className = "col-span-full mt-8 mb-4 flex items-center gap-3";
+            catHeader.className = "col-span-full mt-12 mb-6 flex items-center gap-4 animate-fade-in";
             catHeader.innerHTML = `
-                <div class="p-2 rounded-lg bg-slate-900 border border-slate-800 ${cat.color}">
-                    <iconify-icon icon="${cat.icon}" class="text-xl"></iconify-icon>
+                <div class="p-3 rounded-2xl bg-${cat.color}-500/10 border border-${cat.color}-500/20 text-${cat.color}-400 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+                    <iconify-icon icon="${cat.icon}" class="text-2xl"></iconify-icon>
                 </div>
-                <h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-500">${cat.name}</h3>
-                <div class="flex-1 h-[1px] bg-slate-800/50"></div>
+                <div class="flex-1">
+                    <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-white opacity-40 mb-1">${cat.name}</h3>
+                    <div class="h-px bg-gradient-to-r from-${cat.color}-500/30 to-transparent w-full"></div>
+                </div>
             `;
             list.appendChild(catHeader);
 
             cat.levels.forEach(i => {
                 const isLocked = i > this.gameState.maxLevel;
-                const difficulty = Math.ceil(i / 2);
+                const difficulty = Math.ceil(i / 3);
                 const btn = document.createElement('div');
 
-                let baseClass = "relative overflow-hidden rounded-2xl p-6 border transition-all cursor-pointer group ";
-                if (isLocked) baseClass += "bg-slate-900/50 border-slate-800/50 opacity-40 grayscale pointer-events-none";
-                else baseClass += "bg-slate-900 border-slate-800 hover:border-indigo-500/50 hover:bg-slate-800/50 shadow-lg hover:shadow-indigo-500/10";
+                let baseClass = "relative overflow-hidden rounded-[2.5rem] p-8 border-2 transition-all cursor-pointer group/card animate-fade-in ";
+                if (isLocked) {
+                    baseClass += "bg-slate-900/40 border-slate-800/50 opacity-40 grayscale pointer-events-none";
+                } else {
+                    baseClass += `bg-slate-900/60 border-slate-800/80 hover:border-${cat.color}-500/50 hover:bg-slate-800/60 shadow-2xl hover:shadow-${cat.color}-500/10`;
+                }
 
-                btn.className = baseClass + " isometric-card group/card";
+                btn.className = baseClass + " isometric-card";
                 btn.innerHTML = `
-                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity"></div>
+                    <div class="absolute inset-0 bg-gradient-to-br from-${cat.color}-500/5 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity"></div>
+                    
                     <div class="relative z-10">
-                        <div class="flex items-start justify-between mb-6">
-                            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl border ${isLocked ? 'bg-slate-950 border-slate-800 text-slate-700' : 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)] group-hover/card:scale-110 transition-transform'}">
+                        <div class="flex items-start justify-between mb-8">
+                            <div class="w-14 h-14 rounded-[1.25rem] flex items-center justify-center text-3xl border-2 ${isLocked ? 'bg-slate-950/80 border-slate-800 text-slate-700' : `bg-${cat.color}-500/10 border-${cat.color}-500/20 text-${cat.color}-400 shadow-[0_0_20px_rgba(0,0,0,0.4)] group-hover/card:scale-110 transition-transform`}">
                                 <iconify-icon icon="${isLocked ? 'solar:lock-bold' : 'solar:play-circle-bold'}"></iconify-icon>
                             </div>
-                            <div class="flex gap-0.5">
+                            <div class="flex gap-1 pt-2">
                                 ${Array(5).fill(0).map((_, idx) => `
-                                    <iconify-icon icon="solar:star-bold" class="text-[10px] ${idx < difficulty ? 'text-amber-500 drop-shadow-[0_0_5px_rgba(245,158,11,0.5)]' : 'text-slate-800'}"></iconify-icon>
+                                    <div class="w-1.5 h-1.5 rounded-full ${idx < difficulty ? `bg-${cat.color}-500 shadow-[0_0_8px_${cat.color}]` : 'bg-slate-800'}"></div>
                                 `).join('')}
                             </div>
                         </div>
+                        
                         <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-[10px] font-black text-slate-400 bg-slate-950 px-1.5 py-0.5 rounded uppercase tracking-tighter border border-slate-800 group-hover/card:border-indigo-500/50 transition-colors">Sector ${i}</span>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-[9px] font-black text-slate-500 bg-slate-950/80 px-2 py-1 rounded-lg uppercase tracking-widest border border-slate-800 group-hover/card:border-${cat.color}-500/30 transition-colors">SECTOR ${String(i).padStart(2, '0')}</span>
                             </div>
-                            <h4 class="text-sm font-bold text-white group-hover/card:text-indigo-300 transition-colors truncate">${isLocked ? 'CLASSIFIED' : this.getText('L' + i + '_TITLE')}</h4>
+                            <h4 class="text-lg font-black text-white group-hover/card:text-${cat.color}-300 transition-colors truncate tracking-tight uppercase">${isLocked ? 'CLASSIFIED' : this.getText('L' + i + '_TITLE').replace('MISSION:', '').trim()}</h4>
                         </div>
                     </div>
+
+                    <!-- Decorative elements -->
+                    <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-${cat.color}-500/5 rounded-full blur-2xl group-hover/card:bg-${cat.color}-500/10 transition-colors"></div>
                 `;
 
                 if (!isLocked) {

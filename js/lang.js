@@ -66,7 +66,7 @@ export const LANG = {
     L2_TITLE: { en: "MISSION: CODE REPAIR", si: "මෙහෙයුම: කේත දෝෂ නිවැරදි කිරීම" },
     L2_DESC: { en: "WARNING: Security breach detected! Identify and patch Python syntax errors before the mainframe is compromised.", si: "අවවාදයයි: ආරක්ෂක දෝෂ සහිතයි! දත්ත සොරකම් කිරීමට පෙර Python කේත දෝෂ නිවැරදි කරන්න." },
     L2_TASK_PREFIX: { en: "TASK: ", si: "කාර්යය: " },
-    L2_BTN_RUN: { en: "EXECUTE SCRIPT", si: "ධාවනය කරන්න" },
+    L2_BTN_RUN: { en: "EXECUTE FIX", si: "ධාවනය කරන්න" },
 
     // Level 3: Networking
     L3_TITLE: { en: "MISSION: OSI STACK", si: "මෙහෙයුම: OSI ආකෘතිය" },
@@ -175,6 +175,8 @@ export const LANG = {
     L16_STATUS_LEGEND: { en: "LEGENDARY STATUS", si: "ප්‍රවීණ තත්ත්වය" },
     L16_STATUS_OVERLOAD: { en: "SYSTEM OVERLOAD", si: "පද්ධතිය අධික ලෙස පටවා ඇත" },
     L16_STROKE_ACTIVE: { en: "CYBER STROKE ACTIVE", si: "සයිබර් ස්ට්‍රෝක් ක්‍රියාත්මකයි" },
+    L16_BOSS_INTRO: { en: '"Your ascent ends here, Agent. Prove your technical worth or be purged from the architecture."', si: '"ඔබේ ගමන මෙතැනින් අවසන්, නියෝජිතය. ඔබේ තාක්ෂණික දක්ෂතාවය ඔප්පු කරන්න, නැතහොත් පද්ධතියෙන් ඉවත් වන්න."' },
+    L16_BOSS_FAIL: { en: '"Weak. Your logic falters under pressure."', si: '"දුර්වලයි. පීඩනය හමුවේ ඔබේ තර්කනය බිඳ වැටේ."' },
 
     // Sidebar & Menus
     BTN_MISSIONS: { en: "Select Mission", si: "මෙහෙයුම් තෝරන්න" },

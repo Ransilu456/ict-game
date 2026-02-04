@@ -1,6 +1,6 @@
 /**
  * Level 16: The Legend's Trial
- * Mechanic: Final Boss Exam + "Cyber Stroke" Visuals.
+ * Mechanic: Final Boss Exam + "Neural Link" Cinematic UI.
  */
 
 export default {
@@ -10,6 +10,7 @@ export default {
         this.score = 0;
         this.currentIndex = 0;
         this.totalQuestions = 15;
+        this.integrity = 100;
 
         this.questions = [
             { q: 'Which layer of OSI handles IP routing?', a: 'Network', opts: ['Data Link', 'Network', 'Transport', 'Session'] },
@@ -30,93 +31,90 @@ export default {
         ];
 
         this.render();
-        this.activateStrokes();
     },
 
     render() {
         const qData = this.questions[this.currentIndex];
+        const progress = (this.currentIndex / this.totalQuestions) * 100;
 
         this.container.innerHTML = `
-            <div class="max-w-2xl mx-auto py-8">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-black text-white mb-2 tracking-tighter" id="legend-title">${this.game.getText('L16_TITLE')}</h2>
-                    <p class="text-slate-400 font-medium uppercase text-xs tracking-[0.3em]">${this.game.getText('L16_STATUS_LEGEND')}</p>
-                </div>
-
-                <div id="legends-card" class="bg-slate-900 border-2 border-slate-800 rounded-[2.5rem] p-10 shadow-[0_0_50px_rgba(244,63,94,0.1)] transition-all duration-500 relative overflow-hidden">
-                    <!-- Progress Bar -->
-                    <div class="absolute top-0 left-0 w-full h-1.5 bg-slate-950">
-                        <div id="legend-progress" class="h-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.8)] transition-all duration-500" style="width: ${(this.currentIndex / this.totalQuestions) * 100}%"></div>
-                    </div>
-
-                    <div class="flex justify-between items-center mb-10">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500">
-                                <iconify-icon icon="solar:fire-bold" class="text-2xl animate-pulse"></iconify-icon>
-                            </div>
-                            <span class="text-[10px] font-black text-rose-500 uppercase tracking-widest">${this.game.getText('L16_STROKE_ACTIVE')}</span>
-                        </div>
-                        <span class="text-xs font-mono font-bold text-slate-500">${this.currentIndex + 1} // ${this.totalQuestions}</span>
-                    </div>
-
-                    <div class="mb-10 min-h-[80px]">
-                        <h3 class="text-xl md:text-2xl font-bold text-white leading-tight">${qData.q}</h3>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="options-grid">
-                        ${qData.opts.map(opt => `
-                            <button class="option-btn p-5 bg-slate-950 border border-slate-800 rounded-2xl text-left text-sm font-bold text-slate-400 hover:text-white hover:border-rose-500/50 hover:bg-rose-500/5 transition-all flex items-center gap-3 group" data-answer="${opt}">
-                                <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-xs group-hover:border-rose-500/30 group-hover:text-rose-500 transition-colors">
-                                    <iconify-icon icon="solar:primitive-dot-bold" class="opacity-30 group-hover:opacity-100"></iconify-icon>
-                                </div>
-                                <span>${opt}</span>
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>
-
-                <div class="mt-8 text-center">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 rounded-full border border-slate-800 text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                        <iconify-icon icon="solar:danger-bold" class="text-rose-500 animate-pulse"></iconify-icon>
-                        ${this.game.getText('L16_STATUS_OVERLOAD')}
-                    </div>
-                </div>
-            </div>
-
-            <style>
-                .legend-stroke-effect {
-                    animation: pulseStrokes 2s infinite ease-in-out;
-                    border-color: #f43f5e !important;
-                    box-shadow: 0 0 30px rgba(244,63, 94, 0.4) !important;
-                }
+            <div class="h-full w-full flex flex-col items-center justify-center p-6 md:p-12 relative overflow-hidden bg-slate-950/20">
                 
-                @keyframes pulseStrokes {
-                    0% { box-shadow: 0 0 20px rgba(244,63, 94, 0.2); }
-                    50% { box-shadow: 0 0 40px rgba(244,63, 94, 0.5); }
-                    100% { box-shadow: 0 0 20px rgba(244,63, 94, 0.2); }
-                }
+                <div class="flex flex-col h-full gap-8 animate-fade-in max-w-7xl mx-auto p-4 md:p-8 relative noise-overlay">
+                
+                <!-- HUD Sidebar -->
+                <div class="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col gap-6 z-10 pointer-events-none opacity-40">
+                    <div class="flex flex-col items-end">
+                        <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Neural Integrity</span>
+                        <div class="w-32 h-1 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                            <div id="integrity-bar" class="h-full bg-rose-500 transition-all duration-500" style="width: ${this.integrity}%"></div>
+                        </div>
+                    </div>
+                </div>
 
-                .legend-flash-correct {
-                    animation: flashCorrect 0.5s ease-out;
-                }
-                @keyframes flashCorrect {
-                    0% { background-color: rgba(16, 185, 129, 0.2); }
-                    100% { background-color: transparent; }
-                }
-            </style>
+                <!-- Main Viewport -->
+                <div class="flex-1 flex flex-col glass-panel rounded-[3rem] border border-white/5 relative overflow-hidden group/link bg-slate-950/20" id="link-viewport">
+                    
+                    <!-- Header -->
+                    <div class="p-8 border-b border-white/5 flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-slate-900 border border-white/10 flex items-center justify-center text-indigo-400">
+                                <iconify-icon icon="solar:shield-warning-bold" class="text-2xl"></iconify-icon>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-black text-white tracking-tight uppercase">${this.game.getText('L16_TITLE')}</h3>
+                                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Master Protocol 016 // Secure Channel</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                             <span class="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em]">Node Link Active</span>
+                        </div>
+                    </div>
+      <!-- Question Card -->
+                        <div class="glass-panel p-10 md:p-12 rounded-[3rem] border border-rose-500/10 shadow-3xl relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-slate-950">
+                                <div class="h-full bg-rose-500 shadow-[0_0_15px_rgba(244,63,94,1)] transition-all duration-700" style="width: ${progress}%"></div>
+                            </div>
+
+                            <div class="flex justify-between items-center mb-10">
+                                <div class="flex items-center gap-3">
+                                    <span class="px-3 py-1 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-500 text-[10px] font-black tracking-widest uppercase">Query ${this.currentIndex + 1}</span>
+                                </div>
+                                <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">LEGENDS_TRIAL_V3.HEX</div>
+                            </div>
+
+                            <h3 class="text-2xl md:text-3xl font-black text-white mb-12 tracking-tight leading-snug">
+                                ${qData.q}
+                            </h3>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="options-grid">
+                                ${qData.opts.map((opt, i) => `
+                                    <button class="option-btn group p-6 bg-slate-950 border border-slate-800 rounded-3xl text-left transition-all hover:bg-rose-500/5 hover:border-rose-500/50 active:scale-[0.98] relative overflow-hidden" data-answer="${opt}">
+                                        <div class="absolute inset-y-0 left-0 w-1 bg-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                        <div class="flex items-center gap-4 relative z-10">
+                                            <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-600 group-hover:text-rose-400 group-hover:border-rose-500/30 transition-all">
+                                                <span class="text-xs font-black">${String.fromCharCode(65 + i)}</span>
+                                            </div>
+                                            <span class="text-sm font-bold text-slate-400 group-hover:text-white transition-colors">${opt}</span>
+                                        </div>
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- HUD Ticker Bottom -->
+                <div class="absolute bottom-10 inset-x-0 px-12 flex items-center justify-between pointer-events-none opacity-40">
+                    <div class="text-[9px] font-mono text-slate-500 uppercase tracking-[0.5em]">SYSTEM_STABILITY: CALIBRATING...</div>
+                    <div class="text-[9px] font-mono text-slate-500 uppercase tracking-[0.5em]">SECURE_STORAGE_ACTIVE</div>
+                </div>
+
+            </div>
         `;
 
         this.attachEvents();
-    },
-
-    activateStrokes() {
-        // Add neon strokes to the card
-        const card = document.getElementById('legends-card');
-        if (card) card.classList.add('legend-stroke-effect');
-
-        // Add subtle neon pulse to Sidebar
-        const sidebar = document.getElementById('main-sidebar');
-        if (sidebar) sidebar.style.boxShadow = 'inset -1px 0 20px rgba(244,63,94,0.1)';
     },
 
     attachEvents() {
@@ -125,39 +123,63 @@ export default {
                 const isCorrect = btn.dataset.answer === this.questions[this.currentIndex].a;
 
                 if (isCorrect) {
-                    this.score += 500;
-                    this.triggerSuccessEffect();
-                    this.nextQuestion();
+                    this.triggerSuccess(btn);
                 } else {
-                    this.game.showFeedback('NEURAL COLLAPSE', 'Incorrect response. Mental integrity fading. System stability critical.');
-                    this.score = Math.max(0, this.score - 250);
+                    this.triggerFailure();
                 }
             };
         });
     },
 
-    triggerSuccessEffect() {
-        const card = document.getElementById('legends-card');
-        card.classList.add('legend-flash-correct');
-        setTimeout(() => card.classList.remove('legend-flash-correct'), 500);
+    triggerSuccess(btn) {
+        this.score += 500;
+        btn.classList.add('bg-emerald-500/20', 'border-emerald-500');
+
+        setTimeout(() => {
+            this.currentIndex++;
+            if (this.currentIndex < this.totalQuestions) {
+                this.render();
+            } else {
+                this.finishLevel();
+            }
+        }, 800);
     },
 
-    nextQuestion() {
-        this.currentIndex++;
-        if (this.currentIndex < this.totalQuestions) {
-            this.render();
-            this.activateStrokes();
-        } else {
-            this.finishLevel();
+    triggerFailure() {
+        this.integrity = Math.max(0, this.integrity - 15);
+        this.score = Math.max(0, this.score - 250);
+
+        // Shake & Glitch Effect
+        const viewport = document.getElementById('neural-viewport');
+        const speech = document.getElementById('boss-speech');
+
+        viewport.classList.add('animate-glitch-cinematic', 'animate-shake');
+        if (speech) speech.innerText = this.game.getText('L16_BOSS_FAIL');
+
+        this.updateIntegrityUI();
+
+        if (this.integrity <= 0) {
+            this.finishLevel(false);
         }
+
+        setTimeout(() => {
+            viewport.classList.remove('animate-glitch-cinematic', 'animate-shake');
+        }, 1000);
     },
 
-    finishLevel() {
+    updateIntegrityUI() {
+        const bar = document.getElementById('integrity-bar');
+        const val = document.getElementById('integrity-value');
+        if (bar) bar.style.width = `${this.integrity}%`;
+        if (val) val.innerText = `${this.integrity}%`;
+    },
+
+    finishLevel(success = true) {
         this.game.completeLevel({
-            success: true,
+            success: success,
             score: this.score,
-            xp: 5000,
-            accuracy: 100
+            xp: success ? 5000 : 500,
+            accuracy: Math.round((this.integrity / 100) * 100)
         });
     }
 };

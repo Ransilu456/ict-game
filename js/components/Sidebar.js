@@ -6,7 +6,7 @@ export default class Sidebar {
     render() {
         return `
             <aside class="w-full md:w-64 border-r border-slate-800 bg-slate-900/40 flex flex-col justify-between h-auto md:h-screen shrink-0 z-20 transition-all duration-300 glass-panel" id="main-sidebar">
-                <div class="overflow-y-auto flex-1 scanlines">
+                <div class="overflow-y-auto flex-1 scanlines custom-scrollbar">
                     <!-- Logo Area -->
                     <div class="p-6 flex items-center gap-3 border-b border-slate-800/50 relative overflow-hidden group">
                         <div class="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -21,28 +21,27 @@ export default class Sidebar {
 
                     <!-- Navigation Links -->
                     <nav class="p-4 space-y-2" id="sidebar-nav">
-                        <div class="px-3 mb-4 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]" data-key="SB_NAV_TITLE">Navigation Modules</div>
+                        <div class="px-3 mb-4 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]" data-key="SB_NAV_TITLE">${this.game.getText('SB_NAV_TITLE')}</div>
                         
                         <button id="nav-map" data-screen="select" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-sm font-bold text-left group border border-transparent hover:border-slate-700/50">
                             <iconify-icon icon="solar:map-point-wave-bold" class="text-xl group-hover:scale-110 group-hover:text-indigo-400 transition-all"></iconify-icon>
-                            <span data-key="MENU_TITLE_SELECT" class="tracking-wide">MISSION MAP</span>
+                            <span data-key="MENU_TITLE_SELECT" class="tracking-wide">${this.game.getText('MENU_TITLE_SELECT')}</span>
                         </button>
                         
                         <button id="nav-profile" data-screen="intro" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-sm font-bold text-left group border border-transparent hover:border-slate-700/50">
                             <iconify-icon icon="solar:shield-user-bold" class="text-xl group-hover:scale-110 group-hover:text-indigo-400 transition-all"></iconify-icon>
-                            <span data-key="MENU_TITLE_PROFILE" class="tracking-wide">AGENT PROFILE</span>
+                            <span data-key="MENU_TITLE_PROFILE" class="tracking-wide">${this.game.getText('MENU_TITLE_PROFILE')}</span>
                         </button>
-                        
-
-
-                        <div class="pt-6 mt-6 border-t border-slate-800/50">
-                            <div class="px-3 mb-3 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]" data-key="SB_LANG_TITLE">System Lang</div>
-                            <div class="flex gap-2 px-3">
-                                <button id="lang-en" class="lang-btn flex-1 text-[10px] font-black px-2 py-2 rounded-lg border border-slate-800 bg-slate-950/50 hover:bg-slate-800 text-slate-500 hover:text-white transition-all tracking-widest">EN</button>
-                                <button id="lang-si" class="lang-btn flex-1 text-[10px] font-black px-2 py-2 rounded-lg border border-slate-800 bg-slate-950/50 hover:bg-slate-800 text-slate-500 hover:text-white transition-all tracking-widest">සිං</button>
-                            </div>
-                        </div>
                     </nav>
+
+                    <!-- Language Switcher -->
+                    <div class="px-4 mt-8">
+                        <div class="px-3 mb-3 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]" data-key="SB_LANG_TITLE">${this.game.getText('SB_LANG_TITLE')}</div>
+                        <div class="flex p-1 bg-slate-950/50 rounded-xl border border-slate-800/50 gap-1">
+                            <button id="lang-en" class="lang-btn flex-1 py-2 text-[10px] font-black rounded-lg transition-all tracking-widest uppercase">EN</button>
+                            <button id="lang-si" class="lang-btn flex-1 py-2 text-[10px] font-black rounded-lg transition-all tracking-widest uppercase">සිං</button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- User Stats (HUD Style) -->
@@ -51,31 +50,31 @@ export default class Sidebar {
                         <div class="flex items-center gap-3">
                             <div class="relative">
                                 <div class="w-12 h-12 rounded-full border-2 border-indigo-500/30 p-1">
-                                    <div class="w-full h-full rounded-full bg-slate-800 flex items-center justify-center text-indigo-400 border border-indigo-500/20 shadow-[0_0_10px_rgba(99,102,241,0.2)]">
+                                    <div class="w-full h-full rounded-full bg-slate-800 flex items-center justify-center text-indigo-400 border border-indigo-500/20 shadow-[0_0_10px_rgba(99,102,241,0.2)] overflow-hidden">
                                         <iconify-icon icon="solar:user-bold" class="text-2xl"></iconify-icon>
                                     </div>
                                 </div>
-                                <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-indigo-600 rounded-full border-2 border-slate-900 flex items-center justify-center text-[10px] font-black text-white shadow-lg" id="hud-level-sm">1</div>
+                                <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-indigo-600 rounded-full border-2 border-slate-900 flex items-center justify-center text-[8px] font-black text-white shadow-lg" id="hud-level-sm">1</div>
                             </div>
-                            <div class="flex-1">
-                                <span class="text-[10px] font-black text-slate-500 uppercase tracking-tighter block mb-1" data-key="SB_AGENT_LBL">Authenticated Agent</span>
-                                <span class="text-sm font-black text-white tracking-wider truncate block" id="hud-player-name">Agent</span>
+                            <div class="flex-1 overflow-hidden">
+                                <span class="text-[9px] font-black text-slate-500 uppercase tracking-tighter block mb-0.5" data-key="SB_AGENT_LBL">${this.game.getText('SB_AGENT_LBL')}</span>
+                                <span class="text-xs font-black text-white tracking-wider truncate block" id="hud-player-name">Agent</span>
                             </div>
                         </div>
 
                         <div class="space-y-1">
-                            <div class="flex justify-between items-center text-[10px] font-black text-slate-500 tracking-widest uppercase">
-                                <span data-key="SB_XP_LBL">Core XP</span>
+                            <div class="flex justify-between items-center text-[9px] font-black text-slate-500 tracking-widest uppercase">
+                                <span data-key="SB_XP_LBL">${this.game.getText('SB_XP_LBL')}</span>
                                 <span class="text-indigo-400" id="hud-xp-val">0</span>
                             </div>
-                            <div class="h-1.5 w-full bg-slate-800/50 rounded-full overflow-hidden border border-slate-700/50">
+                            <div class="h-1 w-full bg-slate-800/50 rounded-full overflow-hidden border border-slate-700/50">
                                 <div class="h-full bg-indigo-500 shadow-[0_0_10px_rgba(79,70,229,0.5)]" id="hud-xp-bar" style="width: 5%; transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
                             </div>
                         </div>
                         
                         <div class="bg-indigo-500/5 p-3 rounded-xl border border-indigo-500/10 flex justify-between items-center group/score">
-                            <span class="text-[10px] text-slate-500 uppercase font-black tracking-widest group-hover/score:text-indigo-400 transition-colors" data-key="SB_SCORE">Total Score</span>
-                            <span class="text-sm font-mono font-black text-white" id="hud-score-val">0</span>
+                            <span class="text-[9px] text-slate-500 uppercase font-black tracking-widest group-hover/score:text-indigo-400 transition-colors" data-key="SB_SCORE">${this.game.getText('SB_SCORE')}</span>
+                            <span class="text-xs font-mono font-black text-white" id="hud-score-val">0</span>
                         </div>
                     </div>
                 </div>
@@ -84,18 +83,36 @@ export default class Sidebar {
             <style>
                 .nav-item.active {
                     background: rgba(99, 102, 241, 0.1);
-                    border-right: 3px solid #6366f1;
+                    border-left: 3px solid #6366f1;
                     color: white;
-                    box-shadow: inset -10px 0 20px -10px rgba(99, 102, 241, 0.2);
+                    padding-left: 13px !important;
                 }
                 .nav-item.active iconify-icon {
                     color: #818cf8;
                     filter: drop-shadow(0 0 5px rgba(129, 140, 248, 0.5));
                 }
+                .lang-btn {
+                    color: #64748b;
+                    background: transparent;
+                }
+                .lang-btn:hover {
+                    color: #94a3b8;
+                    background: rgba(255,255,255,0.02);
+                }
                 .lang-btn.active {
-                    border-color: #6366f1;
-                    background: rgba(79, 70, 229, 0.2);
+                    background: #6366f1;
                     color: white;
+                    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+                }
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 4px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #1e293b;
+                    border-radius: 10px;
                 }
             </style>
         `;
@@ -104,7 +121,6 @@ export default class Sidebar {
     attachEvents() {
         document.getElementById('nav-map')?.addEventListener('click', () => this.game.showScreen('select'));
         document.getElementById('nav-profile')?.addEventListener('click', () => this.game.showScreen('intro'));
-
 
         document.getElementById('lang-en')?.addEventListener('click', () => window.setLang('en'));
         document.getElementById('lang-si')?.addEventListener('click', () => window.setLang('si'));
@@ -125,7 +141,7 @@ export default class Sidebar {
         if (xpVal) xpVal.innerText = gameState.xp;
         if (scoreVal) scoreVal.innerText = gameState.score;
         if (nameVal) nameVal.innerText = gameState.playerName || 'Agent';
-        if (levelVal) levelVal.innerText = `LVL ${gameState.currentLevel}`;
+        if (levelVal) levelVal.innerText = gameState.currentLevel;
 
         // Update Active Nav
         document.querySelectorAll('.nav-item').forEach(btn => {

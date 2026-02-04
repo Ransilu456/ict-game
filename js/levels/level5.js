@@ -33,60 +33,65 @@ export default {
         const currentVal = this.calculateCurrentValue();
 
         this.container.innerHTML = `
-            <h2>${this.game.getText('L5_TITLE')}</h2>
-            <p>${this.game.getText('L5_DESC')}</p>
-
-            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap: 2rem;">
-
+            <div class="flex flex-col h-full gap-8 animate-fade-in max-w-7xl mx-auto p-4 md:p-8 relative noise-overlay">
                 
-                <!-- Target Display -->
-                <div style="
-                    background: rgba(0,0,0,0.5); padding: 1rem 2rem; border-radius: 12px; border: 2px solid var(--color-primary);
-                    text-align: center; width: 80%;
-                ">
-                    <div style="font-size: 1rem; color: var(--color-text-muted);">${this.game.getText('L5_TARGET_LBL')}</div>
-                    <div style="font-size: 3rem; color: var(--color-primary); font-family: monospace; font-weight: bold;">
-                        ${stage.target}
-                    </div>
-                </div>
+                <!-- Background Ambient -->
+                <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
 
-                <!-- Bits Interface -->
-                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; justify-content: center;">
-                    ${this.bitValues.map((val, idx) => `
-                        <div style="display:flex; flex-direction:column; align-items:center; gap: 5px;">
-                            <div style="font-size:0.7rem; color:var(--color-text-muted); font-weight:bold;">${val}</div>
-                            <button class="btn-bit" data-idx="${idx}" style="
-                                width:100%; height:80px; border-radius:12px; 
-                                border: 2px solid ${this.currentBits[idx] ? 'white' : 'rgba(255,255,255,0.1)'};
-                                background: ${this.currentBits[idx] ? 'var(--color-primary)' : 'rgba(0,0,0,0.3)'};
-                                color: ${this.currentBits[idx] ? 'white' : 'rgba(255,255,255,0.4)'};
-                                font-size: 1.5rem; font-family: monospace; cursor:pointer;
-                                transition: all 0.2s ease;
-                                box-shadow: ${this.currentBits[idx] ? '0 0 15px var(--color-primary-shadow)' : 'none'};
-                            ">
-                                ${this.currentBits[idx]}
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-2">
+                    
+                    <!-- Left: Target Visualization -->
+                    <div class="w-full lg:w-80 flex flex-col gap-6">
+                        <div class="glass-panel p-8 rounded-[2.5rem] border border-white/5 flex flex-col items-center justify-center text-center flex-1 bg-slate-950/40">
+                            <span class="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em] mb-4">${this.game.getText('L5_TARGET_LBL')}</span>
+                            <div class="text-7xl font-mono font-black text-white tracking-tighter mb-2">
+                                ${stage.target}
+                            </div>
+                            <div class="h-px w-24 bg-slate-800 my-6"></div>
+                            <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Wait for Sync...</span>
+                        </div>
+
+                        <div class="glass-panel p-8 rounded-[2.5rem] border border-white/5 flex flex-col items-center justify-center text-center bg-slate-950/40">
+                            <span class="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em] mb-4">${this.game.getText('L5_CURRENT_LBL')}</span>
+                            <div id="current-val-display" class="text-6xl font-mono font-black tracking-tighter transition-all duration-300
+                                ${currentVal === stage.target ? 'text-emerald-400' : 'text-slate-300'}">
+                                ${currentVal}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Matrix Core -->
+                    <div class="flex-1 glass-panel rounded-[3rem] border border-white/5 p-8 flex flex-col bg-slate-950/20 overflow-hidden relative group">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+                        
+                        <div class="grid grid-cols-3 sm:grid-cols-4 gap-4 flex-1">
+                            ${this.bitValues.map((val, idx) => `
+                                <button class="btn-bit group/bit h-full min-h-[120px] rounded-3xl border-2 transition-all flex flex-col items-center justify-center gap-3 relative overflow-hidden
+                                    ${this.currentBits[idx]
+                ? 'bg-indigo-600 border-indigo-400 text-white shadow-lg'
+                : 'bg-slate-900 border-white/5 text-slate-500 hover:border-slate-700 hover:bg-slate-800'}" 
+                                    data-idx="${idx}">
+                                    
+                                    <span class="text-[10px] font-black uppercase tracking-widest opacity-40 group-hover/bit:opacity-100 transition-opacity">${val}</span>
+                                    <div class="text-4xl font-black font-mono transition-transform duration-300 group-active/bit:scale-90">
+                                        ${this.currentBits[idx]}
+                                    </div>
+                                    
+                                    ${this.currentBits[idx] ? `
+                                        <div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent"></div>
+                                    ` : ''}
+                                </button>
+                            `).join('')}
+                        </div>
+
+                        <div class="mt-8 pt-8 border-t border-white/5 flex justify-end">
+                            <button id="btn-check-binary" class="px-12 py-6 bg-emerald-600 hover:bg-emerald-500 text-white rounded-[2rem] font-black shadow-lg transition-all flex items-center justify-center gap-3 active:scale-95">
+                                <iconify-icon icon="solar:check-read-bold" class="text-2xl"></iconify-icon>
+                                <span class="text-xl uppercase tracking-tighter">${this.game.getText('L5_BTN_CHECK')}</span>
                             </button>
                         </div>
-                    `).join('')}
-                </div>
-
-                <!-- Current Value Display -->
-                <div style="text-align: center;">
-                    <div style="font-size: 1rem; color: var(--color-text-muted);">${this.game.getText('L5_CURRENT_LBL')}</div>
-                    <div id="current-val-display" style="
-                        font-size: 2.5rem; 
-                        color: ${currentVal === stage.target ? 'var(--color-success)' : 'var(--color-text)'};
-                        font-weight: bold;
-                    ">
-                        ${currentVal}
                     </div>
-                </div>
-
-                <!-- Action -->
-                <div>
-                     <button id="btn-check-binary" class="btn" style="width: 200px;">
-                        ${this.game.getText('L5_BTN_CHECK')}
-                     </button>
                 </div>
             </div>
         `;

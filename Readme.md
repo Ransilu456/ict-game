@@ -2,9 +2,19 @@
 
 ![Web-Based]
 ![Premium UI]
+![Mobile-Ready]
 ![Educational]
 
-A high-fidelity, interactive educational platform designed for advanced ICT students. **ICT Quest** gamifies complex concepts, while the **Tech Lab** provides deep-dive hardware simulations with real-time circuitry analysis.
+A high-fidelity, interactive educational platform designed for advanced ICT students. **ICT Quest** gamified complex concepts with a focus on mobile-first responsiveness, while the **Tech Lab** provides deep-dive hardware simulations with real-time circuitry analysis.
+
+---
+
+## 📱 Mobile-First Excellence
+The entire platform has been refactored for **100% Mobile Responsiveness**:
+- **Responsive Layouts**: Fluid scaling from iPhone SE to 4K Desktops.
+- **Touch Interactions**: Optimized tap-to-place mechanics and high-accuracy touch targets.
+- **Safe Areas**: Native support for notches, status bars, and navigation insets.
+- **Silent Feedback**: Inline progress tracking instead of disruptive alerts for a seamless mobile experience.
 
 ---
 
@@ -15,23 +25,24 @@ A professional-grade simulation environment where students can analyze hardware 
 - **Optics Lab**: Understand DSLR mirrors, photodiode arrays, and sensor gain (ISO).
 - **Signal Lab**: Visualize OFDM waves, frequency modulation, and radio broadcasting.
 - **Networking Hub**: Manage L2 Switches with MAC address tables and port forwarding.
-- **Circuitry View**: A specialized mode for *all* devices showing internal ASICs, ISPs, and hardware logic paths.
+- **Circuitry View**: A specialized mode for *all* devices showing internal ASICs and logic paths.
 
-### 🕹️ Interactive Levels
-Progressive challenges covering the core ICT syllabus:
-- **Level 1 (Hardware)**: PC assembly and component identification.
-- **Level 2 (OS)**: Process scheduling and memory management.
-- **Level 3 (Networking)**: Packet routing and IP assignment.
-- **Level 4-8**: Advanced topics including Logic, Programming, and SQL.
+### 🕹️ Interactive Levels (1-16)
+A comprehensive curriculum refactored with a **Component-Based Architecture**:
+- **L1-4 (Hardware & Logic)**: PC Assembly, Binary Ops, and Logic Gate simulation.
+- **L5-8 (Protocols & DB)**: SQL Query building, Caesar Ciphers, and Network layers.
+- **L9-12 (Cloud & AI)**: Cloud service assignment, Firewall rules, IoT nodes, and AI classification.
+- **L13-16 (Arch & Final Trials)**: CIDR Subnetting, Network History, Multimedia Arch, and the Final Exam.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack & Architecture
 
-- **Engine**: Vanilla JavaScript (ES Modules)
-- **Visuals**: SVG-based dynamic rendering & Vanilla CSS
-- **Styling**: Tailwind CSS (for layout) & Custom Glassmorphic CSS
-- **Icons**: Iconify Framework
+- **Engine**: Vanilla JavaScript (ES Module Pattern)
+- **Framework-Free Components**: Custom `LevelContainer`, `AnswerCard`, and `ResultIndicator` system.
+- **Visuals**: Dynamic SVGs & CSS Variables for "Premium Professional Digital" branding.
+- **Styling**: Tailwind CSS for responsive utility & Glassmorphism for UI depth.
+- **Icons**: Iconify Integration.
 
 ---
 
@@ -46,34 +57,36 @@ Progressive challenges covering the core ICT syllabus:
    git clone https://github.com/Ransilu456/ict-game.git
    ```
 2. Simply open `index.html` in your browser.
-   *Note: Using a local server (like VS Code Live Server) is recommended for ESM module support.*
+   *Note: Using a local server (like Live Server) is required for ESM module support.*
 
 ---
 
 ## 📂 Project Structure
 
 ```text
-├── index.html          # Main Entry Point
+├── index.html          # Application Entry
 ├── js/
-│   ├── app.js          # Main Application Coordinator
-│   ├── components/     # UI Components (LandingPage, TechLab, etc.)
+│   ├── app.js          # Core Coordinator
+│   ├── components/     # Reusable UI (LevelContainer, ResultSummary, etc.)
+│   ├── levels/         # Modular Level Logic (1-16)
 │   └── lib/            # Shared Utilities
-├── css/                # Custom Styles & Glassmorphism
-└── assets/             # Images & Multimedia
+├── css/                # Global Styles & Glassmorphic Tokens
+└── assets/             # Vector Assets & Media
 ```
 
 ---
 
 ## 🧠 Design Philosophy
-> "Learn without realizing you are studying."
+> **"Learn without realizing you are studying."**
 
-Focuses on **implicit learning** through interactive feedback loops rather than static textbook definitions.
+Every interaction is built with **Implicit learning** in mind, prioritizing visual stability, immediate feedback, and a friction-less user journey.
 
 ---
 
 ## 🛡️ License
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License.
 
 ---
 
-*Developed with ❤️ for ICT Education.*
+*Developed with ❤️ for the Next Generation of ICT Professionals.*
+

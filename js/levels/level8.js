@@ -1,12 +1,7 @@
-/**
- * Level 8: Final Exam
- * Mechanic: Timed Multiple Choice Quiz
- * Refactored using Component Architecture & Silent Feedback
- */
-
 import GameButton from '../components/GameButton.js';
 import Card from '../components/Card.js';
-import QuestionCard from '../components/QuestionCard.js';
+import LevelContainer from '../components/LevelContainer.js';
+import AnswerCard from '../components/AnswerCard.js';
 
 export default {
     init(container, gameEngine) {
@@ -15,8 +10,6 @@ export default {
         this.currentQuestion = 0;
         this.score = 0;
         this.userAnswers = [];
-
-        // Timer Logic
         this.timeLeft = 15;
         this.timerInterval = null;
 
@@ -54,42 +47,49 @@ export default {
         this.container.innerHTML = '';
         const qData = this.questions[this.currentQuestion];
 
-        const headerContent = document.createElement('div');
-        headerContent.className = "flex justify-between items-center w-full";
-        headerContent.innerHTML = `
-            <div class="flex items-center gap-4">
-                <span class="text-sm font-bold text-slate-400 uppercase">Question ${this.currentQuestion + 1}/${this.questions.length}</span>
+        const content = document.createElement('div');
+        content.className = "flex flex-col gap-6 w-full max-w-2xl mx-auto";
+
+        const statsBar = document.createElement('div');
+        statsBar.className = "flex justify-between items-center px-4";
+        statsBar.innerHTML = `
+            <div class="flex flex-col">
+                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Progress</span>
+                <span class="text-sm font-bold text-white">${this.currentQuestion + 1} / ${this.questions.length}</span>
             </div>
-            <div class="text-xl font-mono text-indigo-300">Exam Mode</div>
+            <div class="flex flex-col items-end">
+                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active Exam</span>
+                <span class="text-sm font-bold text-indigo-400">ICT Core Module</span>
+            </div>
         `;
+        content.appendChild(statsBar);
 
-        const header = new Card({
-            content: headerContent,
-            variant: 'flat',
-            customClass: 'mb-8 border-b border-slate-800 pb-4'
+        const timerContainer = document.createElement('div');
+        timerContainer.className = "w-full h-1.5 bg-slate-800 rounded-full overflow-hidden";
+        timerContainer.innerHTML = `<div id="quiz-timer" class="h-full bg-indigo-500 w-full transition-all duration-1000 ease-linear"></div>`;
+        content.appendChild(timerContainer);
+
+        const questionText = document.createElement('h3');
+        questionText.className = "text-lg sm:text-2xl font-bold text-white text-center px-4 leading-tight";
+        questionText.innerText = qData.q;
+        content.appendChild(questionText);
+
+        const optionsGrid = document.createElement('div');
+        optionsGrid.className = "grid grid-cols-1 sm:grid-cols-2 gap-4";
+
+        qData.options.forEach((opt, idx) => {
+            const answerCard = new AnswerCard({
+                id: String(idx),
+                text: opt,
+                icon: 'solar:square-academic-cap-bold',
+                onClick: (id) => this.recordAnswer(parseInt(id))
+            });
+            optionsGrid.appendChild(answerCard.render());
         });
+        content.appendChild(optionsGrid);
 
-        // Use QuestionCard for standardized MCQ rendering in Exam
-        const optionsForCard = qData.options.map((opt, idx) => ({
-            id: String(idx),
-            text: opt
-        }));
-
-        this.qCard = new QuestionCard({
-            question: qData.q,
-            options: optionsForCard,
-            selectedId: null,
-            onSelect: (id) => this.recordAnswer(parseInt(id))
-        });
-
-        const timerBar = document.createElement('div');
-        timerBar.className = "w-full h-2 bg-slate-800 rounded-full mb-8 overflow-hidden max-w-2xl mx-auto";
-        timerBar.innerHTML = `<div id="quiz-timer" class="h-full bg-indigo-500 w-full"></div>`;
-
-        this.container.appendChild(header.render());
-        this.container.appendChild(timerBar);
-        this.container.innerHTML += this.qCard.render();
-        this.qCard.attach(this.container);
+        const container_el = new LevelContainer({ content: content });
+        this.container.appendChild(container_el.render());
 
         this.startTimer();
     },
@@ -99,7 +99,10 @@ export default {
         if (bar) {
             const pct = (this.timeLeft / 15) * 100;
             bar.style.width = `${pct}%`;
-            if (pct < 30) bar.className = "h-full bg-rose-500 transition-all duration-1000 ease-linear";
+            if (pct < 30) {
+                bar.classList.remove('bg-indigo-500');
+                bar.classList.add('bg-rose-500');
+            }
         }
     },
 
@@ -109,19 +112,16 @@ export default {
         const qData = this.questions[this.currentQuestion];
         const isCorrect = selectedIndex === qData.answer;
 
-        // Record Answer Silently
         this.userAnswers.push({
             question: qData.q,
             selected: selectedIndex === -1 ? "Timeout" : qData.options[selectedIndex],
             correct: qData.options[qData.answer],
             isCorrect: isCorrect,
-            explanation: "Review course material."
+            explanation: "Review ICT fundamentals."
         });
 
         if (isCorrect) {
-            const basePoints = 100;
-            const timeBonus = this.timeLeft * 10;
-            this.score += basePoints + timeBonus;
+            this.score += 100 + (this.timeLeft * 10);
         }
 
         this.currentQuestion++;
@@ -133,13 +133,14 @@ export default {
     },
 
     finishLevel() {
-        const passed = this.score > 800; 
+        const passed = this.score > 800;
         this.game.completeLevel({
             success: passed,
             score: this.score,
             xp: passed ? 2000 : 500,
-            accuracy: Math.floor((this.score / (this.questions.length * 250)) * 100),
+            accuracy: Math.floor((this.userAnswers.filter(a => a.isCorrect).length / this.questions.length) * 100),
             detailedResults: this.userAnswers
         });
     }
 };
+

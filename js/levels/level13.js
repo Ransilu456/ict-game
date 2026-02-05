@@ -7,6 +7,7 @@
 import GameButton from '../components/GameButton.js';
 import Card from '../components/Card.js';
 import Feedback from '../components/Feedback.js';
+import LevelContainer from '../components/LevelContainer.js';
 
 export default {
     init(container, gameEngine) {
@@ -31,64 +32,70 @@ export default {
         this.container.innerHTML = '';
         const scenario = this.scenarios[this.currentIndex];
 
+        const content = document.createElement('div');
+        content.className = "flex flex-col gap-6 w-full items-center";
+
         const header = new Card({
             title: this.game.getText('L13_TITLE'),
             subtitle: this.game.getText('L13_DESC'),
             variant: 'flat',
-            customClass: 'text-center mb-8'
+            customClass: 'text-center'
         });
+        content.appendChild(header.render());
 
         const infoFeedback = new Feedback({
-            title: "Analysis Target",
-            message: `Extract the subnet parameters for the host address: <span class="font-mono font-bold text-indigo-400">${scenario.ip}</span>`,
+            title: "CIDR Analysis Target",
+            message: `Calculate parameters for: <span class="font-mono font-black text-indigo-400 text-lg sm:text-xl ml-2">${scenario.ip}</span>`,
             type: "neutral"
         });
+        content.appendChild(infoFeedback.render());
 
         const inputGroup = document.createElement('div');
-        inputGroup.className = "space-y-6";
+        inputGroup.className = "flex flex-col gap-6";
         inputGroup.innerHTML = `
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">${this.game.getText('L13_MASK_LBL')}</label>
-                    <input type="text" id="ans-mask" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-xl text-white font-mono focus:border-indigo-500 transition-colors placeholder:text-slate-800" placeholder="0.0.0.0">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">${this.game.getText('L13_MASK_LBL')}</label>
+                    <input type="text" id="ans-mask" class="w-full bg-slate-950 border border-white/10 rounded-2xl px-5 py-4 text-lg sm:text-xl text-white font-mono focus:border-indigo-500 transition-all placeholder:text-slate-800 outline-none shadow-inner" placeholder="0.0.0.0">
                 </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">${this.game.getText('L13_NETID_LBL')}</label>
-                    <input type="text" id="ans-netid" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-xl text-white font-mono focus:border-indigo-500 transition-colors placeholder:text-slate-800" placeholder="0.0.0.0">
+                <div class="space-y-1.5">
+                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">${this.game.getText('L13_NETID_LBL')}</label>
+                    <input type="text" id="ans-netid" class="w-full bg-slate-950 border border-white/10 rounded-2xl px-5 py-4 text-lg sm:text-xl text-white font-mono focus:border-indigo-500 transition-all placeholder:text-slate-800 outline-none shadow-inner" placeholder="0.0.0.0">
                 </div>
             </div>
-            <div>
-                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">${this.game.getText('L13_BC_LBL')}</label>
-                <input type="text" id="ans-bc" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-xl text-white font-mono focus:border-indigo-500 transition-colors placeholder:text-slate-800" placeholder="0.0.0.0">
+            <div class="space-y-1.5">
+                <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">${this.game.getText('L13_BC_LBL')}</label>
+                <input type="text" id="ans-bc" class="w-full bg-slate-950 border border-white/10 rounded-2xl px-5 py-4 text-lg sm:text-xl text-white font-mono focus:border-indigo-500 transition-all placeholder:text-slate-800 outline-none shadow-inner" placeholder="0.0.0.0">
             </div>
         `;
 
-        const actionBtn = new GameButton({
-            text: "Process Calculation",
-            variant: 'primary',
-            size: 'lg',
-            icon: 'solar:calculator-minimalistic-bold',
-            onClick: () => this.handleVerify()
-        });
-
         const workspace = new Card({
-            title: "CIDR Decoder Terminal",
+            title: "Decipher Terminal",
             content: inputGroup,
             variant: 'glass',
-            footer: actionBtn.render(),
-            customClass: "max-w-2xl mx-auto"
+            footer: new GameButton({
+                text: "Validate Subnet",
+                variant: 'primary',
+                size: 'lg',
+                icon: 'solar:calculator-minimalistic-bold',
+                customClass: 'w-full',
+                onClick: () => this.handleVerify()
+            }).render(),
+            customClass: "w-full max-w-2xl"
         });
+        content.appendChild(workspace.render());
 
         const progress = document.createElement('div');
-        progress.className = "flex justify-center gap-1 mt-8";
+        progress.className = "flex justify-center gap-2 mt-4 w-full";
         this.scenarios.forEach((_, i) => {
-            progress.innerHTML += `<div class="h-1 w-12 rounded-full ${i <= this.currentIndex ? 'bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]' : 'bg-slate-800'}"></div>`;
+            const dot = document.createElement('div');
+            dot.className = `h-1 flex-1 max-w-[40px] rounded-full transition-all duration-300 ${i === this.currentIndex ? 'bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]' : (i < this.currentIndex ? 'bg-indigo-500/40' : 'bg-slate-800')}`;
+            progress.appendChild(dot);
         });
+        content.appendChild(progress);
 
-        this.container.appendChild(header.render());
-        this.container.appendChild(infoFeedback.render());
-        this.container.appendChild(workspace.render());
-        this.container.appendChild(progress);
+        const container_el = new LevelContainer({ content: content });
+        this.container.appendChild(container_el.render());
     },
 
     handleVerify() {
@@ -100,11 +107,11 @@ export default {
         const isCorrect = (m === s.mask && n === s.netId && b === s.broadcast);
 
         this.results.push({
-            question: `Subnet Analysis: ${s.ip}`,
+            question: `CIDR: ${s.ip}`,
             selected: `M:${m} N:${n} B:${b}`,
             correct: `M:${s.mask} N:${s.netId} B:${s.broadcast}`,
             isCorrect: isCorrect,
-            explanation: isCorrect ? "Parameters validated." : "Mathematical inconsistency detected."
+            explanation: isCorrect ? "Parameters validated." : "Subnet calculation error."
         });
 
         if (isCorrect) {
@@ -115,9 +122,11 @@ export default {
                 this.finishLevel();
             }
         } else {
-            const el = document.querySelector('.glass-panel');
-            el.classList.add('animate-shake', 'border-rose-500');
-            setTimeout(() => el.classList.remove('animate-shake', 'border-rose-500'), 500);
+            const el = this.container.querySelector('.glass-panel');
+            if (el) {
+                el.classList.add('animate-shake', 'border-rose-500');
+                setTimeout(() => el.classList.remove('animate-shake', 'border-rose-500'), 500);
+            }
         }
     },
 
@@ -132,3 +141,4 @@ export default {
         });
     }
 };
+

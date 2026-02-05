@@ -1,12 +1,7 @@
-/**
- * Level 15: Multimedia Architecture
- * Mechanic: Camera Hardware Assembly + Codec Classification.
- * Refactored using Component Architecture & Silent Feedback
- */
-
 import GameButton from '../components/GameButton.js';
 import Card from '../components/Card.js';
 import Feedback from '../components/Feedback.js';
+import LevelContainer from '../components/LevelContainer.js';
 
 export default {
     init(container, gameEngine) {
@@ -15,6 +10,7 @@ export default {
         this.score = 0;
         this.itemsResolved = 0;
         this.results = [];
+        this.selectedItemId = null;
 
         this.hardware = [
             { id: 'h1', name: this.game.getText('L15_ITEM_SENSOR'), type: 'Capture', target: 't1', icon: 'solar:camera-bold' },
@@ -34,74 +30,87 @@ export default {
     render() {
         this.container.innerHTML = '';
 
+        const content = document.createElement('div');
+        content.className = "flex flex-col gap-8 w-full";
+
         const header = new Card({
             title: this.game.getText('L15_TITLE'),
             subtitle: this.game.getText('L15_DESC'),
             variant: 'flat',
-            customClass: 'text-center mb-8'
+            customClass: 'text-center'
         });
+        content.appendChild(header.render());
 
         const statusFeedback = new Feedback({
-            title: "Multimedia Assembly Guide",
-            message: "1. Drag hardware modules to their matching slots (Sensor -> Capture, DSP -> Processing, etc.)\n2. Select the correct category for each media codec.",
+            title: "Architecture Workspace",
+            message: "Analyze the requirements and assign the appropriate hardware and codec profiles.",
             type: "neutral"
         });
+        content.appendChild(statusFeedback.render());
 
-        const grid = document.createElement('div');
-        grid.className = "grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-6xl mx-auto";
+        const mainGrid = document.createElement('div');
+        mainGrid.className = "grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 w-full";
 
+        // Phase 1: Hardware Integration
         const hwContent = document.createElement('div');
-        hwContent.className = "space-y-6";
+        hwContent.className = "space-y-4";
         this.hardware.forEach(item => {
             const isDone = this.results.find(r => r.id === item.id && r.isCorrect);
-            hwContent.innerHTML += `
-                <div class="flex items-center gap-4 group">
-                    <div class="drop-target w-20 h-20 rounded-2xl border-2 border-dashed ${isDone ? 'bg-emerald-500/10 border-emerald-500' : 'bg-slate-950 border-slate-800'} flex items-center justify-center transition-all relative" data-target="${item.target}" data-item-id="${item.id}">
-                        ${isDone ? `<iconify-icon icon="${item.icon}" class="text-3xl text-emerald-400"></iconify-icon>` : `<iconify-icon icon="solar:box-minimalistic-bold" class="text-2xl text-slate-800"></iconify-icon>`}
-                    </div>
-                    <div class="flex-1">
-                        <div class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">${item.type} MODULE</div>
-                        <div class="text-sm font-bold ${isDone ? 'text-emerald-400' : 'text-slate-500'}">${isDone ? 'MODULE_CONNECTED' : 'PLACE_UNIT_HERE'}</div>
-                    </div>
+            const slot = document.createElement('div');
+            slot.className = "flex items-center gap-4 group cursor-pointer";
+            slot.innerHTML = `
+                <div class="drop-target w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border-2 border-dashed transition-all flex items-center justify-center
+                    ${isDone ? 'bg-emerald-500/10 border-emerald-500/50' : 'bg-slate-950/50 border-white/5 hover:border-indigo-500/30'}"
+                    data-target="${item.target}" data-item-id="${item.id}">
+                    ${isDone ? `<iconify-icon icon="${item.icon}" class="text-3xl text-emerald-400 animate-bounce-in"></iconify-icon>` : `<iconify-icon icon="solar:box-minimalistic-bold" class="text-2xl text-slate-800 opacity-30"></iconify-icon>`}
+                </div>
+                <div class="flex-1">
+                    <div class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">${item.type} UNIT</div>
+                    <div class="text-xs font-bold ${isDone ? 'text-emerald-400' : 'text-slate-600'}">${isDone ? 'HW_STATUS_LINKED' : 'AWAITING_HW_MODULE'}</div>
                 </div>
             `;
+            slot.onclick = () => this.handleHWInteraction(item.target, item.id);
+            hwContent.appendChild(slot);
         });
 
-        const tray = document.createElement('div');
-        tray.className = "mt-10 flex gap-4 overflow-x-auto pb-4";
+        const hwTray = document.createElement('div');
+        hwTray.className = "flex flex-wrap gap-3 mt-6";
         this.hardware.forEach(item => {
             if (this.results.find(r => r.id === item.id && r.isCorrect)) return;
+            const isSelected = this.selectedItemId === item.id;
             const el = document.createElement('div');
-            el.className = "hw-item px-5 py-3 bg-slate-900 border border-slate-700 rounded-xl cursor-grab active:cursor-grabbing text-[10px] font-black text-white hover:border-indigo-500 shrink-0 uppercase tracking-widest";
+            el.className = `hw-item px-4 py-3 rounded-xl border-2 text-[9px] font-black uppercase tracking-widest transition-all cursor-pointer select-none touch-none
+                ${isSelected ? 'bg-indigo-600 border-indigo-400 text-white scale-105 shadow-indigo-500/20' : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-indigo-500/50'}`;
             el.draggable = true;
             el.dataset.id = item.id;
             el.dataset.target = item.target;
             el.innerText = item.name;
-            tray.appendChild(el);
+            el.onclick = (e) => {
+                e.stopPropagation();
+                this.selectedItemId = isSelected ? null : item.id;
+                this.render();
+            };
+            hwTray.appendChild(el);
         });
 
-        const phase1Card = new Card({
-            title: "Hardware Integration (Phase I)",
-            content: hwContent,
-            footer: tray,
-            variant: 'glass'
-        });
+        const hwCard = new Card({ title: "Module Integration", content: hwContent, footer: hwTray, variant: 'glass' });
 
+        // Phase 2: Codec Classification
         const codecContent = document.createElement('div');
         codecContent.className = "space-y-4";
         this.codecs.forEach(codec => {
             const isDone = this.results.find(r => r.id === codec.id && r.isCorrect);
             const container = document.createElement('div');
-            container.className = `p-5 rounded-2xl border-2 transition-all ${isDone ? 'bg-emerald-500/5 border-emerald-500/30' : 'bg-slate-950 border-slate-800'}`;
+            container.className = `p-4 rounded-2xl border transition-all ${isDone ? 'bg-emerald-500/5 border-emerald-500/30' : 'bg-slate-900/50 border-white/5'}`;
             container.innerHTML = `
-                <div class="flex justify-between items-start mb-2">
-                    <span class="text-xs font-black font-mono ${isDone ? 'text-emerald-400' : 'text-indigo-300'}">${codec.name}</span>
-                    <iconify-icon icon="solar:playback-speed-bold" class="${isDone ? 'text-emerald-500' : 'text-slate-700'}"></iconify-icon>
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-xs font-black font-mono tracking-wider ${isDone ? 'text-emerald-400' : 'text-indigo-400'}">${codec.name}</span>
+                    <iconify-icon icon="solar:programming-bold" class="${isDone ? 'text-emerald-500' : 'text-slate-800'}"></iconify-icon>
                 </div>
-                <p class="text-[9px] text-slate-500 mb-4 font-bold uppercase tracking-tighter">${codec.desc}</p>
                 <div class="flex gap-2">
                     ${['VIDEO', 'IMAGE', 'AUDIO'].map(cat => `
-                        <button class="codec-btn flex-1 py-2 rounded-xl border border-slate-800 text-[10px] font-black text-slate-500 hover:text-white transition-all ${isDone && codec.category === cat ? 'bg-emerald-500 border-emerald-400 text-white' : ''}" 
+                        <button class="codec-btn flex-1 py-3 rounded-xl border text-[8px] font-black transition-all uppercase tracking-widest
+                            ${isDone && codec.category === cat ? 'bg-emerald-500 border-emerald-400 text-white shadow-emerald-500/20' : 'bg-slate-950 border-white/5 text-slate-500 hover:text-white hover:border-indigo-500/50'}"
                             data-id="${codec.id}" data-category="${cat}" ${isDone ? 'disabled' : ''}>
                             ${cat}
                         </button>
@@ -111,40 +120,42 @@ export default {
             codecContent.appendChild(container);
         });
 
-        const phase2Card = new Card({
-            title: "Codec Classification (Phase II)",
-            content: codecContent,
-            variant: 'glass'
-        });
+        const codecCard = new Card({ title: "Codec Profiles", content: codecContent, variant: 'glass' });
 
-        grid.appendChild(phase1Card.render());
-        grid.appendChild(phase2Card.render());
+        mainGrid.appendChild(hwCard.render());
+        mainGrid.appendChild(codecCard.render());
+        content.appendChild(mainGrid);
 
-        this.container.appendChild(header.render());
-        this.container.appendChild(statusFeedback.render());
-        this.container.appendChild(grid);
+        const container_el = new LevelContainer({ content: content });
+        this.container.appendChild(container_el.render());
 
         this.attachEvents();
     },
 
     attachEvents() {
-        const hwItems = this.container.querySelectorAll('.hw-item');
+        const hwTrayItems = this.container.querySelectorAll('.hw-item');
         const hwdTargets = this.container.querySelectorAll('.drop-target');
 
-        hwItems.forEach(item => {
+        hwTrayItems.forEach(item => {
             item.ondragstart = (e) => {
                 e.dataTransfer.setData('id', item.dataset.id);
                 e.dataTransfer.setData('target', item.dataset.target);
+                this.selectedItemId = item.dataset.id;
                 item.classList.add('opacity-50');
             };
             item.ondragend = () => item.classList.remove('opacity-50');
         });
 
         hwdTargets.forEach(target => {
-            target.ondragover = (e) => e.preventDefault();
+            target.ondragover = (e) => {
+                e.preventDefault();
+                target.classList.add('border-indigo-500/50', 'bg-indigo-500/5');
+            };
+            target.ondragleave = () => target.classList.remove('border-indigo-500/50', 'bg-indigo-500/5');
             target.ondrop = (e) => {
                 const id = e.dataTransfer.getData('id');
                 const tCode = e.dataTransfer.getData('target');
+                target.classList.remove('border-indigo-500/50', 'bg-indigo-500/5');
                 this.handleHWDrop(id, tCode, target);
             };
         });
@@ -158,26 +169,28 @@ export default {
         });
     },
 
+    handleHWInteraction(targetCode, targetId) {
+        if (!this.selectedItemId) return;
+        const item = this.hardware.find(h => h.id === this.selectedItemId);
+        this.handleHWDrop(item.id, item.target, { dataset: { target: targetCode } });
+    },
+
     handleHWDrop(id, tCode, target) {
         const item = this.hardware.find(h => h.id === id);
         const isMatch = tCode === target.dataset.target;
 
-        this.results.push({
-            id: id,
-            question: `Hardware: ${item.name}`,
-            selected: target.dataset.target,
-            correct: item.target,
-            isCorrect: isMatch
-        });
-
         if (isMatch) {
+            this.results.push({ id, question: `Module: ${item.name}`, isCorrect: true });
             this.itemsResolved++;
+            this.selectedItemId = null;
             this.render();
         } else {
-            target.classList.add('animate-shake', 'border-rose-500');
-            setTimeout(() => target.classList.remove('animate-shake', 'border-rose-500'), 500);
+            const el = this.container.querySelector(`[data-item-id="${target.dataset.itemId}"]`);
+            if (el) {
+                el.classList.add('animate-shake', 'border-rose-500');
+                setTimeout(() => el.classList.remove('animate-shake', 'border-rose-500'), 500);
+            }
         }
-
         this.checkFinish();
     },
 
@@ -185,22 +198,14 @@ export default {
         const codec = this.codecs.find(c => c.id === id);
         const isMatch = category === codec.category;
 
-        this.results.push({
-            id: id,
-            question: `Codec: ${codec.name}`,
-            selected: category,
-            correct: codec.category,
-            isCorrect: isMatch
-        });
-
         if (isMatch) {
+            this.results.push({ id, question: `Codec: ${codec.name}`, isCorrect: true });
             this.itemsResolved++;
             this.render();
         } else {
-            btn.classList.add('bg-rose-500', 'text-white', 'border-rose-400');
-            setTimeout(() => btn.classList.remove('bg-rose-500', 'text-white', 'border-rose-400'), 500);
+            btn.classList.add('animate-shake', 'bg-rose-500/20', 'border-rose-500/50');
+            setTimeout(() => btn.classList.remove('animate-shake', 'bg-rose-500/20', 'border-rose-500/50'), 500);
         }
-
         this.checkFinish();
     },
 
@@ -213,10 +218,11 @@ export default {
     finishLevel() {
         this.game.completeLevel({
             success: true,
-            score: this.itemsResolved * 500,
+            score: 3000,
             xp: 3000,
-            accuracy: Math.round((this.itemsResolved / this.results.length) * 100),
+            accuracy: 100,
             detailedResults: this.results
         });
     }
 };
+

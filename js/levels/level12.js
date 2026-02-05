@@ -1,13 +1,8 @@
-/**
- * Level 12: Neural Training (AI)
- * Mechanic: Classify Signal vs Noise.
- * Refactored using Component Architecture & Silent Feedback
- */
-
 import GameButton from '../components/GameButton.js';
 import Card from '../components/Card.js';
 import Feedback from '../components/Feedback.js';
-import QuestionCard from '../components/QuestionCard.js';
+import LevelContainer from '../components/LevelContainer.js';
+import AnswerCard from '../components/AnswerCard.js';
 
 export default {
     init(container, gameEngine) {
@@ -34,48 +29,70 @@ export default {
         this.container.innerHTML = '';
         const currentData = this.dataset[this.currentIndex];
 
+        const content = document.createElement('div');
+        content.className = "flex flex-col gap-6 w-full max-w-2xl mx-auto";
+
         const header = new Card({
             title: this.game.getText('L12_TITLE'),
             subtitle: this.game.getText('L12_DESC'),
             variant: 'flat',
-            customClass: 'text-center mb-8'
+            customClass: 'text-center'
         });
+        content.appendChild(header.render());
 
         const objectiveFeedback = new Feedback({
             title: "Neural Objective",
-            message: "Distinguish valid data signals from background electromagnetic noise to calibrate the AI model.",
+            message: "Distinguish valid data signals from background noise to calibrate the model.",
             type: "neutral"
         });
+        content.appendChild(objectiveFeedback.render());
 
-        const options = [
-            { id: 'signal', text: `<div class="flex items-center gap-3"><iconify-icon icon="solar:check-circle-bold" class="text-xl text-emerald-400"></iconify-icon> ${this.game.getText('L12_SIGNAL')}</div>` },
-            { id: 'noise', text: `<div class="flex items-center gap-3"><iconify-icon icon="solar:close-circle-bold" class="text-xl text-rose-400"></iconify-icon> ${this.game.getText('L12_NOISE')}</div>` }
-        ];
-
-        const qCard = new QuestionCard({
-            question: `<div class="font-mono text-center p-6 bg-slate-950 rounded-2xl border border-indigo-500/20 text-indigo-400 animate-pulse tracking-widest">${currentData.data}</div>`,
-            options: options,
-            onSelect: (id) => this.handleClassification(id)
-        });
-
-        const progressContainer = document.createElement('div');
-        progressContainer.className = "w-full max-w-sm mx-auto mt-8";
-        progressContainer.innerHTML = `
-            <div class="flex justify-between items-center mb-2 px-1">
-                <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Calibration Progress</span>
-                <span class="text-[9px] font-black text-indigo-400 uppercase tracking-widest">${this.currentIndex + 1} / ${this.dataset.length}</span>
-            </div>
-            <div class="h-1 bg-slate-800 rounded-full overflow-hidden">
-                <div class="h-full bg-indigo-500 transition-all duration-500" style="width: ${((this.currentIndex + 1) / this.dataset.length) * 100}%"></div>
+        const dataDisplay = document.createElement('div');
+        dataDisplay.className = "p-6 sm:p-10 bg-slate-950/80 rounded-[2rem] border border-indigo-500/20 text-indigo-400 text-center shadow-2xl relative overflow-hidden group";
+        dataDisplay.innerHTML = `
+            <div class="absolute inset-0 bg-indigo-500/5 animate-pulse opacity-50"></div>
+            <div class="text-[9px] font-black text-indigo-500 uppercase tracking-[0.2em] mb-4 opacity-60">Incoming Fragment</div>
+            <div class="text-xl sm:text-3xl font-mono font-black tracking-widest break-words z-10 relative drop-shadow-[0_0_15px_rgba(99,102,241,0.5)]">
+                ${currentData.data}
             </div>
         `;
+        content.appendChild(dataDisplay);
 
-        this.container.appendChild(header.render());
-        this.container.appendChild(objectiveFeedback.render());
-        this.container.innerHTML += qCard.render();
-        this.container.appendChild(progressContainer);
+        const optionsGrid = document.createElement('div');
+        optionsGrid.className = "grid grid-cols-2 gap-4 sm:gap-6";
 
-        qCard.attach(this.container);
+        const opts = [
+            { id: 'signal', text: this.game.getText('L12_SIGNAL'), icon: 'solar:check-circle-bold', color: 'emerald' },
+            { id: 'noise', text: this.game.getText('L12_NOISE'), icon: 'solar:close-circle-bold', color: 'rose' }
+        ];
+
+        opts.forEach(opt => {
+            const answerCard = new AnswerCard({
+                id: opt.id,
+                text: opt.text,
+                icon: opt.icon,
+                onClick: (id) => this.handleClassification(id)
+            });
+            optionsGrid.appendChild(answerCard.render());
+        });
+        content.appendChild(optionsGrid);
+
+        const progressContainer = document.createElement('div');
+        progressContainer.className = "w-full max-w-sm mx-auto mt-4";
+        const progress = ((this.currentIndex + 1) / this.dataset.length) * 100;
+        progressContainer.innerHTML = `
+            <div class="flex justify-between items-center mb-2 px-1">
+                <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Model Stability</span>
+                <span class="text-[9px] font-black text-indigo-400 uppercase tracking-widest">${this.currentIndex + 1} / ${this.dataset.length}</span>
+            </div>
+            <div class="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full bg-indigo-500 transition-all duration-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" style="width: ${progress}%"></div>
+            </div>
+        `;
+        content.appendChild(progressContainer);
+
+        const container_el = new LevelContainer({ content: content });
+        this.container.appendChild(container_el.render());
     },
 
     handleClassification(type) {
@@ -83,7 +100,7 @@ export default {
         const isCorrect = type === item.type;
 
         this.results.push({
-            question: `Data Point: ${item.data}`,
+            question: item.data,
             selected: type.toUpperCase(),
             correct: item.type.toUpperCase(),
             isCorrect: isCorrect,
@@ -92,9 +109,9 @@ export default {
 
         this.currentIndex++;
         if (this.currentIndex < this.dataset.length) {
-            setTimeout(() => this.render(), 400);
+            setTimeout(() => this.render(), 300);
         } else {
-            setTimeout(() => this.finishLevel(), 800);
+            setTimeout(() => this.finishLevel(), 600);
         }
     },
 
@@ -109,3 +126,4 @@ export default {
         });
     }
 };
+

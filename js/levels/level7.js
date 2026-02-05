@@ -7,6 +7,7 @@
 import GameButton from '../components/GameButton.js';
 import Card from '../components/Card.js';
 import Feedback from '../components/Feedback.js';
+import LevelContainer from '../components/LevelContainer.js';
 
 export default {
     init(container, gameEngine) {
@@ -31,7 +32,7 @@ export default {
             {
                 method: "Vigenère (Simplified)",
                 msg: "SECURITY IS NOT A PRODUCT BUT A PROCESS",
-                shift: 13, 
+                shift: 13,
                 hint: "Classic Rotation 13."
             }
         ];
@@ -46,64 +47,70 @@ export default {
         const encrypted = this.encrypt(stage.msg, stage.shift);
         const decryptedView = this.decrypt(encrypted, this.userShift);
 
+        const content = document.createElement('div');
+        content.className = "flex flex-col gap-6 w-full items-center";
+
         const header = new Card({
             title: `Decryption Console ${this.currentStage + 1}`,
-            subtitle: `Method: ${stage.method} | Crack the ciphertext.`,
+            subtitle: `Stage ${this.currentStage + 1} of ${this.stages.length}`,
             variant: 'flat',
-            customClass: 'text-center mb-6'
+            customClass: 'text-center'
         });
+        content.appendChild(header.render());
 
         const hintFeedback = new Feedback({
-            title: "Intelligence Hint",
+            title: "Analysis Hint",
             message: stage.hint,
             type: "neutral"
         });
+        content.appendChild(hintFeedback.render());
 
         const layout = document.createElement('div');
-        layout.className = "flex flex-col lg:flex-row gap-6 h-full";
+        // Mobile-first: column, Desktop: Row with specific widths
+        layout.className = "flex flex-col lg:flex-row gap-6 w-full";
 
-        // Analysis Tool
-        const analysisContent = document.createElement('div');
-        analysisContent.className = "flex flex-col gap-4";
-
-        analysisContent.innerHTML = `
-            <div class="p-4 bg-slate-900 rounded-lg border border-slate-700">
-                <h4 class="text-xs font-bold text-slate-400 uppercase mb-2">Signal Intercept</h4>
-                <p class="font-mono text-xl text-rose-400 break-all tracking-wider leading-relaxed">${encrypted}</p>
-            </div>
+        // Intercept Display
+        const signalContent = document.createElement('div');
+        signalContent.className = "p-4 sm:p-6 bg-slate-950/50 rounded-2xl border border-slate-800 shadow-inner";
+        signalContent.innerHTML = `
+            <div class="text-[10px] font-black text-rose-500 uppercase tracking-[0.2em] mb-3 opacity-60">Intercepted Signal</div>
+            <p class="font-mono text-base sm:text-xl text-rose-400 break-words tracking-widest leading-relaxed">${encrypted}</p>
         `;
 
         const toolCard = new Card({
-            title: "Cryptanalysis Tools",
-            content: analysisContent,
+            title: "Signal Source",
+            content: signalContent,
             variant: 'glass',
-            customClass: 'w-full lg:w-1/3'
+            customClass: 'flex-1 min-w-0'
         });
 
         // Decryption Controls
         const controlContent = document.createElement('div');
-        controlContent.className = "flex flex-col items-center justify-center gap-8 py-8";
+        controlContent.className = "flex flex-col items-center gap-8 py-4";
 
         const dial = document.createElement('div');
-        dial.className = "flex items-center gap-4";
+        dial.className = "flex items-center gap-4 sm:gap-8";
         dial.innerHTML = `
-            <button id="shift-down" class="p-4 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-600 transition-all active:scale-95">
+            <button id="shift-down" class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-600 transition-all active:scale-90 shadow-lg">
                 <iconify-icon icon="solar:minus-circle-bold" class="text-2xl text-slate-300"></iconify-icon>
             </button>
-            <div class="w-24 h-24 rounded-full border-4 border-indigo-500/30 flex items-center justify-center bg-slate-900 shadow-inner relative">
-                <div class="text-4xl font-mono font-bold text-indigo-400">${this.userShift}</div>
-                <div class="absolute text-[8px] text-slate-500 bottom-4 uppercase tracking-widest">Shift</div>
+            <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-indigo-500/30 flex flex-col items-center justify-center bg-slate-900 shadow-inner relative group bg-gradient-to-b from-slate-800 to-slate-900">
+                <div class="absolute inset-0 rounded-full bg-indigo-500/5 blur-xl group-hover:bg-indigo-500/10 transition-all"></div>
+                <div class="text-4xl sm:text-5xl font-mono font-black text-indigo-400 z-10 drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]">${this.userShift}</div>
+                <div class="text-[8px] sm:text-[10px] text-slate-500 font-black uppercase tracking-widest z-10 mt-1">Shift</div>
             </div>
-            <button id="shift-up" class="p-4 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-600 transition-all active:scale-95">
+            <button id="shift-up" class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-600 transition-all active:scale-90 shadow-lg">
                 <iconify-icon icon="solar:add-circle-bold" class="text-2xl text-slate-300"></iconify-icon>
             </button>
         `;
 
         const outputPrev = document.createElement('div');
-        outputPrev.className = `w-full p-6 rounded-xl border-2 transition-all text-center bg-slate-950 border-indigo-500/30 text-slate-400`;
+        outputPrev.className = `w-full p-6 rounded-2xl border-2 transition-all text-center bg-slate-950/80 border-indigo-500/20 text-slate-400 shadow-2xl`;
         outputPrev.innerHTML = `
-            <div class="text-xs font-bold opacity-50 uppercase mb-2">Decrypted Message Output</div>
-            <div class="text-xl md:text-2xl font-mono tracking-widest font-bold break-words">${decryptedView}</div>
+            <div class="text-[9px] font-black text-indigo-500 uppercase tracking-widest mb-3 opacity-60">Real-time Decryption</div>
+            <div class="text-lg sm:text-2xl font-mono tracking-[0.2em] font-black break-words text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]">
+                ${decryptedView}
+            </div>
         `;
 
         controlContent.appendChild(dial);
@@ -113,26 +120,33 @@ export default {
             title: "Decipher Output",
             content: controlContent,
             variant: 'glass',
-            customClass: 'w-full lg:w-2/3',
+            customClass: 'flex-[1.5] min-w-0',
             footer: new GameButton({
                 text: "Confirm Decryption",
                 variant: "primary",
+                size: 'lg',
                 icon: "solar:lock-unlocked-bold",
+                customClass: 'w-full',
                 onClick: () => this.checkStage(decryptedView, stage.msg, outputPrev)
             }).render()
         });
 
-        this.container.appendChild(header.render());
-        this.container.appendChild(hintFeedback.render());
         layout.appendChild(toolCard.render());
         layout.appendChild(controlCard.render());
-        this.container.appendChild(layout);
+        content.appendChild(layout);
 
-        document.getElementById('shift-down').onclick = () => {
+        const container_el = new LevelContainer({ content: content });
+        this.container.appendChild(container_el.render());
+
+        // Event Listeners
+        const downBtn = this.container.querySelector('#shift-down');
+        const upBtn = this.container.querySelector('#shift-up');
+
+        if (downBtn) downBtn.onclick = () => {
             this.userShift = (this.userShift - 1 + 26) % 26;
             this.render();
         };
-        document.getElementById('shift-up').onclick = () => {
+        if (upBtn) upBtn.onclick = () => {
             this.userShift = (this.userShift + 1) % 26;
             this.render();
         };
@@ -158,9 +172,9 @@ export default {
 
         if (isCorrect) {
             this.results.push({
-                question: `Decrypt: Stage ${this.currentStage + 1}`,
-                selected: "Decoded Successfully",
-                correct: "Decoded Successfully",
+                question: `Signal Decryption`,
+                selected: current,
+                correct: target,
                 isCorrect: true
             });
 
@@ -172,10 +186,8 @@ export default {
                 this.finishLevel();
             }
         } else {
-            visualContainer.classList.add('animate-shake', 'border-rose-500', 'text-rose-400');
-            setTimeout(() => {
-                visualContainer.classList.remove('animate-shake', 'border-rose-500', 'text-rose-400');
-            }, 500);
+            visualContainer.classList.add('animate-shake', 'border-rose-500');
+            setTimeout(() => visualContainer.classList.remove('animate-shake', 'border-rose-500'), 500);
         }
     },
 
@@ -189,3 +201,4 @@ export default {
         });
     }
 };
+

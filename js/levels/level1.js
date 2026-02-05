@@ -7,6 +7,7 @@
 import GameButton from '../components/GameButton.js';
 import Card from '../components/Card.js';
 import Feedback from '../components/Feedback.js';
+import LevelContainer from '../components/LevelContainer.js';
 
 export default {
     init(container, gameEngine) {
@@ -17,7 +18,6 @@ export default {
         this.placements = [];
 
         // Define correct install order (Logical Assembly)
-        // 1. Motherboard parts (CPU, RAM, M.2) -> 2. Cooling -> 3. GPU -> 4. PSU/Cables
         this.installOrder = [
             ['cpu', 'ram', 'storage'], // Phase 1
             ['liquid', 'fan', 'fan2'], // Phase 2
@@ -47,38 +47,49 @@ export default {
     render() {
         this.container.innerHTML = '';
 
+        // Content Wrapper
+        const content = document.createElement('div');
+        content.className = "flex flex-col gap-6 w-full";
+
         // Header Section
         const header = new Card({
             title: this.game.getText('L1_TITLE'),
             subtitle: this.game.getText('L1_DESC') + " | Precision Assembly Required.",
             variant: 'flat',
-            customClass: 'mb-6 text-center'
+            customClass: 'text-center'
         });
+        content.appendChild(header.render());
 
-        // Main Layout
+        const instructionFeedback = new Feedback({
+            title: "Assembly Protocol",
+            message: "Install core components (CPU, RAM, M.2) before coolers and peripherals.",
+            type: "neutral"
+        });
+        content.appendChild(instructionFeedback.render());
+
+        // Main Layout: Column on mobile, row on large screens
         const layout = document.createElement('div');
-        layout.className = "flex flex-col lg:flex-row gap-8 min-h-screen lg:h-[calc(100vh-250px)]";
+        layout.className = "flex flex-col lg:flex-row gap-6";
 
-        // Left: Parts Tray
+        // Left/Top: Parts Tray
         const trayContent = document.createElement('div');
-        trayContent.className = "grid grid-cols-2 gap-3";
+        trayContent.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-3";
 
-        // Render Draggables
         this.parts.forEach(part => {
             const el = document.createElement('div');
-            el.className = "draggable-item p-4 bg-slate-800 rounded-xl border border-slate-700 hover:border-indigo-500 cursor-grab active:cursor-grabbing transition-all flex flex-col items-center justify-center gap-2 group select-none";
+            el.className = "draggable-item p-3 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-indigo-500 cursor-grab active:cursor-grabbing transition-all flex flex-col items-center justify-center gap-2 group select-none touch-none";
             el.draggable = true;
             el.dataset.type = part.id;
             el.dataset.label = part.label;
 
+            // Handle touch for mobile drag-drop simulation if needed (simplified here)
             el.innerHTML = `
                 <div class="w-10 h-10 rounded-full bg-${part.color}-500/10 flex items-center justify-center text-${part.color}-400 group-hover:scale-110 transition-transform">
                     <iconify-icon icon="${part.icon}" class="text-2xl"></iconify-icon>
                 </div>
-                <span class="text-xs font-bold text-slate-300 uppercase tracking-wide text-center">${part.label}</span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide text-center">${part.label}</span>
             `;
 
-            // Drag Events
             el.addEventListener('dragstart', (e) => {
                 e.dataTransfer.setData('type', part.id);
                 e.dataTransfer.setData('label', part.label);
@@ -94,7 +105,7 @@ export default {
             subtitle: "Drag items to the schematic",
             content: trayContent,
             variant: 'glass',
-            customClass: 'w-full lg:w-1/3 flex flex-col'
+            customClass: 'w-full lg:w-1/3'
         });
 
         // Right: Motherboard Schematic
@@ -103,82 +114,59 @@ export default {
 
         // The Motherboard Grid
         const board = document.createElement('div');
-        board.className = "relative w-full max-w-[320px] sm:max-w-lg aspect-[3/4] bg-slate-950 rounded-xl border-4 border-slate-800 shadow-2xl p-4 grid grid-cols-3 grid-rows-5 gap-2 sm:gap-3 mx-auto shrink-0";
-
-        // Define Zones
-        const zones = [
-            { accept: 'fan', label: 'Fan Mount 1', area: 'col-span-1 row-span-1' },
-            { accept: 'fan2', label: 'Fan Mount 2', area: 'col-span-1 row-span-1 col-start-3' },
-            { accept: 'liquid', label: 'Liquid Radiator', area: 'col-span-3 row-span-1 row-start-2' },
-            { accept: 'psu', label: 'PSU Bay', area: 'col-span-1 row-span-1 row-start-5' },
-
-            // Mobo Group
-            {
-                accept: 'cpu', label: 'CPU Socket', area: 'col-start-2 row-start-3 h-16',
-                inner: true, parentArea: 'col-span-2 row-span-3 col-start-2 row-start-3 border border-slate-800 bg-slate-900/80 rounded-lg p-2 grid grid-cols-2 gap-2'
-            },
-            { accept: 'ram', label: 'DIMM Slots', area: 'h-16', inner: true },
-            { accept: 'gpu', label: 'PCIe x16', area: 'h-12 col-span-2', inner: true },
-            { accept: 'nic', label: 'PCIe x1', area: 'h-10', inner: true },
-            { accept: 'audio', label: 'Audio Header', area: 'h-10', inner: true },
-            { accept: 'storage', label: 'M.2 Slot', area: 'h-10', inner: true },
-        ];
+        board.className = "relative w-full max-w-[340px] sm:max-w-xl bg-slate-950 rounded-[2rem] border-[6px] border-slate-800 shadow-2xl p-4 sm:p-6 grid grid-cols-3 gap-3 sm:gap-4 mx-auto shrink-0";
 
         board.innerHTML = `
             <!-- Top Fans -->
-            ${this.renderDropZone('fan', 'Fan Mount 1', 'col-span-1 row-span-1')}
-            <div class="col-span-1 row-span-1 text-center flex items-center justify-center opacity-20">
-                <iconify-icon icon="solar:monitor-smartphone-bold" class="text-4xl"></iconify-icon>
+            ${this.renderDropZone('fan', 'Cooler 01', 'col-span-1 aspect-square')}
+            <div class="col-span-1 flex items-center justify-center opacity-10">
+                <iconify-icon icon="solar:chip-bold" class="text-3xl sm:text-5xl"></iconify-icon>
             </div>
-            ${this.renderDropZone('fan2', 'Fan Mount 2', 'col-span-1 row-span-1')}
+            ${this.renderDropZone('fan2', 'Cooler 02', 'col-span-1 aspect-square')}
             
             <!-- Radiator -->
-            ${this.renderDropZone('liquid', 'Liquid Radiator', 'col-span-3 row-span-1 bg-slate-900/30')}
+            ${this.renderDropZone('liquid', 'Liquid Cooling Block', 'col-span-3 h-16 sm:h-20 bg-slate-900/30')}
             
             <!-- Main Board Area -->
-            <div class="col-span-3 row-span-2 border-2 border-indigo-900/30 bg-indigo-900/10 rounded-lg p-3 relative">
-                <div class="absolute -top-3 left-2 bg-slate-950 px-2 text-[10px] text-indigo-400 font-mono uppercase">Motherboard</div>
+            <div class="col-span-3 border-2 border-indigo-500/20 bg-indigo-500/5 rounded-2xl p-4 relative mt-2">
+                <div class="absolute -top-3 left-4 bg-slate-950 px-2 text-[8px] font-black text-indigo-400 uppercase tracking-[0.2em] border border-white/5 rounded-full">Motherboard Core</div>
                 
-                <div class="grid grid-cols-2 gap-3 h-full">
-                    ${this.renderDropZone('cpu', 'CPU Socket', 'row-span-1')}
-                    ${this.renderDropZone('ram', 'DIMM Slots', 'row-span-1')}
+                <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                    ${this.renderDropZone('cpu', 'Processor Socket', 'aspect-square')}
+                    ${this.renderDropZone('ram', 'RAM Modules', 'aspect-square')}
                     
-                    ${this.renderDropZone('storage', 'M.2 SSD', 'col-span-2 h-10')}
-                    ${this.renderDropZone('gpu', 'PCIe x16 GPU', 'col-span-2 h-12')}
+                    ${this.renderDropZone('storage', 'NVMe Storage', 'col-span-2 h-10 sm:h-12')}
+                    ${this.renderDropZone('gpu', 'Graphics PCIe Slot', 'col-span-2 h-14 sm:h-16')}
                     
-                    ${this.renderDropZone('nic', 'PCIe x1 Net', 'col-span-1')}
-                    ${this.renderDropZone('audio', 'Audio HD', 'col-span-1')}
+                    <div class="col-span-2 grid grid-cols-2 gap-3">
+                        ${this.renderDropZone('nic', 'Network Unit', 'h-10 sm:h-12')}
+                        ${this.renderDropZone('audio', 'Audio HD Unit', 'h-10 sm:h-12')}
+                    </div>
                 </div>
             </div>
 
             <!-- Bottom: PSU -->
-            <div class="col-span-2 row-span-1"></div>
-            ${this.renderDropZone('psu', 'PSU Bay', 'col-span-1 row-span-1 bg-slate-800/30')}
+            <div class="col-span-2 py-2 flex items-end">
+                <div class="w-full h-1 bg-gradient-to-r from-transparent via-slate-800 to-transparent opacity-50"></div>
+            </div>
+            ${this.renderDropZone('psu', 'Power Supply', 'col-span-1 aspect-square bg-slate-800/20')}
         `;
 
-        schematicWrapper.appendChild(board);
 
-        const schematicCard = new Card({
+        const boardCard = new Card({
             title: "System Schematic",
-            subtitle: "Assembly Phase: " + (this.currentPhase + 1),
-            content: schematicWrapper,
+            subtitle: `Phase ${this.currentPhase + 1}: Assemble Core Components`,
+            content: board,
             variant: 'glass',
-            customClass: 'w-full lg:w-2/3 flex flex-col'
+            customClass: 'w-full lg:w-2/3 flex flex-col items-center'
         });
 
-        // Append All
         layout.appendChild(trayCard.render());
-        layout.appendChild(schematicCard.render());
+        layout.appendChild(boardCard.render());
+        content.appendChild(layout);
 
-        const instructionFeedback = new Feedback({
-            title: "Assembly Protocol",
-            message: "Install core components (CPU, RAM, M.2) before coolers and peripherals.",
-            type: "neutral"
-        });
-
-        this.container.appendChild(header.render());
-        this.container.appendChild(instructionFeedback.render());
-        this.container.appendChild(layout);
+        const container_el = new LevelContainer({ content: content });
+        this.container.appendChild(container_el.render());
 
         this.attachEvents();
     },
@@ -187,93 +175,80 @@ export default {
         return `
             <div class="drop-zone border-2 border-dashed border-slate-700 bg-slate-900/50 rounded-lg flex flex-col items-center justify-center transition-all ${classes}" 
                 data-accept="${accept}" data-label="${label}">
-                <span class="text-[9px] font-bold text-slate-500 uppercase pointer-events-none text-center px-1">${label}</span>
+                <span class="text-[8px] font-bold text-slate-500 uppercase pointer-events-none text-center px-1">${label}</span>
             </div>
         `;
     },
 
     attachEvents() {
-        // Drag Events managed in render() for sources.
         const zones = this.container.querySelectorAll('.drop-zone');
-
         zones.forEach(zone => {
             zone.addEventListener('dragover', (e) => {
                 e.preventDefault();
-                if (!zone.classList.contains('occupied')) {
-                    zone.classList.add('hover');
-                }
+                if (!zone.classList.contains('occupied')) zone.classList.add('bg-indigo-500/10', 'border-indigo-500');
             });
 
-            zone.addEventListener('dragleave', () => zone.classList.remove('hover'));
+            zone.addEventListener('dragleave', () => zone.classList.remove('bg-indigo-500/10', 'border-indigo-500'));
 
             zone.addEventListener('drop', (e) => {
                 e.preventDefault();
-                zone.classList.remove('hover');
-
+                zone.classList.remove('bg-indigo-500/10', 'border-indigo-500');
                 const type = e.dataTransfer.getData('type');
                 const label = e.dataTransfer.getData('label');
+                if (type && !zone.classList.contains('occupied')) this.handleDrop(zone, type, label);
+            });
 
-                if (type && !zone.classList.contains('occupied')) {
-                    this.handleDrop(zone, type, label);
+            // Mobile Tap-to-Place fallback
+            zone.addEventListener('click', () => {
+                const activeDraggable = document.querySelector('.draggable-item.active-choice');
+                if (activeDraggable && !zone.classList.contains('occupied')) {
+                    this.handleDrop(zone, activeDraggable.dataset.type, activeDraggable.dataset.label);
+                    activeDraggable.classList.remove('active-choice');
                 }
+            });
+        });
+
+        // Mobile Tray Interaction
+        this.container.querySelectorAll('.draggable-item').forEach(item => {
+            item.addEventListener('click', () => {
+                this.container.querySelectorAll('.draggable-item').forEach(i => i.classList.remove('active-choice', 'ring-2', 'ring-indigo-500'));
+                item.classList.add('active-choice', 'ring-2', 'ring-indigo-500');
             });
         });
     },
 
     handleDrop(zone, type, label) {
-        // 1. Check compatibility (Silent Reject)
-        const accepted = zone.dataset.accept;
-        if (accepted !== type) {
-            this.shakeElement(zone);
+        if (zone.dataset.accept !== type || !this.installOrder[this.currentPhase].includes(type)) {
+            zone.classList.add('animate-shake', 'border-rose-500');
+            setTimeout(() => zone.classList.remove('animate-shake', 'border-rose-500'), 500);
             return;
         }
 
-        // 2. Check Order (Phase restriction) (Silent Reject)
-        const allowedParts = this.installOrder[this.currentPhase];
-        if (!allowedParts.includes(type)) {
-            this.shakeElement(zone);
-            return;
-        }
-
-        // 3. Success Placement
         this.placeItem(zone, type, label);
-    },
-
-    shakeElement(el) {
-        el.classList.add('animate-shake');
-        setTimeout(() => el.classList.remove('animate-shake'), 500);
     },
 
     placeItem(zone, type, label) {
         zone.classList.add('occupied', 'border-emerald-500/50', 'bg-emerald-500/10');
         zone.classList.remove('border-dashed', 'border-slate-700');
 
-        // Visual
-        const partInfo = this.parts.find(p => p.id === type);
+        const part = this.parts.find(p => p.id === type);
         zone.innerHTML = `
             <div class="animate-fade-in flex flex-col items-center justify-center text-emerald-400">
-                <iconify-icon icon="${partInfo.icon}" class="text-2xl"></iconify-icon>
-                <span class="text-[8px] font-bold uppercase mt-1">${label}</span>
+                <iconify-icon icon="${part.icon}" class="text-xl sm:text-2xl"></iconify-icon>
+                <span class="text-[7px] font-bold uppercase mt-1 text-center">${label}</span>
             </div>
         `;
 
-        // Hide from tray
         const dragger = this.container.querySelector(`.draggable-item[data-type="${type}"]`);
-        if (dragger) {
-            dragger.classList.add('hidden');
-        }
+        if (dragger) dragger.classList.add('hidden');
 
-        // Record
         this.placements.push(type);
         this.placedItems++;
 
-        // Check Phase Completion
-        const currentPhaseParts = this.installOrder[this.currentPhase];
-        const allPhasePartsPlaced = currentPhaseParts.every(p => this.placements.includes(p));
-
-        if (allPhasePartsPlaced) {
+        if (this.installOrder[this.currentPhase].every(p => this.placements.includes(p))) {
             if (this.currentPhase < this.installOrder.length - 1) {
                 this.currentPhase++;
+                this.render(); // Re-render to update instructions/phase
             } else {
                 setTimeout(() => this.finishLevel(), 1000);
             }
@@ -283,21 +258,17 @@ export default {
     finishLevel() {
         const elapsedSec = Math.floor((Date.now() - this.startTime) / 1000);
         const timeBonus = Math.max(0, (90 - elapsedSec) * 10);
-
-        // Generate Detailed Results for Summary Screen
-        const detailedResults = [
-            { question: "Component Assembly Sequence", selected: "Correct Order", correct: "Correct Order", isCorrect: true },
-            { question: "Thermal Paste Application", selected: "Applied", correct: "Applied", isCorrect: true }, // Flavor
-            { question: "Cable Management", selected: "Optimized", correct: "Optimized", isCorrect: true }
-        ];
-
         this.game.completeLevel({
             success: true,
             score: 1000 + timeBonus,
             xp: 500,
             accuracy: 100,
             timeBonus: timeBonus,
-            detailedResults: detailedResults
+            detailedResults: [
+                { question: "Assembly Protocol", selected: "Correct Sequence", correct: "Correct Sequence", isCorrect: true },
+                { question: "Component Placement", selected: "All Parts Installed", correct: "All Parts Installed", isCorrect: true }
+            ]
         });
     }
 };
+

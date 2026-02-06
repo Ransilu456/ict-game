@@ -77,7 +77,7 @@ export default {
 
         this.parts.forEach(part => {
             const el = document.createElement('div');
-            el.className = "draggable-item p-3 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-indigo-500 cursor-grab active:cursor-grabbing transition-all flex flex-col items-center justify-center gap-2 group select-none touch-none";
+            el.className = `draggable-item p-3 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-indigo-500 cursor-grab active:cursor-grabbing transition-all flex flex-col items-center justify-center gap-2 group select-none touch-none ${this.placements.includes(part.id) ? 'hidden' : ''}`;
             el.draggable = true;
             el.dataset.type = part.id;
             el.dataset.label = part.label;
@@ -172,10 +172,20 @@ export default {
     },
 
     renderDropZone(accept, label, classes = '') {
+        const isOccupied = this.placements.includes(accept);
+        const part = this.parts.find(p => p.id === accept);
+
         return `
-            <div class="drop-zone border-2 border-dashed border-slate-700 bg-slate-900/50 rounded-lg flex flex-col items-center justify-center transition-all ${classes}" 
+            <div class="drop-zone border-2 ${isOccupied ? 'occupied border-emerald-500/50 bg-emerald-500/10' : 'border-dashed border-slate-700 bg-slate-900/50'} rounded-lg flex flex-col items-center justify-center transition-all ${classes}" 
                 data-accept="${accept}" data-label="${label}">
-                <span class="text-[8px] font-bold text-slate-500 uppercase pointer-events-none text-center px-1">${label}</span>
+                ${isOccupied ? `
+                    <div class="flex flex-col items-center justify-center text-emerald-400">
+                        <iconify-icon icon="${part.icon}" class="text-xl sm:text-2xl"></iconify-icon>
+                        <span class="text-[7px] font-bold uppercase mt-1 text-center">${label}</span>
+                    </div>
+                ` : `
+                    <span class="text-[8px] font-bold text-slate-500 uppercase pointer-events-none text-center px-1">${label}</span>
+                `}
             </div>
         `;
     },
